@@ -60,12 +60,24 @@ android {
         compose true
         buildConfig true
     }
+
+    signingConfigs {
+        release {
+            if (keystorePropertiesFile.exists()) {
+                storeFile file(keystoreProperties['storeFile'])
+                storePassword keystoreProperties['storePassword']
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+            }
+        }
+    }
     
     buildTypes {
         debug {
             applicationIdSuffix ".dev"
         }
         release {
+            signingConfig keystorePropertiesFile.exists() ? signingConfigs.release : signingConfigs.debug
             // R8 minify on (with -dontobfuscate in proguard rules) so unused
             // classes — notably Flutter's FlutterPlayStoreSplitApplication and
             // its proprietary play-core deps — get tree-shaken out.
