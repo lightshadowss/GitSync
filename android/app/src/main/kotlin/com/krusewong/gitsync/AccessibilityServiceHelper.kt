@@ -1,4 +1,4 @@
-package com.viscouspot.gitsync
+package com.krusewong.gitsync
 
 import android.content.Context
 import android.content.Intent

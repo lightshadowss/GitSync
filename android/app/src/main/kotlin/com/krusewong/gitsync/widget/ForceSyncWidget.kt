@@ -1,4 +1,4 @@
-package com.viscouspot.gitsync.widget
+package com.krusewong.gitsync.widget
 
 import es.antonborri.home_widget.HomeWidgetGlanceState
 import es.antonborri.home_widget.HomeWidgetGlanceStateDefinition
@@ -43,7 +43,7 @@ import androidx.glance.Image
 import androidx.glance.ImageProvider
 import android.util.Log
 import androidx.compose.ui.unit.DpSize
-import com.viscouspot.gitsync.R
+import com.krusewong.gitsync.R
 
 class SyncAction : ActionCallback {
     override suspend fun onAction(

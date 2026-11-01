@@ -1,4 +1,4 @@
-package com.viscouspot.gitsync.widget
+package com.krusewong.gitsync.widget
 
 import es.antonborri.home_widget.HomeWidgetGlanceState
 import es.antonborri.home_widget.HomeWidgetGlanceStateDefinition
@@ -44,7 +44,7 @@ import androidx.glance.Image
 import androidx.glance.ImageProvider
 import android.util.Log
 import androidx.compose.ui.unit.DpSize
-import com.viscouspot.gitsync.R
+import com.krusewong.gitsync.R
 
 class ManualSyncAction : ActionCallback {
     override suspend fun onAction(
@@ -92,7 +92,7 @@ class ManualSyncWidget : GlanceAppWidget() {
                 .fillMaxSize()
                 .background(Color(0xFF141414))
                 .clickable(
-                    onClick = actionStartActivity<com.viscouspot.gitsync.MainActivity>(
+                    onClick = actionStartActivity<com.krusewong.gitsync.MainActivity>(
                         context,
                         Uri.parse("manualsyncwidget://click?homeWidget")
                     )

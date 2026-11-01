@@ -175,10 +175,10 @@
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>gitsync</string>
+				<string>krusegitsync</string>
 			</array>
 			<key>CFBundleURLName</key>
-			<string>com.viscouspot.gitsync</string>
+			<string>com.krusewong.gitsync</string>
 		</dict>
 	</array>
 	<key>LSApplicationQueriesSchemes</key>

@@ -1,4 +1,4 @@
-package com.viscouspot.gitsync.widget
+package com.krusewong.gitsync.widget
 
 import es.antonborri.home_widget.HomeWidgetGlanceWidgetReceiver
 

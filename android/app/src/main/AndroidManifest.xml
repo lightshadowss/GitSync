@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.viscouspot.gitsync">
+    package="com.krusewong.gitsync">
     <uses-sdk android:minSdkVersion="21" />
    
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -54,7 +54,7 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="gitsync" />
+                <data android:scheme="krusegitsync" />
             </intent-filter>
         </activity>
         <service

@@ -12,8 +12,8 @@ struct SyncNowIntent: AppIntent {
     func perform() async throws -> some IntentResult {
         let repoIndex = UserDefaults(suiteName: "group.ForceSyncWidget")?.integer(forKey: "flutter.repoman_shortcutSyncIndex") ?? -1
         let urlString = repoIndex >= 0
-            ? "gitsync://sync-now?homeWidget&index=\(repoIndex)"
-            : "gitsync://sync-now?homeWidget"
+            ? "krusegitsync://sync-now?homeWidget&index=\(repoIndex)"
+            : "krusegitsync://sync-now?homeWidget"
 
         let backgroundIntent = BackgroundIntent(
             url: URL(string: urlString),

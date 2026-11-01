@@ -1,4 +1,4 @@
-package com.viscouspot.gitsync
+package com.krusewong.gitsync
 
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine

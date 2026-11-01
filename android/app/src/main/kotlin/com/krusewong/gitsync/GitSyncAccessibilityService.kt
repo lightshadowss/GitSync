@@ -1,4 +1,4 @@
-package com.viscouspot.gitsync
+package com.krusewong.gitsync
 
 import android.accessibilityservice.AccessibilityService
 import android.content.Context

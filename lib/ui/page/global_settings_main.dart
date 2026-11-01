@@ -590,16 +590,6 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                             Navigator.of(context).canPop() ? Navigator.pop(context) : null;
                           }
 
-                          if (settingsManagerSettings.length > 1) {
-                            if (ref.read(premiumStatusProvider) != true) {
-                              final result = await Navigator.of(context).push(createUnlockPremiumRoute(context, {}));
-                              if (result == true) {
-                                await importSettings();
-                              }
-                              return;
-                            }
-                          }
-
                           await importSettings();
                         });
                       },

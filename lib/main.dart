@@ -192,7 +192,7 @@ Future<void> backgroundCallback(Uri? data) async {
       return;
     }
 
-    if (scheme == 'gitsync' && data?.host == 'sync-now') {
+    if (scheme == 'krusegitsync' && data?.host == 'sync-now') {
       final repoIndex = await _resolveRepoIndex(data, StorageKey.repoman_shortcutSyncIndex);
 
       if (Platform.isIOS) {
@@ -1215,19 +1215,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> with WidgetsBindingObse
       _pageController.animateToPage(0, duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
     };
 
-    initAsync(() async {
-      if (premiumManager.hasPremiumNotifier.value == false) {
-        await premiumManager.cullNonPremium();
-        await reloadAll();
-      }
-    });
-
-    premiumManager.hasPremiumNotifier.addListener(() async {
-      if (premiumManager.hasPremiumNotifier.value == false && await premiumManager.cullNonPremium()) {
-        await reloadAll();
-      }
-    });
-
     FlutterBackgroundService().on(GitsyncService.MERGE_COMPLETE).listen((event) async {
       Navigator.of(context).canPop() ? Navigator.pop(context) : null;
       await reloadAll();
@@ -1998,16 +1985,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> with WidgetsBindingObse
                                       }
                                     }
 
-                                    if (premiumManager.hasPremiumNotifier.value != true) {
-                                      final result = await Navigator.of(context, rootNavigator: true).push(createUnlockPremiumRoute(context, {}));
-                                      if (result == true) {
-                                        if (mounted) setState(() {});
-                                        await addRepo();
-                                      }
-                                      if (mounted) setState(() {});
-                                      return;
-                                    }
-
                                     if (repoNamesAsync.valueOrNull!.length == 1 || repoSettingsExpanded) {
                                       addRepo();
                                       return;
@@ -2029,19 +2006,14 @@ class _MyHomePageState extends ConsumerState<MyHomePage> with WidgetsBindingObse
                                   },
                                   child: Row(
                                     children: [
-                                      ValueListenableBuilder(
-                                        valueListenable: premiumManager.hasPremiumNotifier,
-                                        builder: (context, hasPremium, child) => FaIcon(
-                                          hasPremium == true
-                                              ? (repoNamesAsync.valueOrNull!.length == 1 || repoSettingsExpanded
-                                                    ? FontAwesomeIcons.solidSquarePlus
-                                                    : FontAwesomeIcons.ellipsis)
-                                              : FontAwesomeIcons.solidGem,
-                                          color: repoNamesAsync.valueOrNull!.length == 1 || repoSettingsExpanded
-                                              ? colours.tertiaryPositive
-                                              : colours.secondaryLight,
-                                          size: textLG,
-                                        ),
+                                      FaIcon(
+                                        repoNamesAsync.valueOrNull!.length == 1 || repoSettingsExpanded
+                                            ? FontAwesomeIcons.solidSquarePlus
+                                            : FontAwesomeIcons.ellipsis,
+                                        color: repoNamesAsync.valueOrNull!.length == 1 || repoSettingsExpanded
+                                            ? colours.tertiaryPositive
+                                            : colours.secondaryLight,
+                                        size: textLG,
                                       ),
                                       repoNamesAsync.valueOrNull!.length != 1
                                           ? SizedBox.shrink()
