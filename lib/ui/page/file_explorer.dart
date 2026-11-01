@@ -64,7 +64,13 @@ class FileExplorerState extends State<FileExplorer> with WidgetsBindingObserver 
   late final _fileManagerWidget = FileManager(
     controller: controller,
     hideHiddenEntity: false,
-    loadingScreen: Center(child: CircularProgressIndicator(color: colours.primaryLight)),
+    loadingScreen: Center(child: CircularProgressIndicator(color: context.colours.primaryLight)),
+    emptyFolder: Center(
+      child: Text(
+        context.t.filesNotFound.toUpperCase(),
+        style: TextStyle(color: context.colours.secondaryLight, fontWeight: FontWeight.bold, fontSize: textLG),
+      ),
+    ),
     builder: (context, snapshot) {
       final List<FileSystemEntity> entities = snapshot;
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -74,7 +80,7 @@ class FileExplorerState extends State<FileExplorer> with WidgetsBindingObserver 
       return ValueListenableBuilder(
         valueListenable: selectedPathsNotifier,
         builder: (context, selectedPaths, child) => RefreshIndicator(
-          color: colours.tertiaryDark,
+          color: context.colours.tertiaryDark,
           onRefresh: () async {
             reload();
             await Future.delayed(Duration(milliseconds: 500));
@@ -92,7 +98,7 @@ class FileExplorerState extends State<FileExplorer> with WidgetsBindingObserver 
                 return Padding(
                   padding: EdgeInsets.only(bottom: spaceSM),
                   child: Material(
-                    color: selectedPaths.contains(path) ? colours.tertiaryLight : colours.tertiaryDark,
+                    color: selectedPaths.contains(path) ? context.colours.tertiaryLight : context.colours.tertiaryDark,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(cornerRadiusSM), side: BorderSide.none),
                     child: InkWell(
                       onTap: () async {
@@ -149,8 +155,8 @@ class FileExplorerState extends State<FileExplorer> with WidgetsBindingObserver 
                                                       : FontAwesomeIcons.solidFile))
                                           : FontAwesomeIcons.solidFolder),
                                 color: isFile
-                                    ? (selectedPaths.contains(path) ? colours.primaryLight : colours.secondaryLight)
-                                    : (selectedPaths.contains(path) ? colours.tertiaryInfo : colours.primaryInfo),
+                                    ? (selectedPaths.contains(path) ? context.colours.primaryLight : context.colours.secondaryLight)
+                                    : (selectedPaths.contains(path) ? context.colours.tertiaryInfo : context.colours.primaryInfo),
                                 size: textMD,
                               ),
                             ),
@@ -161,7 +167,7 @@ class FileExplorerState extends State<FileExplorer> with WidgetsBindingObserver 
                                 children: [
                                   Text(
                                     FileManager.basename(entities[index]),
-                                    style: TextStyle(color: colours.primaryLight, fontSize: textMD, overflow: TextOverflow.ellipsis),
+                                    style: TextStyle(color: context.colours.primaryLight, fontSize: textMD, overflow: TextOverflow.ellipsis),
                                   ),
                                   FutureBuilder<FileStat>(
                                     future: entities[index].stat(),
@@ -172,7 +178,7 @@ class FileExplorerState extends State<FileExplorer> with WidgetsBindingObserver 
                                                 : "${snapshot.data!.modified}".substring(0, 10))
                                           : "",
                                       style: TextStyle(
-                                        color: (selectedPaths.contains(path) ? colours.primaryLight : colours.secondaryLight),
+                                        color: (selectedPaths.contains(path) ? context.colours.primaryLight : context.colours.secondaryLight),
                                         fontSize: textSM,
                                       ),
                                     ),
@@ -195,7 +201,7 @@ class FileExplorerState extends State<FileExplorer> with WidgetsBindingObserver 
   );
   List<((String, String), Function(List<String>))> get singleSelectOptions => [
     (
-      (t.rename, t.renameDescription),
+      (context.t.rename, context.t.renameDescription),
       (List<String> _) async {
         final oldPath = selectedPathsNotifier.value[0];
         final entity = FileSystemEntity.typeSync(oldPath);
@@ -223,7 +229,7 @@ class FileExplorerState extends State<FileExplorer> with WidgetsBindingObserver 
     ),
     if (viewOrEditFile(context, selectedPathsNotifier.value[0], true))
       (
-        (t.openFile, t.openFileDescription),
+        (context.t.openFile, context.t.openFileDescription),
         (List<String> selectedPaths) async {
           loadingMoreNotifier.value = true;
           final path = selectedPathsNotifier.value[0];
@@ -237,7 +243,7 @@ class FileExplorerState extends State<FileExplorer> with WidgetsBindingObserver 
       ),
     if (Platform.isIOS && FileSystemEntity.typeSync(selectedPathsNotifier.value[0]) == FileSystemEntityType.file)
       (
-        (t.openInTextastic, t.openInTextasticDescription),
+        (context.t.openInTextastic, context.t.openInTextasticDescription),
         (List<String> selectedPaths) async {
           final filePath = selectedPathsNotifier.value[0];
           final encodedFullPath = Uri.encodeComponent(filePath);
@@ -266,7 +272,7 @@ class FileExplorerState extends State<FileExplorer> with WidgetsBindingObserver 
         },
       ),
     (
-      (t.viewGitLog, t.viewGitLogDescription),
+      (context.t.viewGitLog, context.t.viewGitLogDescription),
       (List<String> selectedPaths) async {
         loadingMoreNotifier.value = true;
         final path = selectedPathsNotifier.value[0];
@@ -290,13 +296,13 @@ class FileExplorerState extends State<FileExplorer> with WidgetsBindingObserver 
         entityPathsNotifier.value.every((p) => selectedPathsNotifier.value.contains(p));
     return allSelected
         ? (
-            (t.deselectAll, t.deselectAllDescription),
+            (context.t.deselectAll, context.t.deselectAllDescription),
             (List<String> _) {
               selectedPathsNotifier.value = [];
             },
           )
         : (
-            (t.selectAll, t.selectAllDescription),
+            (context.t.selectAll, context.t.selectAllDescription),
             (List<String> _) {
               selectedPathsNotifier.value = List.from(entityPathsNotifier.value);
             },
@@ -305,7 +311,7 @@ class FileExplorerState extends State<FileExplorer> with WidgetsBindingObserver 
 
   List<((String, String), void Function(List<String>))> get ignoreAndUntrackOptions => [
     (
-      (t.ignoreUntrack, t.ignoreUntrackDescription),
+      (context.t.ignoreUntrack, context.t.ignoreUntrackDescription),
       (List<String> selectedPaths) async {
         loadingMoreNotifier.value = true;
         addToIgnore(selectedPaths, gitIgnorePath);
@@ -315,7 +321,7 @@ class FileExplorerState extends State<FileExplorer> with WidgetsBindingObserver 
       },
     ),
     (
-      (t.excludeUntrack, t.excludeUntrackDescription),
+      (context.t.excludeUntrack, context.t.excludeUntrackDescription),
       (List<String> selectedPaths) async {
         loadingMoreNotifier.value = true;
         addToIgnore(selectedPaths, gitInfoExcludePath);
@@ -325,7 +331,7 @@ class FileExplorerState extends State<FileExplorer> with WidgetsBindingObserver 
       },
     ),
     (
-      (t.ignoreOnly, t.ignoreOnlyDescription),
+      (context.t.ignoreOnly, context.t.ignoreOnlyDescription),
       (List<String> selectedPaths) async {
         loadingMoreNotifier.value = true;
         addToIgnore(selectedPaths, gitIgnorePath);
@@ -334,7 +340,7 @@ class FileExplorerState extends State<FileExplorer> with WidgetsBindingObserver 
       },
     ),
     (
-      (t.excludeOnly, t.excludeOnlyDescription),
+      (context.t.excludeOnly, context.t.excludeOnlyDescription),
       (List<String> selectedPaths) async {
         loadingMoreNotifier.value = true;
         addToIgnore(selectedPaths, gitInfoExcludePath);
@@ -343,7 +349,7 @@ class FileExplorerState extends State<FileExplorer> with WidgetsBindingObserver 
       },
     ),
     (
-      (t.untrack, t.untrackDescription),
+      (context.t.untrack, context.t.untrackDescription),
       (List<String> selectedPaths) async {
         loadingMoreNotifier.value = true;
         await runGitOperation(LogType.UntrackAll, (event) => event, {"filePaths": selectedPaths});
@@ -370,9 +376,14 @@ class FileExplorerState extends State<FileExplorer> with WidgetsBindingObserver 
   }
 
   void reload() {
-    final normalised = controller.getCurrentPath.replaceFirst(RegExp(r'/$'), '');
-    controller.setCurrentPath = normalised;
+    final root = widget.path.replaceFirst(RegExp(r'/$'), '');
+    var normalised = controller.getCurrentPath.replaceFirst(RegExp(r'/$'), '');
+    if (!normalised.startsWith(root)) normalised = root;
+    while (normalised.length > root.length && !Directory(normalised).existsSync()) {
+      normalised = p.dirname(normalised);
+    }
     controller.setCurrentPath = "$normalised/";
+    controller.setCurrentPath = normalised;
   }
 
   @override
@@ -443,13 +454,13 @@ class FileExplorerState extends State<FileExplorer> with WidgetsBindingObserver 
   @override
   Widget build(BuildContext context) {
     final scaffold = Scaffold(
-      backgroundColor: colours.primaryDark,
+      backgroundColor: context.colours.primaryDark,
       body: Column(
         children: [
           Container(
             margin: EdgeInsets.only(left: spaceMD, right: spaceMD, bottom: spaceSM),
             padding: EdgeInsets.symmetric(horizontal: spaceXS),
-            decoration: BoxDecoration(color: colours.secondaryDark, borderRadius: BorderRadius.all(cornerRadiusMD)),
+            decoration: BoxDecoration(color: context.colours.secondaryDark, borderRadius: BorderRadius.all(cornerRadiusMD)),
             child: Row(
               children: [
                 ValueListenableBuilder<String?>(
@@ -494,10 +505,10 @@ class FileExplorerState extends State<FileExplorer> with WidgetsBindingObserver 
                               child: FaIcon(
                                 FontAwesomeIcons.arrowUp,
                                 color: isLeftArrowState
-                                    ? (widget.onBackAtRoot != null ? colours.primaryLight : colours.secondaryLight)
-                                    : colours.primaryLight,
+                                    ? (widget.onBackAtRoot != null ? context.colours.primaryLight : context.colours.secondaryLight)
+                                    : context.colours.primaryLight,
                                 size: textLG,
-                                semanticLabel: t.backLabel,
+                                semanticLabel: context.t.backLabel,
                               ),
                             ),
                           );
@@ -516,7 +527,7 @@ class FileExplorerState extends State<FileExplorer> with WidgetsBindingObserver 
                           p.basename(openFile),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(fontSize: textLG, color: colours.primaryLight, fontWeight: FontWeight.bold),
+                          style: TextStyle(fontSize: textLG, color: context.colours.primaryLight, fontWeight: FontWeight.bold),
                         );
                       }
                       return ValueListenableBuilder(
@@ -525,8 +536,8 @@ class FileExplorerState extends State<FileExplorer> with WidgetsBindingObserver 
                           valueListenable: heldPathsNotifier,
                           builder: (context, heldPaths, child) => heldPaths.isNotEmpty
                               ? Text(
-                                  "(${heldPaths.length}) file${heldPaths.length > 1 ? "s" : ""} ${t.selected}",
-                                  style: TextStyle(fontSize: textLG, color: colours.primaryLight, fontWeight: FontWeight.bold),
+                                  "(${heldPaths.length}) file${heldPaths.length > 1 ? "s" : ""} ${context.t.selected}",
+                                  style: TextStyle(fontSize: textLG, color: context.colours.primaryLight, fontWeight: FontWeight.bold),
                                 )
                               : ExtendedText(
                                   currentPath.replaceFirst(getPathLeadingText(), ""),
@@ -537,10 +548,10 @@ class FileExplorerState extends State<FileExplorer> with WidgetsBindingObserver 
                                     position: TextOverflowPosition.start,
                                     child: Text(
                                       "…",
-                                      style: TextStyle(fontSize: textLG, color: colours.primaryLight, fontWeight: FontWeight.bold),
+                                      style: TextStyle(fontSize: textLG, color: context.colours.primaryLight, fontWeight: FontWeight.bold),
                                     ),
                                   ),
-                                  style: TextStyle(fontSize: textLG, color: colours.primaryLight, fontWeight: FontWeight.bold),
+                                  style: TextStyle(fontSize: textLG, color: context.colours.primaryLight, fontWeight: FontWeight.bold),
                                 ),
                         ),
                       );
@@ -593,9 +604,9 @@ class FileExplorerState extends State<FileExplorer> with WidgetsBindingObserver 
                                                 icon: loadingMore
                                                     ? SizedBox.square(
                                                         dimension: textLG,
-                                                        child: CircularProgressIndicator(color: colours.primaryLight),
+                                                        child: CircularProgressIndicator(color: context.colours.primaryLight),
                                                       )
-                                                    : FaIcon(FontAwesomeIcons.ellipsisVertical, color: colours.primaryLight, size: textLG),
+                                                    : FaIcon(FontAwesomeIcons.ellipsisVertical, color: context.colours.primaryLight, size: textLG),
                                               ),
                                               Positioned(
                                                 top: spaceLG * 1.5,
@@ -606,7 +617,7 @@ class FileExplorerState extends State<FileExplorer> with WidgetsBindingObserver 
                                                   icon: SizedBox.shrink(),
                                                   underline: const SizedBox.shrink(),
                                                   menuWidth: MediaQuery.of(context).size.width / 1.5,
-                                                  dropdownColor: colours.secondaryDark,
+                                                  dropdownColor: context.colours.secondaryDark,
                                                   padding: EdgeInsets.zero,
                                                   alignment: Alignment.bottomCenter,
                                                   onChanged: (value) {},
@@ -631,15 +642,15 @@ class FileExplorerState extends State<FileExplorer> with WidgetsBindingObserver 
                                                                     // Text("", style: TextStyle(fontSize: textSM)),
                                                                     Container(
                                                                       margin: EdgeInsets.symmetric(horizontal: spaceMD),
-                                                                      color: colours.tertiaryDark,
+                                                                      color: context.colours.tertiaryDark,
                                                                       height: 2,
                                                                       width: double.infinity,
                                                                     ),
                                                                     SizedBox(height: spaceXXXS),
                                                                     Text(
-                                                                      t.ignoreAndUntrack.toUpperCase(),
+                                                                      context.t.ignoreAndUntrack.toUpperCase(),
                                                                       style: TextStyle(
-                                                                        color: colours.tertiaryInfo,
+                                                                        color: context.colours.tertiaryInfo,
                                                                         fontSize: textSM,
                                                                         fontWeight: FontWeight.bold,
                                                                       ),
@@ -671,7 +682,7 @@ class FileExplorerState extends State<FileExplorer> with WidgetsBindingObserver 
                                                                       overflow: TextOverflow.ellipsis,
                                                                       style: TextStyle(
                                                                         fontSize: textSM,
-                                                                        color: colours.primaryLight,
+                                                                        color: context.colours.primaryLight,
                                                                         fontWeight: FontWeight.bold,
                                                                         overflow: TextOverflow.ellipsis,
                                                                       ),
@@ -685,7 +696,7 @@ class FileExplorerState extends State<FileExplorer> with WidgetsBindingObserver 
                                                                       overflow: TextOverflow.ellipsis,
                                                                       style: TextStyle(
                                                                         fontSize: textXS,
-                                                                        color: colours.secondaryLight,
+                                                                        color: context.colours.secondaryLight,
                                                                         fontWeight: FontWeight.bold,
                                                                         overflow: TextOverflow.ellipsis,
                                                                       ),
@@ -715,7 +726,7 @@ class FileExplorerState extends State<FileExplorer> with WidgetsBindingObserver 
 
                                                   try {
                                                     if (entity == FileSystemEntityType.directory) {
-                                                      await Directory(path).delete();
+                                                      await Directory(path).delete(recursive: true);
                                                     } else {
                                                       await File(path).delete();
                                                     }
@@ -736,7 +747,7 @@ class FileExplorerState extends State<FileExplorer> with WidgetsBindingObserver 
                                               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                               padding: WidgetStatePropertyAll(EdgeInsets.all(spaceXXS)),
                                             ),
-                                            icon: FaIcon(FontAwesomeIcons.trash, color: colours.tertiaryNegative, size: textLG),
+                                            icon: FaIcon(FontAwesomeIcons.trash, color: context.colours.tertiaryNegative, size: textLG),
                                           ),
                                           SizedBox(width: spaceXXS),
                                           IconButton(
@@ -749,7 +760,7 @@ class FileExplorerState extends State<FileExplorer> with WidgetsBindingObserver 
                                               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                               padding: WidgetStatePropertyAll(EdgeInsets.all(spaceXXS)),
                                             ),
-                                            icon: FaIcon(FontAwesomeIcons.solidCopy, color: colours.tertiaryInfo, size: textLG),
+                                            icon: FaIcon(FontAwesomeIcons.solidCopy, color: context.colours.tertiaryInfo, size: textLG),
                                           ),
                                           SizedBox(width: spaceXXS),
                                           IconButton(
@@ -762,7 +773,7 @@ class FileExplorerState extends State<FileExplorer> with WidgetsBindingObserver 
                                               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                               padding: WidgetStatePropertyAll(EdgeInsets.all(spaceXXS)),
                                             ),
-                                            icon: FaIcon(FontAwesomeIcons.scissors, color: colours.tertiaryInfo, size: textLG),
+                                            icon: FaIcon(FontAwesomeIcons.scissors, color: context.colours.tertiaryInfo, size: textLG),
                                           ),
                                         ]
                                       : heldPaths.isNotEmpty
@@ -806,9 +817,9 @@ class FileExplorerState extends State<FileExplorer> with WidgetsBindingObserver 
                                               icon: pasting
                                                   ? SizedBox.square(
                                                       dimension: textLG,
-                                                      child: CircularProgressIndicator(color: colours.tertiaryInfo),
+                                                      child: CircularProgressIndicator(color: context.colours.tertiaryInfo),
                                                     )
-                                                  : FaIcon(FontAwesomeIcons.solidPaste, color: colours.tertiaryInfo, size: textLG),
+                                                  : FaIcon(FontAwesomeIcons.solidPaste, color: context.colours.tertiaryInfo, size: textLG),
                                             ),
                                           ),
                                           SizedBox(width: spaceXXS),
@@ -816,7 +827,7 @@ class FileExplorerState extends State<FileExplorer> with WidgetsBindingObserver 
                                             onPressed: () {
                                               heldPathsNotifier.value = [];
                                             },
-                                            icon: FaIcon(FontAwesomeIcons.solidCircleXmark, color: colours.primaryLight, size: textLG),
+                                            icon: FaIcon(FontAwesomeIcons.solidCircleXmark, color: context.colours.primaryLight, size: textLG),
                                           ),
                                         ]
                                       : [
@@ -844,7 +855,7 @@ class FileExplorerState extends State<FileExplorer> with WidgetsBindingObserver 
                                             ),
                                             icon: FaIcon(
                                               FontAwesomeIcons.folderPlus,
-                                              color: colours.primaryLight,
+                                              color: context.colours.primaryLight,
                                               size: textLG,
                                               semanticLabel: "create folder",
                                             ),
@@ -871,7 +882,7 @@ class FileExplorerState extends State<FileExplorer> with WidgetsBindingObserver 
                                             ),
                                             icon: FaIcon(
                                               FontAwesomeIcons.fileCirclePlus,
-                                              color: colours.primaryLight,
+                                              color: context.colours.primaryLight,
                                               size: textLG,
                                               semanticLabel: "create file",
                                             ),
@@ -905,7 +916,7 @@ class FileExplorerState extends State<FileExplorer> with WidgetsBindingObserver 
                           ? const SizedBox.shrink(key: ValueKey('no-editor'))
                           : Container(
                               key: ValueKey('editor-inner:$openFile:$_editorReloadVersion'),
-                              color: colours.primaryDark,
+                              color: context.colours.primaryDark,
                               child: Editor(path: openFile, type: EditorType.DEFAULT),
                             ),
                     ),

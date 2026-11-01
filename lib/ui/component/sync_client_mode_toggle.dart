@@ -25,7 +25,7 @@ class _SyncClientModeToggleState extends ConsumerState<SyncClientModeToggle> {
             duration: animFast,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.only(topLeft: cornerRadiusMD, topRight: Radius.zero, bottomLeft: cornerRadiusMD, bottomRight: Radius.zero),
-              color: clientModeEnabled != true ? colours.tertiaryInfo : colours.tertiaryDark,
+              color: clientModeEnabled != true ? context.colours.tertiaryInfo : context.colours.tertiaryDark,
             ),
             child: TextButton.icon(
               onPressed: () async {
@@ -39,7 +39,7 @@ class _SyncClientModeToggleState extends ConsumerState<SyncClientModeToggle> {
               style: ButtonStyle(
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 padding: WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: spaceSM, horizontal: spaceMD)),
-                backgroundColor: WidgetStatePropertyAll(clientModeEnabled != true ? colours.tertiaryInfo : colours.tertiaryDark),
+                backgroundColor: WidgetStatePropertyAll(clientModeEnabled != true ? context.colours.tertiaryInfo : context.colours.tertiaryDark),
                 shape: WidgetStatePropertyAll(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.only(
@@ -49,13 +49,13 @@ class _SyncClientModeToggleState extends ConsumerState<SyncClientModeToggle> {
                       bottomRight: Radius.zero,
                     ),
 
-                    side: clientModeEnabled != true ? BorderSide.none : BorderSide(width: 3, color: colours.tertiaryInfo),
+                    side: clientModeEnabled != true ? BorderSide.none : BorderSide(width: 3, color: context.colours.tertiaryInfo),
                   ),
                 ),
               ),
               icon: FaIcon(
                 FontAwesomeIcons.arrowsRotate,
-                color: clientModeEnabled != true ? colours.primaryDark : colours.primaryLight,
+                color: clientModeEnabled != true ? context.colours.primaryDark : context.colours.primaryLight,
                 size: textMD,
               ),
               label: SizedBox(
@@ -70,17 +70,17 @@ class _SyncClientModeToggleState extends ConsumerState<SyncClientModeToggle> {
                               child: Container(
                                 padding: EdgeInsets.symmetric(vertical: 1, horizontal: spaceXXS),
                                 decoration: BoxDecoration(
-                                  color: clientModeEnabled != true ? colours.tertiaryDark : colours.tertiaryInfo,
+                                  color: clientModeEnabled != true ? context.colours.tertiaryDark : context.colours.tertiaryInfo,
                                   borderRadius: BorderRadius.all(cornerRadiusMD),
                                 ),
                                 child: AnimatedDefaultTextStyle(
                                   child: Text(
-                                    t.defaultTo.toUpperCase(),
+                                    context.t.defaultTo.toUpperCase(),
                                     textAlign: TextAlign.center,
                                     style: TextStyle(fontSize: textSM, fontWeight: FontWeight.w800),
                                   ),
                                   style: TextStyle(
-                                    color: clientModeEnabled != true ? colours.primaryLight : colours.primaryDark,
+                                    color: clientModeEnabled != true ? context.colours.primaryLight : context.colours.primaryDark,
                                     fontSize: textMD,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -93,12 +93,12 @@ class _SyncClientModeToggleState extends ConsumerState<SyncClientModeToggle> {
                         : [],
                     AnimatedDefaultTextStyle(
                       child: Text(
-                        t.syncMode,
+                        context.t.syncMode,
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: textMD, fontWeight: FontWeight.bold),
                       ),
                       style: TextStyle(
-                        color: clientModeEnabled != true ? colours.primaryDark : colours.primaryLight,
+                        color: clientModeEnabled != true ? context.colours.primaryDark : context.colours.primaryLight,
                         fontSize: textMD,
                         fontWeight: FontWeight.bold,
                       ),
@@ -107,12 +107,12 @@ class _SyncClientModeToggleState extends ConsumerState<SyncClientModeToggle> {
                     SizedBox(height: spaceXXXXS),
                     AnimatedDefaultTextStyle(
                       child: Text(
-                        t.syncModeDescription,
+                        context.t.syncModeDescription,
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: textXS, fontWeight: FontWeight.bold),
                       ),
                       style: TextStyle(
-                        color: clientModeEnabled != true ? colours.primaryDark : colours.primaryLight,
+                        color: clientModeEnabled != true ? context.colours.primaryDark : context.colours.primaryLight,
                         fontSize: textMD,
                         fontWeight: FontWeight.bold,
                       ),
@@ -129,7 +129,7 @@ class _SyncClientModeToggleState extends ConsumerState<SyncClientModeToggle> {
             duration: animFast,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.only(topLeft: Radius.zero, topRight: cornerRadiusMD, bottomLeft: Radius.zero, bottomRight: cornerRadiusMD),
-              color: clientModeEnabled == true ? colours.tertiaryInfo : colours.tertiaryDark,
+              color: clientModeEnabled == true ? context.colours.tertiaryInfo : context.colours.tertiaryDark,
             ),
             child: TextButton.icon(
               onPressed: () async {
@@ -143,7 +143,7 @@ class _SyncClientModeToggleState extends ConsumerState<SyncClientModeToggle> {
               style: ButtonStyle(
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 padding: WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: spaceSM, horizontal: spaceMD)),
-                backgroundColor: WidgetStatePropertyAll(clientModeEnabled == true ? colours.tertiaryInfo : colours.tertiaryDark),
+                backgroundColor: WidgetStatePropertyAll(clientModeEnabled == true ? context.colours.tertiaryInfo : context.colours.tertiaryDark),
                 shape: WidgetStatePropertyAll(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.only(
@@ -152,12 +152,16 @@ class _SyncClientModeToggleState extends ConsumerState<SyncClientModeToggle> {
                       bottomLeft: Radius.zero,
                       bottomRight: cornerRadiusMD,
                     ),
-                    side: clientModeEnabled == true ? BorderSide.none : BorderSide(width: 3, color: colours.tertiaryInfo),
+                    side: clientModeEnabled == true ? BorderSide.none : BorderSide(width: 3, color: context.colours.tertiaryInfo),
                   ),
                 ),
               ),
               iconAlignment: IconAlignment.end,
-              icon: FaIcon(FontAwesomeIcons.codeCompare, color: clientModeEnabled == true ? colours.primaryDark : colours.primaryLight, size: textMD),
+              icon: FaIcon(
+                FontAwesomeIcons.codeCompare,
+                color: clientModeEnabled == true ? context.colours.primaryDark : context.colours.primaryLight,
+                size: textMD,
+              ),
               label: SizedBox(
                 width: double.infinity,
                 child: Column(
@@ -170,17 +174,17 @@ class _SyncClientModeToggleState extends ConsumerState<SyncClientModeToggle> {
                               child: Container(
                                 padding: EdgeInsets.symmetric(vertical: 1, horizontal: spaceXXS),
                                 decoration: BoxDecoration(
-                                  color: clientModeEnabled != true ? colours.tertiaryInfo : colours.tertiaryDark,
+                                  color: clientModeEnabled != true ? context.colours.tertiaryInfo : context.colours.tertiaryDark,
                                   borderRadius: BorderRadius.all(cornerRadiusMD),
                                 ),
                                 child: AnimatedDefaultTextStyle(
                                   child: Text(
-                                    t.defaultTo.toUpperCase(),
+                                    context.t.defaultTo.toUpperCase(),
                                     textAlign: TextAlign.center,
                                     style: TextStyle(fontSize: textSM, fontWeight: FontWeight.w800),
                                   ),
                                   style: TextStyle(
-                                    color: clientModeEnabled != true ? colours.primaryDark : colours.primaryLight,
+                                    color: clientModeEnabled != true ? context.colours.primaryDark : context.colours.primaryLight,
                                     fontSize: textMD,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -193,12 +197,12 @@ class _SyncClientModeToggleState extends ConsumerState<SyncClientModeToggle> {
                         : [],
                     AnimatedDefaultTextStyle(
                       child: Text(
-                        t.clientMode,
+                        context.t.clientMode,
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: textMD, fontWeight: FontWeight.bold),
                       ),
                       style: TextStyle(
-                        color: clientModeEnabled == true ? colours.primaryDark : colours.primaryLight,
+                        color: clientModeEnabled == true ? context.colours.primaryDark : context.colours.primaryLight,
                         fontSize: textMD,
                         fontWeight: FontWeight.bold,
                       ),
@@ -207,12 +211,12 @@ class _SyncClientModeToggleState extends ConsumerState<SyncClientModeToggle> {
                     SizedBox(height: spaceXXXXS),
                     AnimatedDefaultTextStyle(
                       child: Text(
-                        t.clientModeDescription,
+                        context.t.clientModeDescription,
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: textXS, fontWeight: FontWeight.bold),
                       ),
                       style: TextStyle(
-                        color: clientModeEnabled == true ? colours.primaryDark : colours.primaryLight,
+                        color: clientModeEnabled == true ? context.colours.primaryDark : context.colours.primaryLight,
                         fontSize: textXS,
                         fontWeight: FontWeight.bold,
                       ),

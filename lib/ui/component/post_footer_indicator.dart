@@ -19,12 +19,12 @@ class PostFooterIndicator extends StatelessWidget {
         final footer = valueAsync.valueOrNull?.trim() ?? '';
         if (footer.isEmpty) return SizedBox.shrink();
         return GestureDetector(
-          onTap: () => InfoDialog.showDialog(context, t.postFooterLabel, t.postFooterDialogInfo),
+          onTap: () => InfoDialog.showDialog(context, context.t.postFooterLabel, context.t.postFooterDialogInfo),
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: spaceMD, vertical: 0),
             child: Align(
               alignment: Alignment.centerLeft,
-              child: MarkdownBlock(data: footer, config: buildFooterMarkdownConfig(), generator: buildMarkdownGenerator(), selectable: false),
+              child: MarkdownBlock(data: footer, config: buildFooterMarkdownConfig(context), generator: buildMarkdownGenerator(), selectable: false),
             ),
           ),
         );

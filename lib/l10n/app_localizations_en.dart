@@ -12,6 +12,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dismiss => 'Dismiss';
 
   @override
+  String get dontShowAgain => 'Don\'t Show Again';
+
+  @override
   String get skip => 'Skip';
 
   @override
@@ -220,6 +223,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get premiumHookDetectPrivateKey => 'detect-private-key';
+
+  @override
+  String get premiumIndieDevTitle => 'Built by one developer';
+
+  @override
+  String get premiumIndieDevSubtitle => 'GitSync is an independent project, not a company. Buying Premium pays for the time that goes into it.';
 
   @override
   String get switchToClientMode => 'Switch to Client Mode…';
@@ -812,6 +821,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commitsNotFound => 'No commits found…';
 
   @override
+  String get filesNotFound => 'No files found…';
+
+  @override
   String get repoNotFound => 'No repo found…';
 
   @override
@@ -984,10 +996,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get remoteAuthMismatchTitle => 'Auth won\'t work with this remote';
 
   @override
-  String get remoteAuthMismatchUsesSsh => 'This remote uses SSH — tap to switch';
+  String get remoteAuthMismatchUsesSsh => 'This remote uses SSH. Tap to switch';
 
   @override
-  String get remoteAuthMismatchUsesHttps => 'This remote uses HTTPS or OAuth — tap to switch';
+  String get remoteAuthMismatchUsesHttps => 'This remote uses HTTPS or OAuth. Tap to switch';
 
   @override
   String get selectYourGitProviderAndAuthenticate => 'Select your git provider and authenticate';
@@ -1360,6 +1372,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get requestAFeature => 'Request A Feature';
 
   @override
+  String get sponsorCheckFailedTitle => 'Sponsor Check Failed';
+
+  @override
+  String get sponsorCheckFailedMessage => 'We could not reach GitHub to check your sponsorship. Check your connection and try again.';
+
+  @override
+  String get sponsorCheckRejectedMessage => 'GitHub rejected the linked account. Please sign in again.';
+
+  @override
+  String get sponsorNotFoundTitle => 'No Sponsorship Found';
+
+  @override
+  String get sponsorNotFoundMessage =>
+      'This GitHub account is not in the sponsor list. A new sponsorship can take up to a day to become active in the app.';
+
+  @override
+  String get becomeASponsor => 'Become A Sponsor';
+
+  @override
   String get contributeTitle => 'Support Our Work';
 
   @override
@@ -1409,6 +1440,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get directory => 'Directory';
+
+  @override
+  String get confirmFileDirDeleteTitle => 'Confirm Deletion';
 
   @override
   String get confirmFileDirDeleteMsg => 'Are you sure you want to delete the %s \"%s\" %s?';
@@ -1927,6 +1961,35 @@ class AppLocalizationsEn extends AppLocalizations {
   String get actionFilterFailed => 'Failed';
 
   @override
+  String get mergeRequests => 'Merge Requests';
+
+  @override
+  String get jobs => 'Jobs';
+
+  @override
+  String get comment => 'Comment';
+
+  @override
+  String get downloading => 'Downloading…';
+
+  @override
+  String get downloadFailed => 'Download failed';
+
+  @override
+  String savedTo(Object name) {
+    return 'Saved to $name';
+  }
+
+  @override
+  String get saveArchive => 'Save archive';
+
+  @override
+  String get saveAsset => 'Save asset';
+
+  @override
+  String get useOffline => 'Use Offline';
+
+  @override
   String get attemptAutoFix => 'Attempt Auto-Fix?';
 
   @override
@@ -2081,6 +2144,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get issueCommentFailedMsg => 'Your message couldn’t be sent. Please check your connection and try again.';
+
+  @override
+  String get issueReportFailedMsg => 'Your report couldn’t be sent. Please check your connection and try again.';
 
   @override
   String get createNewRepository => 'Create New Repository';
@@ -2387,4 +2453,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get aiSetupMsg => 'Configure an AI provider to use this feature. Go to AI settings?';
+
+  @override
+  String get aiAlwaysAllowSession => 'Always allow this session';
+
+  @override
+  String get aiAllowAllEdits => 'Allow all edits this session';
+
+  @override
+  String get aiRateLimited => 'Rate limited. Your chat is saved. Wait a moment, then send again to carry on.';
+
+  @override
+  String get aiStopGeneratingMsg => 'This will cancel the current response. Any partial output will be kept.';
 }

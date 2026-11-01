@@ -6,6 +6,7 @@
 
     "@@x-GENERAL": "",
     "dismiss": "Dismiss",
+    "dontShowAgain": "Don't Show Again",
     "skip": "Skip",
     "done": "Done",
     "confirm": "Confirm",
@@ -89,6 +90,9 @@
     "premiumHookCheckYamlJson": "check-yaml / check-json",
     "premiumHookMixedLineEnding": "mixed-line-ending",
     "premiumHookDetectPrivateKey": "detect-private-key",
+
+    "premiumIndieDevTitle": "Built by one developer",
+    "premiumIndieDevSubtitle": "GitSync is an independent project, not a company. Buying Premium pays for the time that goes into it.",
 
 
     "@@x-SYNC_OPTIONS": "",
@@ -320,6 +324,7 @@
     "detachedHead": "Detached Head",
     "unbornBranch": "Unborn Branch",
     "commitsNotFound": "No commits found…",
+    "filesNotFound": "No files found…",
     "repoNotFound": "No repo found…",
     "committed": "committed",
     "additions": "%s ++",
@@ -380,8 +385,8 @@
 
     "@@x-AUTH": "",
     "remoteAuthMismatchTitle": "Auth won't work with this remote",
-    "remoteAuthMismatchUsesSsh": "This remote uses SSH — tap to switch",
-    "remoteAuthMismatchUsesHttps": "This remote uses HTTPS or OAuth — tap to switch",
+    "remoteAuthMismatchUsesSsh": "This remote uses SSH. Tap to switch",
+    "remoteAuthMismatchUsesHttps": "This remote uses HTTPS or OAuth. Tap to switch",
     "selectYourGitProviderAndAuthenticate": "Select your git provider and authenticate",
     "oauthProviders": "oAuth Providers",
     "gitProtocols": "Git Protocols",
@@ -514,6 +519,12 @@
     "documentation": "Guides & Wiki",
     "viewDocumentation": "View Guides & Wiki",
     "requestAFeature": "Request A Feature",
+    "sponsorCheckFailedTitle": "Sponsor Check Failed",
+    "sponsorCheckFailedMessage": "We could not reach GitHub to check your sponsorship. Check your connection and try again.",
+    "sponsorCheckRejectedMessage": "GitHub rejected the linked account. Please sign in again.",
+    "sponsorNotFoundTitle": "No Sponsorship Found",
+    "sponsorNotFoundMessage": "This GitHub account is not in the sponsor list. A new sponsorship can take up to a day to become active in the app.",
+    "becomeASponsor": "Become A Sponsor",
     "contributeTitle": "Support Our Work",
     "improveTranslations": "Improve Translations",
     "joinTheDiscussion": "Join The Discord",
@@ -535,6 +546,7 @@
     "file": "File",
     "folder": "Folder",
     "directory": "Directory",
+    "confirmFileDirDeleteTitle": "Confirm Deletion",
     "confirmFileDirDeleteMsg":"Are you sure you want to delete the %s \"%s\" %s?",
     "deleteMultipleSuffix": "and %s more and their contents",
     "deleteSingularSuffix": "and it's contents",
@@ -733,6 +745,15 @@
     "actionFilterAll": "All",
     "actionFilterSuccess": "Success",
     "actionFilterFailed": "Failed",
+    "mergeRequests": "Merge Requests",
+    "jobs": "Jobs",
+    "comment": "Comment",
+    "downloading": "Downloading…",
+    "downloadFailed": "Download failed",
+    "savedTo": "Saved to {name}",
+    "saveArchive": "Save archive",
+    "saveAsset": "Save asset",
+    "useOffline": "Use Offline",
 
 
     "@@x-ERRORS": "",
@@ -788,6 +809,7 @@
     "issueCommentSuccessTitle": "Message Sent",
     "issueCommentSuccessMsg": "Your report has been added to the existing issue. Bookmark this page to track progress and respond to messages. \n\nIssues with no activity for 7 days are automatically closed.",
     "issueCommentFailedMsg": "Your message couldn’t be sent. Please check your connection and try again.",
+    "issueReportFailedMsg": "Your report couldn’t be sent. Please check your connection and try again.",
     "createNewRepository": "Create New Repository",
     "noGitRepoFoundMsg": "No git repository was found in the selected folder. Would you like to create a new one here?",
     "remoteSetupLaterMsg": "This creates a local repository.\nAuthenticate and add a remote to enable sync.",
@@ -903,5 +925,9 @@
     "hideAiFeaturesConfirmTitle": "Hide AI Features?",
     "hideAiFeaturesConfirmMsg": "This will remove the AI tab and all AI buttons throughout the app. You can re-enable AI features anytime from Global Settings.",
     "aiSetupTitle": "Set Up AI",
-    "aiSetupMsg": "Configure an AI provider to use this feature. Go to AI settings?"
+    "aiSetupMsg": "Configure an AI provider to use this feature. Go to AI settings?",
+    "aiAlwaysAllowSession": "Always allow this session",
+    "aiAllowAllEdits": "Allow all edits this session",
+    "aiRateLimited": "Rate limited. Your chat is saved. Wait a moment, then send again to carry on.",
+    "aiStopGeneratingMsg": "This will cancel the current response. Any partial output will be kept."
 }

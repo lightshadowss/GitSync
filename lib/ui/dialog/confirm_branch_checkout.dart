@@ -14,8 +14,8 @@ Future<void> showDialog(BuildContext context, String branchName, Future<void> Fu
         title: SizedBox(
           width: MediaQuery.of(context).size.width,
           child: Text(
-            t.confirmBranchCheckoutTitle,
-            style: TextStyle(color: colours.primaryLight, fontSize: textXL, fontWeight: FontWeight.bold),
+            context.t.confirmBranchCheckoutTitle,
+            style: TextStyle(color: context.colours.primaryLight, fontSize: textXL, fontWeight: FontWeight.bold),
           ),
         ),
         content: SingleChildScrollView(
@@ -23,21 +23,21 @@ Future<void> showDialog(BuildContext context, String branchName, Future<void> Fu
             children: [
               RichText(
                 text: TextSpan(
-                  style: TextStyle(color: colours.primaryLight, fontWeight: FontWeight.bold, fontSize: textSM),
+                  style: TextStyle(color: context.colours.primaryLight, fontWeight: FontWeight.bold, fontSize: textSM),
                   children: [
-                    TextSpan(text: t.confirmBranchCheckoutMsgPart1),
+                    TextSpan(text: context.t.confirmBranchCheckoutMsgPart1),
                     TextSpan(
                       text: "[$branchName]",
-                      style: TextStyle(color: colours.tertiaryInfo),
+                      style: TextStyle(color: context.colours.tertiaryInfo),
                     ),
-                    TextSpan(text: t.confirmBranchCheckoutMsgPart2),
+                    TextSpan(text: context.t.confirmBranchCheckoutMsgPart2),
                   ],
                 ),
               ),
               SizedBox(height: spaceSM),
               Text(
-                t.unsavedChangesMayBeLost,
-                style: TextStyle(color: colours.tertiaryNegative, fontWeight: FontWeight.bold, fontSize: textSM),
+                context.t.unsavedChangesMayBeLost,
+                style: TextStyle(color: context.colours.tertiaryNegative, fontWeight: FontWeight.bold, fontSize: textSM),
               ),
             ],
           ),
@@ -45,8 +45,8 @@ Future<void> showDialog(BuildContext context, String branchName, Future<void> Fu
         actions: <Widget>[
           TextButton(
             child: Text(
-              t.cancel.toUpperCase(),
-              style: TextStyle(color: colours.primaryLight, fontSize: textMD, fontWeight: FontWeight.bold),
+              context.t.cancel.toUpperCase(),
+              style: TextStyle(color: context.colours.primaryLight, fontSize: textMD, fontWeight: FontWeight.bold),
             ),
             onPressed: () {
               Navigator.of(context).canPop() ? Navigator.pop(context) : null;
@@ -54,15 +54,15 @@ Future<void> showDialog(BuildContext context, String branchName, Future<void> Fu
           ),
           TextButton.icon(
             label: Text(
-              t.checkout.toUpperCase(),
-              style: TextStyle(color: colours.primaryPositive, fontSize: textMD, fontWeight: FontWeight.bold),
+              context.t.checkout.toUpperCase(),
+              style: TextStyle(color: context.colours.primaryPositive, fontSize: textMD, fontWeight: FontWeight.bold),
             ),
             iconAlignment: IconAlignment.end,
             icon: loading
                 ? SizedBox(
                     height: spaceMD,
                     width: spaceMD,
-                    child: CircularProgressIndicator(color: colours.primaryPositive),
+                    child: CircularProgressIndicator(color: context.colours.primaryPositive),
                   )
                 : SizedBox.shrink(),
             onPressed: () async {

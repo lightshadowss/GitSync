@@ -789,6 +789,17 @@ fn set_author(repo: &Repository, author: &(String, String)) {
     config.set_str("user.email", &author.1).unwrap();
 }
 
+fn parse_oid(repo: &Repository, sha: &str) -> Result<git2::Oid, git2::Error> {
+    git2::Oid::from_str_ext(sha, repo.object_format())
+}
+
+fn oid_hex_len(repo: &Repository) -> usize {
+    match repo.object_format() {
+        git2::ObjectFormat::Sha1 => 40,
+        _ => 64,
+    }
+}
+
 fn _log(
     log: Arc<impl Fn(LogType, String) -> DartFnFuture<()> + Send + Sync + 'static>,
     log_type: LogType,
@@ -1817,7 +1828,7 @@ pub async fn stage_file_lines(
             uid: 0,
             gid: 0,
             file_size: staged_content.len() as u32,
-            id: git2::Oid::zero(),
+            id: git2::Oid::ZERO_SHA1,
             flags: 0,
             flags_extended: 0,
             path: file_path_bytes.to_vec(),
@@ -1912,7 +1923,7 @@ pub async fn get_recent_commits(
     let mut tag_map: std::collections::HashMap<git2::Oid, Vec<String>> =
         std::collections::HashMap::new();
     if let Ok(tag_names) = repo.tag_names(None) {
-        for tag_name in tag_names.iter().flatten() {
+        for tag_name in tag_names.iter().filter_map(|name| name.ok().flatten()) {
             if let Ok(reference) = repo.find_reference(&format!("refs/tags/{}", tag_name)) {
                 let target_oid = if let Ok(tag_obj) = reference.peel(git2::ObjectType::Commit) {
                     tag_obj.id()
@@ -1952,28 +1963,7 @@ pub async fn get_recent_commits(
             .to_string();
         let reference = format!("{}", oid);
 
-        let (additions, deletions) = if let Some(&(a, d)) = cached_diff_stats.get(&reference) {
-            (a, d)
-        } else {
-            let parent = commit.parent(0).ok();
-            let mut diff_opts = DiffOptions::new();
-            let diff = match parent {
-                Some(parent_commit) => repo.diff_tree_to_tree(
-                    Some(&swl!(parent_commit.tree())?),
-                    Some(&swl!(commit.tree())?),
-                    Some(&mut diff_opts),
-                )?,
-                None => swl!(repo.diff_tree_to_tree(
-                    None,
-                    Some(&swl!(commit.tree())?),
-                    Some(&mut diff_opts)
-                ))?,
-            };
-            match diff.stats() {
-                Ok(s) => (s.insertions() as i32, s.deletions() as i32),
-                Err(_) => (0, 0),
-            }
-        };
+        let (additions, deletions) = cached_diff_stats.get(&reference).copied().unwrap_or((-1, -1));
 
         let unpulled = unpulled_oids.contains(&oid);
         let unpushed = unpushed_oids.contains(&oid);
@@ -2003,6 +1993,57 @@ pub async fn get_recent_commits(
     Ok(commits)
 }
 
+pub async fn get_commit_diff_stats(
+    path_string: &String,
+    references: Vec<String>,
+    log: impl Fn(LogType, String) -> DartFnFuture<()> + Send + Sync + 'static,
+) -> Result<Vec<String>, git2::Error> {
+    let log_callback = Arc::new(log);
+    let repo = swl!(Repository::open(path_string))?;
+
+    let mut result = Vec::new();
+    for reference in references {
+        let oid = match repo.revparse_single(&reference) {
+            Ok(obj) => match obj.peel_to_commit() {
+                Ok(c) => c.id(),
+                Err(_) => continue,
+            },
+            Err(_) => continue,
+        };
+        let commit = match repo.find_commit(oid) {
+            Ok(c) => c,
+            Err(_) => continue,
+        };
+        let parent = commit.parent(0).ok();
+        let mut diff_opts = DiffOptions::new();
+        let diff = match parent {
+            Some(parent_commit) => repo.diff_tree_to_tree(
+                Some(&swl!(parent_commit.tree())?),
+                Some(&swl!(commit.tree())?),
+                Some(&mut diff_opts),
+            )?,
+            None => swl!(repo.diff_tree_to_tree(
+                None,
+                Some(&swl!(commit.tree())?),
+                Some(&mut diff_opts)
+            ))?,
+        };
+        let (additions, deletions) = match diff.stats() {
+            Ok(s) => (s.insertions() as i32, s.deletions() as i32),
+            Err(_) => (0, 0),
+        };
+        result.push(format!("{}|{}|{}", reference, additions, deletions));
+    }
+
+    _log(
+        Arc::clone(&log_callback),
+        LogType::RecentCommits,
+        format!("Computed diff stats for {} commits", result.len()),
+    );
+
+    Ok(result)
+}
+
 fn fast_forward(
     repo: &Repository,
     lb: &mut git2::Reference,
@@ -2015,8 +2056,8 @@ fn fast_forward(
         "Fast forward".to_string(),
     );
     let name = match lb.name() {
-        Some(s) => s.to_string(),
-        None => String::from_utf8_lossy(lb.name_bytes()).to_string(),
+        Ok(s) => s.to_string(),
+        Err(_) => String::from_utf8_lossy(lb.name_bytes()).to_string(),
     };
     let msg = format!("Fast-Forward: Setting {} to id: {}", name, rc.id());
 
@@ -2094,7 +2135,7 @@ fn commit(
                 // On unborn branch, read HEAD's symbolic target to get the intended branch name
                 repo.find_reference("HEAD")
                     .ok()
-                    .and_then(|r| r.symbolic_target().map(|s| s.to_string()))
+                    .and_then(|r| r.symbolic_target().ok().flatten().map(|s| s.to_string()))
                     .and_then(|s| s.strip_prefix("refs/heads/").map(|s| s.to_string()))
                     .unwrap_or_else(|| "main".to_string())
             });
@@ -2334,7 +2375,7 @@ pub async fn pull_changes(
     let remote_name = repo
         .remotes()
         .ok()
-        .and_then(|r| r.get(0).map(|s| s.to_string()))
+        .and_then(|r| r.get(0).ok().flatten().map(|s| s.to_string()))
         .unwrap_or_else(|| "origin".to_string());
 
     tokio::task::block_in_place(|| {
@@ -2380,7 +2421,7 @@ fn pull_changes_priv(
     let resolved_head = swl!(head.resolve())?;
     let remote_branch = swl!(resolved_head
         .shorthand()
-        .ok_or_else(|| git2::Error::from_str("Could not determine branch name")))?;
+        .map_err(|_| git2::Error::from_str("Could not determine branch name")))?;
 
     let tracking_ref_name = format!("refs/remotes/{}/{}", remote_name, remote_branch);
     let tracking_ref = swl!(repo.find_reference(&tracking_ref_name))?;
@@ -2670,7 +2711,7 @@ fn push_changes_priv(
         let resolved_head = swl!(head.resolve())?;
         let branch_name = swl!(resolved_head
             .shorthand()
-            .ok_or_else(|| git2::Error::from_str("Could not determine branch name")))?;
+            .map_err(|_| git2::Error::from_str("Could not determine branch name")))?;
 
         format!("refs/heads/{}", branch_name)
     };
@@ -2712,7 +2753,7 @@ fn push_changes_priv(
             }
             let branch_name = swl!(head
                 .shorthand()
-                .ok_or_else(|| git2::Error::from_str("Invalid branch")))?;
+                .map_err(|_| git2::Error::from_str("Invalid branch")))?;
 
             let remote_branch_ref = format!("refs/remotes/{}/{}", remote_name, branch_name);
 
@@ -2984,7 +3025,11 @@ pub async fn get_recommended_action(
     if let Ok(mut remote) = repo.find_remote(remote_name) {
         swl!(remote.connect_auth(git2::Direction::Fetch, Some(callbacks), None))?;
         let remote_refs = swl!(remote.list())?;
-        let tracking_ref_name = format!("refs/remotes/{}/{}", remote.name().unwrap(), &branch_name);
+        let tracking_ref_name = format!(
+            "refs/remotes/{}/{}",
+            remote.name().ok().flatten().unwrap_or(remote_name.as_str()),
+            &branch_name
+        );
         let mut found = false;
 
         if let Ok(tracking_ref) = repo.find_reference(&tracking_ref_name) {
@@ -3409,7 +3454,7 @@ pub async fn force_pull(
         let resolved_head = swl!(head.resolve())?;
         let mut branch_name = swl!(resolved_head
             .shorthand()
-            .ok_or_else(|| git2::Error::from_str("Could not determine branch name")))?
+            .map_err(|_| git2::Error::from_str("Could not determine branch name")))?
         .to_string();
 
         let orig_head_path = git_dir.join("ORIG_HEAD");
@@ -3421,7 +3466,7 @@ pub async fn force_pull(
                     ))
                 )?;
             let orig_commit_id = content.trim();
-            let orig_commit = swl!(repo.find_commit(git2::Oid::from_str(orig_commit_id)?))?;
+            let orig_commit = swl!(repo.find_commit(parse_oid(&repo, orig_commit_id)?))?;
             let branches = swl!(repo.branches(None))?;
 
             for branch in branches {
@@ -3531,7 +3576,7 @@ pub async fn force_push(
         let resolved_head = swl!(head.resolve())?;
         let mut branch_name = swl!(resolved_head
             .shorthand()
-            .ok_or_else(|| git2::Error::from_str("Could not determine branch name")))?
+            .map_err(|_| git2::Error::from_str("Could not determine branch name")))?
         .to_string();
 
         let orig_head_path = git_dir.join("ORIG_HEAD");
@@ -3543,7 +3588,7 @@ pub async fn force_push(
                     ))
                 )?;
             let orig_commit_id = content.trim();
-            let orig_commit = swl!(repo.find_commit(git2::Oid::from_str(orig_commit_id)?))?;
+            let orig_commit = swl!(repo.find_commit(parse_oid(&repo, orig_commit_id)?))?;
             let branches = swl!(repo.branches(None))?;
 
             for branch in branches {
@@ -3709,7 +3754,7 @@ pub async fn upload_and_overwrite(
         let resolved_head = swl!(head.resolve())?;
         let mut branch_name = swl!(resolved_head
             .shorthand()
-            .ok_or_else(|| git2::Error::from_str("Could not determine branch name")))?
+            .map_err(|_| git2::Error::from_str("Could not determine branch name")))?
         .to_string();
 
         let orig_head_path = git_dir.join("ORIG_HEAD");
@@ -3721,7 +3766,7 @@ pub async fn upload_and_overwrite(
                     ))
                 )?;
             let orig_commit_id = content.trim();
-            let orig_commit = swl!(repo.find_commit(git2::Oid::from_str(orig_commit_id)?))?;
+            let orig_commit = swl!(repo.find_commit(parse_oid(&repo, orig_commit_id)?))?;
             let branches = swl!(repo.branches(None))?;
 
             for branch in branches {
@@ -3827,7 +3872,7 @@ pub async fn download_and_overwrite(
         let resolved_head = swl!(head.resolve())?;
         let mut branch_name = swl!(resolved_head
             .shorthand()
-            .ok_or_else(|| git2::Error::from_str("Could not determine branch name")))?
+            .map_err(|_| git2::Error::from_str("Could not determine branch name")))?
         .to_string();
 
         let orig_head_path = git_dir.join("ORIG_HEAD");
@@ -3839,7 +3884,7 @@ pub async fn download_and_overwrite(
                     ))
                 )?;
             let orig_commit_id = content.trim();
-            let orig_commit = swl!(repo.find_commit(git2::Oid::from_str(orig_commit_id)?))?;
+            let orig_commit = swl!(repo.find_commit(parse_oid(&repo, orig_commit_id)?))?;
             let branches = swl!(repo.branches(None))?;
 
             for branch in branches {
@@ -4072,6 +4117,7 @@ fn get_uncommitted_file_paths_priv(
 ) -> Result<Vec<(String, i32)>, git2::Error> {
     let mut opts = StatusOptions::new();
     opts.include_untracked(include_untracked);
+    opts.recurse_untracked_dirs(include_untracked);
     opts.include_ignored(false);
     opts.update_index(true);
     opts.show(git2::StatusShow::Workdir);
@@ -4281,7 +4327,7 @@ fn get_branch_name_priv(repo: &Repository) -> Option<String> {
 
     if head.is_branch() {
         return Some(head.shorthand().unwrap().to_string());
-    } else if let Some(name) = head.name() {
+    } else if let Ok(name) = head.name() {
         if name.starts_with("refs/remotes/") {
             return Some(name.trim_start_matches("refs/remotes/").to_string());
         }
@@ -4392,7 +4438,7 @@ pub async fn list_remotes(
     let remotes = swl!(repo.remotes())?;
     Ok(remotes
         .iter()
-        .filter_map(|r| r.map(|s| s.to_string()))
+        .filter_map(|r| r.ok().flatten().map(|s| s.to_string()))
         .collect())
 }
 
@@ -4689,6 +4735,7 @@ pub async fn recreate_deleted_index(path_string: String) -> Result<(), git2::Err
 pub async fn prune_corrupted_loose_objects(path_string: String) -> Result<(), git2::Error> {
     let repo = swl!(Repository::open(&path_string))?;
     let odb = swl!(repo.odb())?;
+    let loose_name_len = oid_hex_len(&repo) - 2;
     let objects_dir = Path::new(&path_string).join(".git").join("objects");
     let mut pruned = 0u32;
 
@@ -4725,13 +4772,15 @@ pub async fn prune_corrupted_loose_objects(path_string: String) -> Result<(), gi
                 None => continue,
             };
 
-            // Loose object filenames are 38 hex chars
-            if file_name_str.len() != 38 || !file_name_str.chars().all(|c| c.is_ascii_hexdigit()) {
+            // Loose object filenames are the object id minus its 2 char directory prefix
+            if file_name_str.len() != loose_name_len
+                || !file_name_str.chars().all(|c| c.is_ascii_hexdigit())
+            {
                 continue;
             }
 
             let hex = format!("{}{}", dir_name_str, file_name_str);
-            let oid = match git2::Oid::from_str(&hex) {
+            let oid = match parse_oid(&repo, &hex) {
                 Ok(o) => o,
                 Err(_) => continue,
             };
@@ -4773,7 +4822,7 @@ pub async fn create_branch_from_commit(
 
     let repo = swl!(Repository::open(Path::new(path_string)))?;
 
-    let oid = swl!(git2::Oid::from_str(commit_sha))?;
+    let oid = swl!(parse_oid(&repo, commit_sha))?;
     let commit = swl!(repo.find_commit(oid))?;
 
     let new_branch = swl!(repo.branch(new_branch_name, &commit, false))?;
@@ -4821,7 +4870,7 @@ pub async fn checkout_commit(
 
     let repo = swl!(Repository::open(Path::new(path_string)))?;
 
-    let oid = swl!(git2::Oid::from_str(commit_sha))?;
+    let oid = swl!(parse_oid(&repo, commit_sha))?;
     let commit = swl!(repo.find_commit(oid))?;
     let object = commit.as_object();
 
@@ -4861,7 +4910,7 @@ pub async fn create_tag(
 
     let repo = swl!(Repository::open(Path::new(path_string)))?;
 
-    let oid = swl!(git2::Oid::from_str(commit_sha))?;
+    let oid = swl!(parse_oid(&repo, commit_sha))?;
     let commit = swl!(repo.find_commit(oid))?;
 
     swl!(repo.tag_lightweight(tag_name, commit.as_object(), false))?;
@@ -4893,7 +4942,7 @@ pub async fn revert_commit(
 
     let repo = swl!(Repository::open(Path::new(path_string)))?;
 
-    let oid = swl!(git2::Oid::from_str(commit_sha))?;
+    let oid = swl!(parse_oid(&repo, commit_sha))?;
     let commit = swl!(repo.find_commit(oid))?;
 
     swl!(repo.revert(&commit, None))?;
@@ -5032,7 +5081,7 @@ pub async fn reset_to_commit(
 
     let repo = swl!(Repository::open(Path::new(path_string)))?;
 
-    let oid = swl!(git2::Oid::from_str(commit_sha))?;
+    let oid = swl!(parse_oid(&repo, commit_sha))?;
     let commit = swl!(repo.find_commit(oid))?;
 
     swl!(repo.reset(commit.as_object(), ResetType::Hard, None))?;
@@ -5084,7 +5133,7 @@ pub async fn cherry_pick_commit(
         swl!(repo.set_head(&format!("refs/heads/{}", target_branch)))?;
     }
 
-    let oid = swl!(git2::Oid::from_str(commit_sha))?;
+    let oid = swl!(parse_oid(&repo, commit_sha))?;
     let commit = swl!(repo.find_commit(oid))?;
 
     swl!(repo.cherrypick(&commit, None))?;
@@ -5152,7 +5201,7 @@ pub async fn squash_commits(
 
     let repo = swl!(Repository::open(Path::new(path_string)))?;
 
-    let oldest_oid = swl!(git2::Oid::from_str(oldest_commit_sha))?;
+    let oldest_oid = swl!(parse_oid(&repo, oldest_commit_sha))?;
     let oldest_commit = swl!(repo.find_commit(oldest_oid))?;
 
     if oldest_commit.parent_count() == 0 {

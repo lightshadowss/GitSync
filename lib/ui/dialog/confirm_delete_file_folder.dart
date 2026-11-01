@@ -14,10 +14,10 @@ Future<void> showDialog(BuildContext context, List<String> selectedPaths, Future
   if (entity == FileSystemEntityType.notFound) {
     throw Exception('Path does not exist.');
   }
-  String text = sprintf(t.confirmFileDirDeleteMsg, [
-    entity == FileSystemEntityType.directory ? t.directory.toLowerCase() : t.file.toLowerCase(),
+  String text = sprintf(context.t.confirmFileDirDeleteMsg, [
+    entity == FileSystemEntityType.directory ? context.t.directory.toLowerCase() : context.t.file.toLowerCase(),
     p.basename(oldPath),
-    sprintf(selectedPaths.length > 1 ? t.deleteMultipleSuffix : t.deleteSingularSuffix, [selectedPaths.length - 1]),
+    sprintf(selectedPaths.length > 1 ? context.t.deleteMultipleSuffix : context.t.deleteSingularSuffix, [selectedPaths.length - 1]),
   ]);
 
   return mat.showDialog(
@@ -26,8 +26,8 @@ Future<void> showDialog(BuildContext context, List<String> selectedPaths, Future
       title: SizedBox(
         width: MediaQuery.of(context).size.width,
         child: Text(
-          text,
-          style: TextStyle(color: colours.primaryLight, fontSize: textXL, fontWeight: FontWeight.bold),
+          context.t.confirmFileDirDeleteTitle,
+          style: TextStyle(color: context.colours.primaryLight, fontSize: textXL, fontWeight: FontWeight.bold),
         ),
       ),
       content: SingleChildScrollView(
@@ -35,12 +35,12 @@ Future<void> showDialog(BuildContext context, List<String> selectedPaths, Future
           children: [
             Text(
               text,
-              style: TextStyle(color: colours.primaryLight, fontWeight: FontWeight.bold, fontSize: textSM),
+              style: TextStyle(color: context.colours.primaryLight, fontWeight: FontWeight.bold, fontSize: textSM),
             ),
             SizedBox(height: spaceMD),
             Text(
-              t.thisActionCannotBeUndone,
-              style: TextStyle(color: colours.primaryLight, fontWeight: FontWeight.bold, fontSize: textSM),
+              context.t.thisActionCannotBeUndone,
+              style: TextStyle(color: context.colours.primaryLight, fontWeight: FontWeight.bold, fontSize: textSM),
             ),
           ],
         ),
@@ -48,8 +48,8 @@ Future<void> showDialog(BuildContext context, List<String> selectedPaths, Future
       actions: <Widget>[
         TextButton(
           child: Text(
-            t.cancel.toUpperCase(),
-            style: TextStyle(color: colours.primaryLight, fontSize: textMD),
+            context.t.cancel.toUpperCase(),
+            style: TextStyle(color: context.colours.primaryLight, fontSize: textMD),
           ),
           onPressed: () {
             Navigator.of(context).canPop() ? Navigator.pop(context) : null;
@@ -57,8 +57,8 @@ Future<void> showDialog(BuildContext context, List<String> selectedPaths, Future
         ),
         TextButton(
           child: Text(
-            t.delete.toUpperCase(),
-            style: TextStyle(color: colours.tertiaryNegative, fontSize: textMD),
+            context.t.delete.toUpperCase(),
+            style: TextStyle(color: context.colours.tertiaryNegative, fontSize: textMD),
           ),
           onPressed: () async {
             await callback();

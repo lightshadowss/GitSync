@@ -96,16 +96,18 @@ class ItemCommit extends ConsumerStatefulWidget {
   ConsumerState<ItemCommit> createState() => _ItemCommit();
 }
 
-class _ItemCommit extends ConsumerState<ItemCommit> {
+class _ItemCommit extends ConsumerState<ItemCommit> with SingleTickerProviderStateMixin {
   late Timer _timer;
   late String _relativeCommitDate;
   bool _menuOpen = false;
+  late final AnimationController _pulseController;
 
   @override
   void initState() {
     super.initState();
     _updateTime();
     _timer = Timer.periodic(const Duration(minutes: 1), (timer) => _updateTime());
+    _pulseController = AnimationController(vsync: this, duration: const Duration(milliseconds: 900))..repeat(reverse: true);
   }
 
   void _updateTime() {
@@ -119,13 +121,14 @@ class _ItemCommit extends ConsumerState<ItemCommit> {
   @override
   void dispose() {
     _timer.cancel();
+    _pulseController.dispose();
     super.dispose();
   }
 
   void _showCommitContextMenu(BuildContext context, Offset position) async {
     setState(() => _menuOpen = true);
-    final titleStyle = TextStyle(color: colours.primaryLight, fontSize: textSM, fontWeight: FontWeight.bold);
-    final descStyle = TextStyle(color: colours.tertiaryLight, fontSize: textXS);
+    final titleStyle = TextStyle(color: context.colours.primaryLight, fontSize: textSM, fontWeight: FontWeight.bold);
+    final descStyle = TextStyle(color: context.colours.tertiaryLight, fontSize: textXS);
     PopupMenuItem<String> item(String value, String title, String desc, {bool enabled = true}) {
       return PopupMenuItem(
         value: value,
@@ -133,14 +136,14 @@ class _ItemCommit extends ConsumerState<ItemCommit> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title, style: titleStyle.copyWith(color: !enabled ? colours.tertiaryDark : null)),
-            Text(desc, style: descStyle.copyWith(color: !enabled ? colours.tertiaryDark : null)),
+            Text(title, style: titleStyle.copyWith(color: !enabled ? context.colours.tertiaryDark : null)),
+            Text(desc, style: descStyle.copyWith(color: !enabled ? context.colours.tertiaryDark : null)),
           ],
         ),
       );
     }
 
-    PopupMenuDivider separator() => PopupMenuDivider(height: spaceSM, color: colours.tertiaryDark);
+    PopupMenuDivider separator() => PopupMenuDivider(height: spaceSM, color: context.colours.tertiaryDark);
 
     final overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
     final localPosition = overlay.globalToLocal(position);
@@ -149,31 +152,31 @@ class _ItemCommit extends ConsumerState<ItemCommit> {
     final result = await showMenu<String>(
       context: context,
       position: menuPosition,
-      color: colours.secondaryDark,
+      color: context.colours.secondaryDark,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(cornerRadiusSM)),
       items: [
-        item('select', t.menuSelectCommits.toUpperCase(), t.menuSelectCommitsDesc),
+        item('select', context.t.menuSelectCommits.toUpperCase(), context.t.menuSelectCommitsDesc),
         if (widget.recentCommits.isNotEmpty && widget.commit.reference == widget.recentCommits.first.reference) ...[
-          item('amend-commit', t.menuAmendCommit.toUpperCase(), t.menuAmendCommitDesc),
-          if (widget.commit.unpushed) item('undo-commit', t.menuUndoCommit.toUpperCase(), t.menuUndoCommitDesc),
+          item('amend-commit', context.t.menuAmendCommit.toUpperCase(), context.t.menuAmendCommitDesc),
+          if (widget.commit.unpushed) item('undo-commit', context.t.menuUndoCommit.toUpperCase(), context.t.menuUndoCommitDesc),
         ],
         separator(),
-        item('reset-commit', t.menuResetToCommit.toUpperCase(), t.menuResetToCommitDesc),
-        item('checkout', t.menuCheckoutCommit.toUpperCase(), t.menuCheckoutCommitDesc),
+        item('reset-commit', context.t.menuResetToCommit.toUpperCase(), context.t.menuResetToCommitDesc),
+        item('checkout', context.t.menuCheckoutCommit.toUpperCase(), context.t.menuCheckoutCommitDesc),
         // item('reorder-commit', 'REORDER COMMIT', 'Move this commit to a different position in history'),
-        item('revert', t.menuRevertCommit.toUpperCase(), t.menuRevertCommitDesc),
+        item('revert', context.t.menuRevertCommit.toUpperCase(), context.t.menuRevertCommitDesc),
         separator(),
-        item('create-branch', t.menuCreateBranch.toUpperCase(), t.menuCreateBranchDesc),
-        item('create-tag', t.menuCreateTag.toUpperCase(), t.menuCreateTagDesc),
-        item('cherry-pick', t.menuCherryPick.toUpperCase(), t.menuCherryPickDesc),
+        item('create-branch', context.t.menuCreateBranch.toUpperCase(), context.t.menuCreateBranchDesc),
+        item('create-tag', context.t.menuCreateTag.toUpperCase(), context.t.menuCreateTagDesc),
+        item('cherry-pick', context.t.menuCherryPick.toUpperCase(), context.t.menuCherryPickDesc),
         separator(),
-        item('copy-sha', t.menuCopySha.toUpperCase(), t.menuCopyShaDesc),
-        item('copy-tag', t.menuCopyTag.toUpperCase(), t.menuCopyTagDesc, enabled: widget.commit.tags.isNotEmpty),
+        item('copy-sha', context.t.menuCopySha.toUpperCase(), context.t.menuCopyShaDesc),
+        item('copy-tag', context.t.menuCopyTag.toUpperCase(), context.t.menuCopyTagDesc, enabled: widget.commit.tags.isNotEmpty),
         item(
           'view',
-          sprintf(t.menuViewOnProvider, [widget.gitProvider!.name]).toUpperCase(),
-          t.menuViewOnProviderDesc,
-          enabled: widget.gitProvider?.isOAuthProvider == true && widget.remoteWebUrl != null,
+          sprintf(context.t.menuViewOnProvider, [widget.gitProvider!.name]).toUpperCase(),
+          context.t.menuViewOnProviderDesc,
+          enabled: widget.gitProvider?.isOAuthProvider == true && widget.remoteWebUrl != null && !widget.commit.unpushed,
         ),
       ],
     );
@@ -300,21 +303,21 @@ class _ItemCommit extends ConsumerState<ItemCommit> {
               style: ButtonStyle(
                 backgroundColor: WidgetStatePropertyAll(
                   widget.commit.unpushed
-                      ? colours.tertiaryInfo
+                      ? context.colours.tertiaryInfo
                       : widget.commit.unpulled
-                      ? colours.tertiaryWarning
-                      : colours.tertiaryDark,
+                      ? context.colours.tertiaryWarning
+                      : context.colours.tertiaryDark,
                 ),
                 padding: WidgetStatePropertyAll(EdgeInsets.zero),
                 shape: WidgetStatePropertyAll(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(cornerRadiusSM),
                     side: isSelected
-                        ? BorderSide(color: colours.primaryInfo, width: spaceXXXXS * 2)
+                        ? BorderSide(color: context.colours.primaryInfo, width: spaceXXXXS * 2)
                         : _menuOpen
-                        ? BorderSide(color: colours.primaryLight, width: spaceXXXXS)
+                        ? BorderSide(color: context.colours.primaryLight, width: spaceXXXXS)
                         : inSelectMode
-                        ? BorderSide(color: colours.tertiaryLight.withAlpha(50), width: spaceXXXXS)
+                        ? BorderSide(color: context.colours.tertiaryLight.withAlpha(50), width: spaceXXXXS)
                         : BorderSide.none,
                   ),
                 ),
@@ -325,9 +328,9 @@ class _ItemCommit extends ConsumerState<ItemCommit> {
               child: CustomPaint(
                 painter: ChevronPainter(
                   color: widget.commit.unpushed
-                      ? colours.secondaryInfo.withAlpha(70)
+                      ? context.colours.secondaryInfo.withAlpha(70)
                       : widget.commit.unpulled
-                      ? colours.secondaryWarning.withAlpha(70)
+                      ? context.colours.secondaryWarning.withAlpha(70)
                       : Colors.transparent,
                   stripeWidth: 20,
                   facingDown: !widget.commit.unpushed,
@@ -349,15 +352,15 @@ class _ItemCommit extends ConsumerState<ItemCommit> {
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
-                                  color: widget.commit.unpulled || widget.commit.unpushed ? colours.secondaryDark : colours.primaryLight,
+                                  color: widget.commit.unpulled || widget.commit.unpushed ? context.colours.secondaryDark : context.colours.primaryLight,
                                   fontSize: textMD,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
                               Text(
-                                "${demo ? "ViscousTests" : widget.commit.authorUsername} ${t.committed} $_relativeCommitDate",
+                                "${demo ? "ViscousTests" : widget.commit.authorUsername} ${context.t.committed} $_relativeCommitDate",
                                 style: TextStyle(
-                                  color: widget.commit.unpulled || widget.commit.unpushed ? colours.tertiaryDark : colours.secondaryLight,
+                                  color: widget.commit.unpulled || widget.commit.unpushed ? context.colours.tertiaryDark : context.colours.secondaryLight,
                                   fontSize: textSM,
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -371,21 +374,21 @@ class _ItemCommit extends ConsumerState<ItemCommit> {
                           children: [
                             Stack(
                               clipBehavior: Clip.none,
-                              alignment: Alignment.centerLeft,
+                              alignment: Alignment.centerRight,
                               children: [
                                 Padding(
                                   padding: EdgeInsets.only(right: widget.commit.tags.isEmpty ? 0 : widget.commit.tags.length.clamp(0, 4) * spaceSM),
                                   child: Container(
                                     decoration: BoxDecoration(
-                                      color: widget.commit.unpulled || widget.commit.unpushed ? colours.tertiaryDark : colours.secondaryLight,
+                                      color: widget.commit.unpulled || widget.commit.unpushed ? context.colours.tertiaryDark : context.colours.secondaryLight,
                                       borderRadius: BorderRadius.all(cornerRadiusXS),
-                                      boxShadow: [BoxShadow(color: colours.tertiaryDark, blurRadius: 10, offset: Offset(0, 2))],
+                                      boxShadow: [BoxShadow(color: context.colours.tertiaryDark, blurRadius: 10, offset: Offset(0, 2))],
                                     ),
                                     padding: EdgeInsets.symmetric(horizontal: spaceXS, vertical: spaceXXXS),
                                     child: Text(
                                       (widget.commit.reference).substring(0, 7).toUpperCase(),
                                       style: TextStyle(
-                                        color: widget.commit.unpulled || widget.commit.unpushed ? colours.secondaryLight : colours.tertiaryDark,
+                                        color: widget.commit.unpulled || widget.commit.unpushed ? context.colours.secondaryLight : context.colours.tertiaryDark,
                                         fontSize: textXS,
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -393,19 +396,20 @@ class _ItemCommit extends ConsumerState<ItemCommit> {
                                   ),
                                 ),
                                 for (int i = widget.commit.tags.length.clamp(0, 4) - 1; i >= 0; i--)
-                                  Positioned(
-                                    right: i * spaceSM,
+                                  Padding(
+                                    padding: EdgeInsets.only(right: i * spaceSM),
                                     child: Opacity(
                                       opacity: (1.0 - (i * 0.3)).clamp(0.0, 1.0),
                                       child: Container(
+                                        constraints: BoxConstraints(maxWidth: MediaQuery.sizeOf(context).width * 0.4),
                                         decoration: BoxDecoration(
-                                          color: widget.commit.unpulled || widget.commit.unpushed ? colours.tertiaryDark : colours.secondaryLight,
+                                          color: widget.commit.unpulled || widget.commit.unpushed ? context.colours.tertiaryDark : context.colours.secondaryLight,
                                           borderRadius: BorderRadius.all(cornerRadiusXS),
                                           border: Border.all(
-                                            color: widget.commit.unpulled || widget.commit.unpushed ? colours.secondaryLight : colours.tertiaryDark,
+                                            color: widget.commit.unpulled || widget.commit.unpushed ? context.colours.secondaryLight : context.colours.tertiaryDark,
                                             width: 1,
                                           ),
-                                          boxShadow: [BoxShadow(color: colours.tertiaryDark, blurRadius: 10, offset: Offset(0, 2))],
+                                          boxShadow: [BoxShadow(color: context.colours.tertiaryDark, blurRadius: 10, offset: Offset(0, 2))],
                                         ),
                                         padding: EdgeInsets.symmetric(horizontal: spaceXS, vertical: spaceXXXS),
                                         child: Row(
@@ -414,17 +418,21 @@ class _ItemCommit extends ConsumerState<ItemCommit> {
                                             FaIcon(
                                               FontAwesomeIcons.tag,
                                               size: textXXS,
-                                              color: widget.commit.unpulled || widget.commit.unpushed ? colours.secondaryLight : colours.tertiaryDark,
+                                              color: widget.commit.unpulled || widget.commit.unpushed ? context.colours.secondaryLight : context.colours.tertiaryDark,
                                             ),
                                             SizedBox(width: spaceXXXXS),
-                                            Text(
-                                              widget.commit.tags[i].toUpperCase(),
-                                              style: TextStyle(
-                                                color: widget.commit.unpulled || widget.commit.unpushed
-                                                    ? colours.secondaryLight
-                                                    : colours.tertiaryDark,
-                                                fontSize: textXS,
-                                                fontWeight: FontWeight.bold,
+                                            Flexible(
+                                              child: Text(
+                                                widget.commit.tags[i].toUpperCase(),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: TextStyle(
+                                                  color: widget.commit.unpulled || widget.commit.unpushed
+                                                      ? context.colours.secondaryLight
+                                                      : context.colours.tertiaryDark,
+                                                  fontSize: textXS,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
                                               ),
                                             ),
                                           ],
@@ -435,26 +443,69 @@ class _ItemCommit extends ConsumerState<ItemCommit> {
                               ],
                             ),
                             SizedBox(height: spaceXXXS),
-                            Row(
-                              children: [
-                                Text(
-                                  sprintf(t.additions, [widget.commit.additions]),
-                                  style: TextStyle(
-                                    color: widget.commit.unpulled || widget.commit.unpushed ? colours.secondaryPositive : colours.tertiaryPositive,
-                                    fontSize: textXS,
-                                    fontWeight: FontWeight.w900,
-                                  ),
-                                ),
-                                SizedBox(width: spaceSM),
-                                Text(
-                                  sprintf(t.deletions, [widget.commit.deletions]),
-                                  style: TextStyle(
-                                    color: widget.commit.unpulled || widget.commit.unpushed ? colours.primaryNegative : colours.tertiaryNegative,
-                                    fontSize: textXS,
-                                    fontWeight: FontWeight.w900,
-                                  ),
-                                ),
-                              ],
+                            AnimatedSwitcher(
+                              duration: animFast,
+                              layoutBuilder: (currentChild, previousChildren) => Stack(
+                                alignment: Alignment.centerLeft,
+                                children: [...previousChildren, if (currentChild != null) currentChild],
+                              ),
+                              child: widget.commit.additions == -1 && widget.commit.deletions == -1
+                                  ? SizedBox(
+                                      key: const ValueKey('diff-pending'),
+                                      height: textXS * 1.5,
+                                      child: Row(
+                                        children: [
+                                          FadeTransition(
+                                            opacity: _pulseController,
+                                            child: Container(
+                                              width: textSM * 3,
+                                              height: textXS * 0.9,
+                                              decoration: BoxDecoration(
+                                                color: context.colours.secondaryLight.withValues(alpha: 0.5),
+                                                borderRadius: BorderRadius.all(cornerRadiusXS),
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(width: spaceSM),
+                                          FadeTransition(
+                                            opacity: _pulseController,
+                                            child: Container(
+                                              width: textSM * 3,
+                                              height: textXS * 0.9,
+                                              decoration: BoxDecoration(
+                                                color: context.colours.secondaryLight.withValues(alpha: 0.5),
+                                                borderRadius: BorderRadius.all(cornerRadiusXS),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  : SizedBox(
+                                      key: const ValueKey('diff-loaded'),
+                                      height: textXS * 1.5,
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            sprintf(context.t.additions, [widget.commit.additions]),
+                                            style: TextStyle(
+                                              color: widget.commit.unpulled || widget.commit.unpushed ? context.colours.secondaryPositive : context.colours.tertiaryPositive,
+                                              fontSize: textXS,
+                                              fontWeight: FontWeight.w900,
+                                            ),
+                                          ),
+                                          SizedBox(width: spaceSM),
+                                          Text(
+                                            sprintf(context.t.deletions, [widget.commit.deletions]),
+                                            style: TextStyle(
+                                              color: widget.commit.unpulled || widget.commit.unpushed ? context.colours.primaryNegative : context.colours.tertiaryNegative,
+                                              fontSize: textXS,
+                                              fontWeight: FontWeight.w900,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                             ),
                           ],
                         ),

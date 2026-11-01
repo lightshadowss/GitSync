@@ -26,11 +26,40 @@ Widget outlineCircleMinus({required double size, required Color color}) => Stack
   ],
 );
 
+const double diffLineGutterWidth = spaceXXS * 3 + textMD + spaceXXXS * 3 + spaceLG * 2 + textSM;
+const TextStyle diffLineTextStyle = TextStyle(fontFamily: "monospace", fontSize: textSM);
+
+Widget diffLineHorizontalScroll({required bool enabled, required Iterable<String> contents, required Widget child}) {
+  if (!enabled) return child;
+
+  var longest = "";
+  for (final content in contents) {
+    if (content.length > longest.length) longest = content;
+  }
+
+  return LayoutBuilder(
+    builder: (context, constraints) {
+      final painter = TextPainter(
+        text: TextSpan(text: longest, style: DefaultTextStyle.of(context).style.merge(diffLineTextStyle)),
+        textDirection: TextDirection.ltr,
+        maxLines: 1,
+      )..layout();
+      final contentWidth = diffLineGutterWidth + painter.width + spaceXS;
+
+      return SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: SizedBox(width: contentWidth > constraints.maxWidth ? contentWidth : constraints.maxWidth, child: child),
+      );
+    },
+  );
+}
+
 Future<bool> showDialog(BuildContext context, {bool? hasRemotes}) async {
   final syncMessageController = TextEditingController();
   final selectedFiles = <String>[];
   final lineSelections = <String, Set<int>>{};
   final pageController = PageController();
+  final pageViewKey = GlobalKey();
   final diffCache = <String, Future<Map<String, dynamic>?>>{};
 
   final clientModeEnabled = await uiSettingsManager.getClientModeEnabled();
@@ -157,9 +186,9 @@ Future<bool> showDialog(BuildContext context, {bool? hasRemotes}) async {
                   title: SizedBox(
                     width: MediaQuery.of(context).size.width,
                     child: Text(
-                      (clientModeEnabled ? t.stageAndCommit : t.manualSync).toUpperCase(),
+                      (clientModeEnabled ? context.t.stageAndCommit : context.t.manualSync).toUpperCase(),
                       textAlign: TextAlign.center,
-                      style: TextStyle(color: colours.primaryLight, fontSize: textXL, fontWeight: FontWeight.bold),
+                      style: TextStyle(color: context.colours.primaryLight, fontSize: textXL, fontWeight: FontWeight.bold),
                     ),
                   ),
                   contentBuilder: (expanded) =>
@@ -167,9 +196,9 @@ Future<bool> showDialog(BuildContext context, {bool? hasRemotes}) async {
                       ? (List<Widget> children) => Column(children: children)
                       : (List<Widget> children) => SingleChildScrollView(child: ListBody(children: children)))(<Widget>[
                         Text(
-                          t.manualSyncMsg,
+                          context.t.manualSyncMsg,
                           textAlign: TextAlign.center,
-                          style: TextStyle(color: colours.primaryLight, fontWeight: FontWeight.bold, fontSize: textSM),
+                          style: TextStyle(color: context.colours.primaryLight, fontWeight: FontWeight.bold, fontSize: textSM),
                         ),
                         SizedBox(height: spaceMD + spaceSM),
                         IntrinsicHeight(
@@ -215,21 +244,21 @@ Future<bool> showDialog(BuildContext context, {bool? hasRemotes}) async {
                                     controller: syncMessageController,
                                     maxLines: null,
                                     style: TextStyle(
-                                      color: colours.primaryLight,
+                                      color: context.colours.primaryLight,
                                       fontWeight: FontWeight.bold,
                                       decoration: TextDecoration.none,
                                       decorationThickness: 0,
                                       fontSize: textMD,
                                     ),
                                     decoration: InputDecoration(
-                                      fillColor: colours.secondaryDark,
+                                      fillColor: context.colours.secondaryDark,
                                       filled: true,
                                       border: const OutlineInputBorder(borderRadius: BorderRadius.all(cornerRadiusSM), borderSide: BorderSide.none),
                                       hintText: syncMessage,
                                       isCollapsed: true,
                                       label: Text(
-                                        t.commitMessage.toUpperCase(),
-                                        style: TextStyle(color: colours.secondaryLight, fontSize: textSM, fontWeight: FontWeight.bold),
+                                        context.t.commitMessage.toUpperCase(),
+                                        style: TextStyle(color: context.colours.secondaryLight, fontSize: textSM, fontWeight: FontWeight.bold),
                                       ),
                                       floatingLabelBehavior: FloatingLabelBehavior.always,
                                       contentPadding: const EdgeInsets.symmetric(horizontal: spaceMD, vertical: spaceSM),
@@ -261,7 +290,7 @@ Future<bool> showDialog(BuildContext context, {bool? hasRemotes}) async {
                                   style: ButtonStyle(
                                     alignment: Alignment.center,
                                     backgroundColor: WidgetStatePropertyAll(
-                                      (stagedFilePathsSnapshot.data ?? []).isNotEmpty ? colours.primaryPositive : colours.tertiaryDark,
+                                      (stagedFilePathsSnapshot.data ?? []).isNotEmpty ? context.colours.primaryPositive : context.colours.tertiaryDark,
                                     ),
                                     padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: spaceMD, vertical: spaceSM * 1.15)),
                                     shape: WidgetStatePropertyAll(
@@ -273,13 +302,13 @@ Future<bool> showDialog(BuildContext context, {bool? hasRemotes}) async {
                                           height: textSM,
                                           width: textSM,
                                           margin: EdgeInsets.only(right: spaceXXXS),
-                                          child: CircularProgressIndicator(color: colours.tertiaryDark),
+                                          child: CircularProgressIndicator(color: context.colours.tertiaryDark),
                                         )
                                       : null,
                                   label: Text(
-                                    t.commit.toUpperCase(),
+                                    context.t.commit.toUpperCase(),
                                     style: TextStyle(
-                                      color: (stagedFilePathsSnapshot.data ?? []).isNotEmpty ? colours.tertiaryDark : colours.tertiaryLight,
+                                      color: (stagedFilePathsSnapshot.data ?? []).isNotEmpty ? context.colours.tertiaryDark : context.colours.tertiaryLight,
                                       fontSize: textSM,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -291,7 +320,7 @@ Future<bool> showDialog(BuildContext context, {bool? hasRemotes}) async {
                         SizedBox(height: spaceMD),
                         (expanded ? (Widget child) => Expanded(child: child) : (child) => child)(
                           Container(
-                            decoration: BoxDecoration(borderRadius: BorderRadius.all(cornerRadiusSM), color: colours.secondaryDark),
+                            decoration: BoxDecoration(borderRadius: BorderRadius.all(cornerRadiusSM), color: context.colours.secondaryDark),
                             padding: EdgeInsets.only(left: spaceXXS, right: spaceXXS, bottom: spaceXXS, top: spaceXXXS),
                             child: SizedBox(
                               height: expanded ? null : MediaQuery.sizeOf(context).height / 3,
@@ -301,15 +330,16 @@ Future<bool> showDialog(BuildContext context, {bool? hasRemotes}) async {
                                       ? uncommittedFilePathsSnapshot.data == null &&
                                             (stagedFilePathsSnapshot.data == null || stagedFilePathsSnapshot.data?.isEmpty == true)
                                       : uncommittedFilePathsSnapshot.data == null)
-                                  ? Center(child: CircularProgressIndicator(color: colours.tertiaryLight))
+                                  ? Center(child: CircularProgressIndicator(color: context.colours.tertiaryLight))
                                   : filePaths.isEmpty
                                   ? Center(
                                       child: Text(
-                                        t.noUncommittedChanges.toUpperCase(),
-                                        style: TextStyle(fontWeight: FontWeight.bold, color: colours.primaryLight, fontSize: textMD),
+                                        context.t.noUncommittedChanges.toUpperCase(),
+                                        style: TextStyle(fontWeight: FontWeight.bold, color: context.colours.primaryLight, fontSize: textMD),
                                       ),
                                     )
                                   : PageView(
+                                      key: pageViewKey,
                                       controller: pageController,
                                       physics: NeverScrollableScrollPhysics(),
                                       children: [
@@ -352,19 +382,19 @@ Future<bool> showDialog(BuildContext context, {bool? hasRemotes}) async {
                                                                 lineSelections.isEmpty
                                                             ? FaIcon(
                                                                 FontAwesomeIcons.solidCircleCheck,
-                                                                color: hasExplicitSelection ? colours.secondaryInfo : colours.tertiaryInfo,
+                                                                color: hasExplicitSelection ? context.colours.secondaryInfo : context.colours.tertiaryInfo,
                                                                 size: textMD,
                                                               )
                                                             : FaIcon(
                                                                 hasExplicitSelection
                                                                     ? FontAwesomeIcons.solidCircleCheck
                                                                     : FontAwesomeIcons.circleCheck,
-                                                                color: hasExplicitSelection ? colours.secondaryInfo : colours.tertiaryInfo,
+                                                                color: hasExplicitSelection ? context.colours.secondaryInfo : context.colours.tertiaryInfo,
                                                                 size: textMD,
                                                               ),
                                                         label: Text(
-                                                          (hasExplicitSelection ? t.deselectAll : t.selectAll).toUpperCase(),
-                                                          style: TextStyle(fontWeight: FontWeight.bold, color: colours.primaryLight),
+                                                          (hasExplicitSelection ? context.t.deselectAll : context.t.selectAll).toUpperCase(),
+                                                          style: TextStyle(fontWeight: FontWeight.bold, color: context.colours.primaryLight),
                                                         ),
                                                       ),
                                                       uncommittedFilePathsSnapshot.connectionState == ConnectionState.waiting ||
@@ -373,7 +403,7 @@ Future<bool> showDialog(BuildContext context, {bool? hasRemotes}) async {
                                                               padding: EdgeInsetsGeometry.only(right: spaceSM),
                                                               child: SizedBox.square(
                                                                 dimension: spaceMD,
-                                                                child: CircularProgressIndicator(color: colours.primaryLight),
+                                                                child: CircularProgressIndicator(color: context.colours.primaryLight),
                                                               ),
                                                             )
                                                           : SizedBox.shrink(),
@@ -400,14 +430,14 @@ Future<bool> showDialog(BuildContext context, {bool? hasRemotes}) async {
 
                                                       (FaIconData, (Color, Color)) infoIcon = (
                                                         FontAwesomeIcons.solidSquarePlus,
-                                                        (colours.tertiaryPositive, colours.primaryPositive),
+                                                        (context.colours.tertiaryPositive, context.colours.primaryPositive),
                                                       );
                                                       switch (fileType) {
                                                         case 1:
                                                           {
                                                             infoIcon = (
                                                               FontAwesomeIcons.squarePen,
-                                                              (colours.tertiaryWarning, colours.primaryWarning),
+                                                              (context.colours.tertiaryWarning, context.colours.primaryWarning),
                                                             );
                                                             break;
                                                           }
@@ -415,7 +445,7 @@ Future<bool> showDialog(BuildContext context, {bool? hasRemotes}) async {
                                                           {
                                                             infoIcon = (
                                                               FontAwesomeIcons.solidSquareMinus,
-                                                              (colours.tertiaryNegative, colours.tertiaryNegative),
+                                                              (context.colours.tertiaryNegative, context.colours.tertiaryNegative),
                                                             );
                                                             break;
                                                           }
@@ -423,7 +453,7 @@ Future<bool> showDialog(BuildContext context, {bool? hasRemotes}) async {
                                                           {
                                                             infoIcon = (
                                                               FontAwesomeIcons.solidSquarePlus,
-                                                              (colours.tertiaryPositive, colours.primaryPositive),
+                                                              (context.colours.tertiaryPositive, context.colours.primaryPositive),
                                                             );
                                                             break;
                                                           }
@@ -433,7 +463,7 @@ Future<bool> showDialog(BuildContext context, {bool? hasRemotes}) async {
                                                         key: Key(fileName),
                                                         style: ButtonStyle(
                                                           backgroundColor: WidgetStatePropertyAll(
-                                                            clientModeEnabled && isStagedFile() ? colours.secondaryPositive : colours.primaryDark,
+                                                            clientModeEnabled && isStagedFile() ? context.colours.secondaryPositive : context.colours.primaryDark,
                                                           ),
                                                           padding: WidgetStatePropertyAll(EdgeInsets.zero),
                                                           shape: WidgetStatePropertyAll(
@@ -458,14 +488,14 @@ Future<bool> showDialog(BuildContext context, {bool? hasRemotes}) async {
                                                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                                   children: [
                                                                     hasLineSelections
-                                                                        ? outlineCircleMinus(size: textMD, color: colours.tertiaryInfo)
+                                                                        ? outlineCircleMinus(size: textMD, color: context.colours.tertiaryInfo)
                                                                         : Stack(
                                                                             children: [
                                                                               Positioned.fill(
                                                                                 child: FaIcon(
                                                                                   FontAwesomeIcons.circleCheck,
                                                                                   color: isWholeFileSelected && !isPartiallyStagedFile
-                                                                                      ? colours.tertiaryInfo
+                                                                                      ? context.colours.tertiaryInfo
                                                                                       : Colors.transparent,
                                                                                   size: textMD,
                                                                                 ),
@@ -478,9 +508,9 @@ Future<bool> showDialog(BuildContext context, {bool? hasRemotes}) async {
                                                                                     : FontAwesomeIcons.circleCheck,
                                                                                 color: isWholeFileSelected
                                                                                     ? (clientModeEnabled && isStagedFile()
-                                                                                          ? colours.primaryInfo
-                                                                                          : colours.secondaryInfo)
-                                                                                    : colours.tertiaryInfo,
+                                                                                          ? context.colours.primaryInfo
+                                                                                          : context.colours.secondaryInfo)
+                                                                                    : context.colours.tertiaryInfo,
                                                                                 size: textMD,
                                                                               ),
                                                                             ],
@@ -505,12 +535,12 @@ Future<bool> showDialog(BuildContext context, {bool? hasRemotes}) async {
                                                                                     child: Text(
                                                                                       "…",
                                                                                       style: TextStyle(
-                                                                                        color: colours.tertiaryLight,
+                                                                                        color: context.colours.tertiaryLight,
                                                                                         fontSize: textMD,
                                                                                       ),
                                                                                     ),
                                                                                   ),
-                                                                                  style: TextStyle(color: colours.primaryLight, fontSize: textMD),
+                                                                                  style: TextStyle(color: context.colours.primaryLight, fontSize: textMD),
                                                                                 ),
                                                                               ),
                                                                               SizedBox(width: spaceLG),
@@ -529,10 +559,10 @@ Future<bool> showDialog(BuildContext context, {bool? hasRemotes}) async {
                                                               ),
                                                             ),
                                                             IconButton(
-                                                              icon: FaIcon(FontAwesomeIcons.listCheck, color: colours.secondaryLight, size: textMD),
+                                                              icon: FaIcon(FontAwesomeIcons.listCheck, color: context.colours.secondaryLight, size: textMD),
                                                               style: ButtonStyle(
                                                                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                                                backgroundColor: WidgetStatePropertyAll(colours.tertiaryDark.withAlpha(128)),
+                                                                backgroundColor: WidgetStatePropertyAll(context.colours.tertiaryDark.withAlpha(128)),
                                                                 padding: WidgetStatePropertyAll(
                                                                   EdgeInsets.symmetric(horizontal: spaceXS, vertical: spaceXXXS),
                                                                 ),
@@ -633,7 +663,7 @@ Future<bool> showDialog(BuildContext context, {bool? hasRemotes}) async {
                                                       child: Row(
                                                         children: [
                                                           IconButton(
-                                                            icon: FaIcon(FontAwesomeIcons.arrowLeft, color: colours.primaryLight, size: textMD),
+                                                            icon: FaIcon(FontAwesomeIcons.arrowLeft, color: context.colours.primaryLight, size: textMD),
                                                             style: ButtonStyle(
                                                               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                                               padding: WidgetStatePropertyAll(EdgeInsets.all(spaceXS)),
@@ -654,7 +684,7 @@ Future<bool> showDialog(BuildContext context, {bool? hasRemotes}) async {
                                                               maxLines: 1,
                                                               overflow: TextOverflow.ellipsis,
                                                               style: TextStyle(
-                                                                color: colours.primaryLight,
+                                                                color: context.colours.primaryLight,
                                                                 fontSize: textMD,
                                                                 fontWeight: FontWeight.bold,
                                                               ),
@@ -664,7 +694,7 @@ Future<bool> showDialog(BuildContext context, {bool? hasRemotes}) async {
                                                           Text(
                                                             "+$insertions",
                                                             style: TextStyle(
-                                                              color: colours.tertiaryPositive,
+                                                              color: context.colours.tertiaryPositive,
                                                               fontSize: textSM,
                                                               fontWeight: FontWeight.bold,
                                                             ),
@@ -673,7 +703,7 @@ Future<bool> showDialog(BuildContext context, {bool? hasRemotes}) async {
                                                           Text(
                                                             "-$deletions",
                                                             style: TextStyle(
-                                                              color: colours.tertiaryNegative,
+                                                              color: context.colours.tertiaryNegative,
                                                               fontSize: textSM,
                                                               fontWeight: FontWeight.bold,
                                                             ),
@@ -722,17 +752,17 @@ Future<bool> showDialog(BuildContext context, {bool? hasRemotes}) async {
                                                                     selections.isNotEmpty
                                                                 ? FaIcon(
                                                                     FontAwesomeIcons.solidCircleCheck,
-                                                                    color: colours.secondaryInfo,
+                                                                    color: context.colours.secondaryInfo,
                                                                     size: textSM,
                                                                   )
                                                                 : selections.isEmpty
-                                                                ? FaIcon(FontAwesomeIcons.circleCheck, color: colours.tertiaryInfo, size: textSM)
-                                                                : outlineCircleMinus(size: textSM, color: colours.secondaryInfo),
+                                                                ? FaIcon(FontAwesomeIcons.circleCheck, color: context.colours.tertiaryInfo, size: textSM)
+                                                                : outlineCircleMinus(size: textSM, color: context.colours.secondaryInfo),
                                                             label: Text(
-                                                              (selections.isNotEmpty ? t.deselectAll : t.selectAll).toUpperCase(),
+                                                              (selections.isNotEmpty ? context.t.deselectAll : context.t.selectAll).toUpperCase(),
                                                               style: TextStyle(
                                                                 fontWeight: FontWeight.bold,
-                                                                color: colours.primaryLight,
+                                                                color: context.colours.primaryLight,
                                                                 fontSize: textSM,
                                                               ),
                                                             ),
@@ -743,7 +773,7 @@ Future<bool> showDialog(BuildContext context, {bool? hasRemotes}) async {
                                                               child: Text(
                                                                 "${selections.length} LINES",
                                                                 style: TextStyle(
-                                                                  color: colours.secondaryLight,
+                                                                  color: context.colours.secondaryLight,
                                                                   fontSize: textXS,
                                                                   fontWeight: FontWeight.bold,
                                                                 ),
@@ -755,13 +785,13 @@ Future<bool> showDialog(BuildContext context, {bool? hasRemotes}) async {
                                                     SizedBox(height: spaceXXXS),
                                                     Expanded(
                                                       child: diffSnapshot.connectionState == ConnectionState.waiting
-                                                          ? Center(child: CircularProgressIndicator(color: colours.tertiaryLight))
+                                                          ? Center(child: CircularProgressIndicator(color: context.colours.tertiaryLight))
                                                           : isBinary
                                                           ? Center(
                                                               child: Text(
                                                                 "BINARY FILE",
                                                                 style: TextStyle(
-                                                                  color: colours.tertiaryLight,
+                                                                  color: context.colours.tertiaryLight,
                                                                   fontSize: textMD,
                                                                   fontWeight: FontWeight.bold,
                                                                 ),
@@ -770,147 +800,149 @@ Future<bool> showDialog(BuildContext context, {bool? hasRemotes}) async {
                                                           : diffLines.isEmpty
                                                           ? Center(
                                                               child: Text(
-                                                                t.noUncommittedChanges.toUpperCase(),
+                                                                context.t.noUncommittedChanges.toUpperCase(),
                                                                 style: TextStyle(
-                                                                  color: colours.tertiaryLight,
+                                                                  color: context.colours.tertiaryLight,
                                                                   fontSize: textMD,
                                                                   fontWeight: FontWeight.bold,
                                                                 ),
                                                               ),
                                                             )
-                                                          : ListView.builder(
-                                                              itemCount: diffLines.length,
-                                                              itemBuilder: (context, index) {
-                                                                final line = diffLines[index];
+                                                          : diffLineHorizontalScroll(
+                                                              enabled: !editorLineWrap,
+                                                              contents: diffLines.map((l) => l.content),
+                                                              child: ListView.builder(
+                                                                itemCount: diffLines.length,
+                                                                itemBuilder: (context, index) {
+                                                                  final line = diffLines[index];
 
-                                                                if (line.origin == "H") {
-                                                                  return Container(
-                                                                    color: colours.tertiaryDark,
-                                                                    padding: EdgeInsets.symmetric(horizontal: spaceXS, vertical: spaceXXXS),
-                                                                    child: Text(
-                                                                      line.content,
-                                                                      style: TextStyle(
-                                                                        color: colours.tertiaryLight,
-                                                                        fontSize: textSM,
-                                                                        fontFamily: "monospace",
-                                                                        fontWeight: FontWeight.bold,
+                                                                  if (line.origin == "H") {
+                                                                    return Container(
+                                                                      color: context.colours.tertiaryDark,
+                                                                      padding: EdgeInsets.symmetric(horizontal: spaceXS, vertical: spaceXXXS),
+                                                                      child: Text(
+                                                                        line.content,
+                                                                        style: TextStyle(
+                                                                          color: context.colours.tertiaryLight,
+                                                                          fontSize: textSM,
+                                                                          fontFamily: "monospace",
+                                                                          fontWeight: FontWeight.bold,
+                                                                        ),
+                                                                      ),
+                                                                    );
+                                                                  }
+
+                                                                  final isChangedLine = line.origin == "+" || line.origin == "-";
+                                                                  final isSelected = selections.contains(line.lineIndex);
+
+                                                                  Color lineBackground() {
+                                                                    if (line.origin == "+") {
+                                                                      return isSelected
+                                                                          ? context.colours.tertiaryPositive.withAlpha(60)
+                                                                          : context.colours.tertiaryPositive.withAlpha(20);
+                                                                    }
+                                                                    if (line.origin == "-") {
+                                                                      return isSelected
+                                                                          ? context.colours.tertiaryNegative.withAlpha(60)
+                                                                          : context.colours.tertiaryNegative.withAlpha(20);
+                                                                    }
+                                                                    return Colors.transparent;
+                                                                  }
+
+                                                                  return GestureDetector(
+                                                                    onTap: isChangedLine
+                                                                        ? () {
+                                                                            if (isSelected) {
+                                                                              selections.remove(line.lineIndex);
+                                                                            } else {
+                                                                              selections.add(line.lineIndex);
+                                                                            }
+                                                                            selectedFiles.remove(currentDiffFile);
+                                                                            if (context.mounted) setState(() {});
+
+                                                                            debounce("lineStage_$currentDiffFile", 1000, () {
+                                                                              flushLineStage(
+                                                                                currentDiffFile!,
+                                                                                Set<int>.from(selections),
+                                                                                isUnstaging: isSelected,
+                                                                              );
+                                                                            });
+                                                                          }
+                                                                        : null,
+                                                                    child: Container(
+                                                                      color: lineBackground(),
+                                                                      padding: EdgeInsets.symmetric(horizontal: spaceXXS, vertical: spaceXXXXS),
+                                                                      child: Row(
+                                                                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                                                                        textBaseline: TextBaseline.alphabetic,
+                                                                        children: [
+                                                                          SizedBox(
+                                                                            width: textMD + spaceXXXS,
+                                                                            child: isChangedLine && isSelected
+                                                                                ? FaIcon(
+                                                                                    FontAwesomeIcons.check,
+                                                                                    size: textSM,
+                                                                                    color: context.colours.primaryInfo,
+                                                                                  )
+                                                                                : SizedBox.shrink(),
+                                                                          ),
+                                                                          SizedBox(
+                                                                            width: spaceLG,
+                                                                            child: Text(
+                                                                              line.oldLineno > 0 ? "${line.oldLineno}" : "",
+                                                                              textAlign: TextAlign.right,
+                                                                              style: TextStyle(
+                                                                                color: context.colours.tertiaryLight,
+                                                                                fontSize: textXS,
+                                                                                fontFamily: "monospace",
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                          SizedBox(width: spaceXXXS),
+                                                                          SizedBox(
+                                                                            width: spaceLG,
+                                                                            child: Text(
+                                                                              line.newLineno > 0 ? "${line.newLineno}" : "",
+                                                                              textAlign: TextAlign.right,
+                                                                              style: TextStyle(
+                                                                                color: context.colours.tertiaryLight,
+                                                                                fontSize: textXS,
+                                                                                fontFamily: "monospace",
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                          SizedBox(width: spaceXXS),
+                                                                          SizedBox(
+                                                                            width: textSM,
+                                                                            child: Text(
+                                                                              line.origin,
+                                                                              style: TextStyle(
+                                                                                color: line.origin == "+"
+                                                                                    ? context.colours.tertiaryPositive
+                                                                                    : line.origin == "-"
+                                                                                    ? context.colours.tertiaryNegative
+                                                                                    : context.colours.tertiaryLight,
+                                                                                fontFamily: "monospace",
+                                                                                fontSize: textSM,
+                                                                                fontWeight: FontWeight.bold,
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                          SizedBox(width: spaceXXXS),
+                                                                          Expanded(
+                                                                            child: Text(
+                                                                              line.content,
+                                                                              style: diffLineTextStyle.copyWith(color: context.colours.primaryLight),
+                                                                              maxLines: editorLineWrap ? null : 1,
+                                                                              overflow: editorLineWrap ? null : TextOverflow.ellipsis,
+                                                                            ),
+                                                                          ),
+                                                                        ],
                                                                       ),
                                                                     ),
                                                                   );
-                                                                }
-
-                                                                final isChangedLine = line.origin == "+" || line.origin == "-";
-                                                                final isSelected = selections.contains(line.lineIndex);
-
-                                                                Color lineBackground() {
-                                                                  if (line.origin == "+") {
-                                                                    return isSelected
-                                                                        ? colours.tertiaryPositive.withAlpha(60)
-                                                                        : colours.tertiaryPositive.withAlpha(20);
-                                                                  }
-                                                                  if (line.origin == "-") {
-                                                                    return isSelected
-                                                                        ? colours.tertiaryNegative.withAlpha(60)
-                                                                        : colours.tertiaryNegative.withAlpha(20);
-                                                                  }
-                                                                  return Colors.transparent;
-                                                                }
-
-                                                                return GestureDetector(
-                                                                  onTap: isChangedLine
-                                                                      ? () {
-                                                                          if (isSelected) {
-                                                                            selections.remove(line.lineIndex);
-                                                                          } else {
-                                                                            selections.add(line.lineIndex);
-                                                                          }
-                                                                          selectedFiles.remove(currentDiffFile);
-                                                                          if (context.mounted) setState(() {});
-
-                                                                          debounce("lineStage_$currentDiffFile", 1000, () {
-                                                                            flushLineStage(
-                                                                              currentDiffFile!,
-                                                                              Set<int>.from(selections),
-                                                                              isUnstaging: isSelected,
-                                                                            );
-                                                                          });
-                                                                        }
-                                                                      : null,
-                                                                  child: Container(
-                                                                    color: lineBackground(),
-                                                                    padding: EdgeInsets.symmetric(horizontal: spaceXXS, vertical: spaceXXXXS),
-                                                                    child: Row(
-                                                                      children: [
-                                                                        SizedBox(
-                                                                          width: textMD + spaceXXXS,
-                                                                          child: isChangedLine && isSelected
-                                                                              ? FaIcon(
-                                                                                  FontAwesomeIcons.check,
-                                                                                  size: textSM,
-                                                                                  color: colours.primaryInfo,
-                                                                                )
-                                                                              : SizedBox.shrink(),
-                                                                        ),
-                                                                        SizedBox(
-                                                                          width: spaceLG,
-                                                                          child: Text(
-                                                                            line.oldLineno > 0 ? "${line.oldLineno}" : "",
-                                                                            textAlign: TextAlign.right,
-                                                                            style: TextStyle(
-                                                                              color: colours.tertiaryLight,
-                                                                              fontSize: textXS,
-                                                                              fontFamily: "monospace",
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                        SizedBox(width: spaceXXXS),
-                                                                        SizedBox(
-                                                                          width: spaceLG,
-                                                                          child: Text(
-                                                                            line.newLineno > 0 ? "${line.newLineno}" : "",
-                                                                            textAlign: TextAlign.right,
-                                                                            style: TextStyle(
-                                                                              color: colours.tertiaryLight,
-                                                                              fontSize: textXS,
-                                                                              fontFamily: "monospace",
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                        SizedBox(width: spaceXXS),
-                                                                        SizedBox(
-                                                                          width: textSM,
-                                                                          child: Text(
-                                                                            line.origin,
-                                                                            style: TextStyle(
-                                                                              color: line.origin == "+"
-                                                                                  ? colours.tertiaryPositive
-                                                                                  : line.origin == "-"
-                                                                                  ? colours.tertiaryNegative
-                                                                                  : colours.tertiaryLight,
-                                                                              fontFamily: "monospace",
-                                                                              fontSize: textSM,
-                                                                              fontWeight: FontWeight.bold,
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                        SizedBox(width: spaceXXXS),
-                                                                        Expanded(
-                                                                          child: Text(
-                                                                            line.content,
-                                                                            style: TextStyle(
-                                                                              color: colours.primaryLight,
-                                                                              fontFamily: "monospace",
-                                                                              fontSize: textSM,
-                                                                            ),
-                                                                            maxLines: editorLineWrap ? null : 1,
-                                                                            overflow: editorLineWrap ? null : TextOverflow.ellipsis,
-                                                                          ),
-                                                                        ),
-                                                                      ],
-                                                                    ),
-                                                                  ),
-                                                                );
-                                                              },
+                                                                },
+                                                              ),
                                                             ),
                                                     ),
                                                   ],
@@ -953,7 +985,7 @@ Future<bool> showDialog(BuildContext context, {bool? hasRemotes}) async {
                                 style: ButtonStyle(
                                   alignment: Alignment.center,
                                   backgroundColor: WidgetStatePropertyAll(
-                                    selectedFiles.isNotEmpty || selectedFiles.isNotEmpty ? colours.secondaryNegative : colours.tertiaryDark,
+                                    selectedFiles.isNotEmpty || selectedFiles.isNotEmpty ? context.colours.secondaryNegative : context.colours.tertiaryDark,
                                   ),
                                   padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: spaceMD, vertical: spaceSM)),
                                   shape: WidgetStatePropertyAll(
@@ -962,7 +994,7 @@ Future<bool> showDialog(BuildContext context, {bool? hasRemotes}) async {
                                 ),
                                 icon: FaIcon(
                                   FontAwesomeIcons.eraser,
-                                  color: selectedFiles.isNotEmpty || selectedFiles.isNotEmpty ? colours.primaryLight : colours.tertiaryLight,
+                                  color: selectedFiles.isNotEmpty || selectedFiles.isNotEmpty ? context.colours.primaryLight : context.colours.tertiaryLight,
                                   size: textMD,
                                 ),
                               ),
@@ -999,8 +1031,8 @@ Future<bool> showDialog(BuildContext context, {bool? hasRemotes}) async {
                                                 selectedFiles
                                                     .where((file) => (stagedFilePathsSnapshot.data ?? []).map((file) => file.$1).contains(file))
                                                     .isNotEmpty
-                                            ? colours.tertiaryInfo
-                                            : colours.tertiaryDark,
+                                            ? context.colours.tertiaryInfo
+                                            : context.colours.tertiaryDark,
                                       ),
                                       padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: spaceMD, vertical: spaceSM)),
                                       shape: WidgetStatePropertyAll(
@@ -1012,19 +1044,19 @@ Future<bool> showDialog(BuildContext context, {bool? hasRemotes}) async {
                                             height: textSM,
                                             width: textSM,
                                             margin: EdgeInsets.only(right: spaceXXXS),
-                                            child: CircularProgressIndicator(color: onLinesPage ? colours.tertiaryLight : colours.tertiaryDark),
+                                            child: CircularProgressIndicator(color: onLinesPage ? context.colours.tertiaryLight : context.colours.tertiaryDark),
                                           )
                                         : null,
                                     label: Text(
-                                      t.unstage.toUpperCase(),
+                                      context.t.unstage.toUpperCase(),
                                       style: TextStyle(
                                         color:
                                             !onLinesPage &&
                                                 selectedFiles
                                                     .where((file) => (stagedFilePathsSnapshot.data ?? []).map((file) => file.$1).contains(file))
                                                     .isNotEmpty
-                                            ? colours.tertiaryDark
-                                            : colours.tertiaryLight,
+                                            ? context.colours.tertiaryDark
+                                            : context.colours.tertiaryLight,
                                         fontSize: textSM,
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -1076,8 +1108,8 @@ Future<bool> showDialog(BuildContext context, {bool? hasRemotes}) async {
                                                         .where((file) => !(stagedFilePathsSnapshot.data ?? []).map((file) => file.$1).contains(file))
                                                         .isNotEmpty ||
                                                     lineSelections.isNotEmpty)
-                                            ? colours.tertiaryInfo
-                                            : colours.tertiaryDark,
+                                            ? context.colours.tertiaryInfo
+                                            : context.colours.tertiaryDark,
                                       ),
                                       padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: spaceMD, vertical: spaceSM)),
                                       shape: WidgetStatePropertyAll(
@@ -1089,11 +1121,11 @@ Future<bool> showDialog(BuildContext context, {bool? hasRemotes}) async {
                                             height: textSM,
                                             width: textSM,
                                             margin: EdgeInsets.only(right: spaceXXXS),
-                                            child: CircularProgressIndicator(color: onLinesPage ? colours.tertiaryLight : colours.tertiaryDark),
+                                            child: CircularProgressIndicator(color: onLinesPage ? context.colours.tertiaryLight : context.colours.tertiaryDark),
                                           )
                                         : null,
                                     label: Text(
-                                      t.stage.toUpperCase(),
+                                      context.t.stage.toUpperCase(),
                                       style: TextStyle(
                                         color:
                                             !onLinesPage &&
@@ -1101,8 +1133,8 @@ Future<bool> showDialog(BuildContext context, {bool? hasRemotes}) async {
                                                         .where((file) => !(stagedFilePathsSnapshot.data ?? []).map((file) => file.$1).contains(file))
                                                         .isNotEmpty ||
                                                     lineSelections.isNotEmpty)
-                                            ? colours.tertiaryDark
-                                            : colours.tertiaryLight,
+                                            ? context.colours.tertiaryDark
+                                            : context.colours.tertiaryLight,
                                         fontSize: textSM,
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -1151,7 +1183,7 @@ Future<bool> showDialog(BuildContext context, {bool? hasRemotes}) async {
                                 style: ButtonStyle(
                                   alignment: Alignment.center,
                                   backgroundColor: WidgetStatePropertyAll(
-                                    selectedFiles.isNotEmpty || lineSelections.isNotEmpty ? colours.primaryPositive : colours.tertiaryDark,
+                                    selectedFiles.isNotEmpty || lineSelections.isNotEmpty ? context.colours.primaryPositive : context.colours.tertiaryDark,
                                   ),
                                   padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: spaceMD, vertical: spaceSM)),
                                   shape: WidgetStatePropertyAll(
@@ -1163,13 +1195,13 @@ Future<bool> showDialog(BuildContext context, {bool? hasRemotes}) async {
                                         height: textSM,
                                         width: textSM,
                                         margin: EdgeInsets.only(right: spaceXXXS),
-                                        child: CircularProgressIndicator(color: colours.tertiaryDark),
+                                        child: CircularProgressIndicator(color: context.colours.tertiaryDark),
                                       )
                                     : null,
                                 label: Text(
-                                  (uploading ? t.syncStartPull : t.syncNow).toUpperCase(),
+                                  (uploading ? context.t.syncStartPull : context.t.syncNow).toUpperCase(),
                                   style: TextStyle(
-                                    color: selectedFiles.isNotEmpty || lineSelections.isNotEmpty ? colours.tertiaryDark : colours.tertiaryLight,
+                                    color: selectedFiles.isNotEmpty || lineSelections.isNotEmpty ? context.colours.tertiaryDark : context.colours.tertiaryLight,
                                     fontSize: textSM,
                                     fontWeight: FontWeight.bold,
                                   ),

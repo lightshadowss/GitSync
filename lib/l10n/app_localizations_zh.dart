@@ -12,6 +12,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get dismiss => '忽略';
 
   @override
+  String get dontShowAgain => '不再显示';
+
+  @override
   String get skip => '跳过';
 
   @override
@@ -220,6 +223,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get premiumHookDetectPrivateKey => 'detect-private-key';
+
+  @override
+  String get premiumIndieDevTitle => 'Built by one developer';
+
+  @override
+  String get premiumIndieDevSubtitle => 'GitSync is an independent project, not a company. Buying Premium pays for the time that goes into it.';
 
   @override
   String get switchToClientMode => '切换到客户端模式…';
@@ -810,6 +819,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get commitsNotFound => '未找到提交…';
 
   @override
+  String get filesNotFound => 'No files found…';
+
+  @override
   String get repoNotFound => '未找到仓库…';
 
   @override
@@ -1353,6 +1365,25 @@ class AppLocalizationsZh extends AppLocalizations {
   String get requestAFeature => '请求功能';
 
   @override
+  String get sponsorCheckFailedTitle => 'Sponsor Check Failed';
+
+  @override
+  String get sponsorCheckFailedMessage => 'We could not reach GitHub to check your sponsorship. Check your connection and try again.';
+
+  @override
+  String get sponsorCheckRejectedMessage => 'GitHub rejected the linked account. Please sign in again.';
+
+  @override
+  String get sponsorNotFoundTitle => 'No Sponsorship Found';
+
+  @override
+  String get sponsorNotFoundMessage =>
+      'This GitHub account is not in the sponsor list. A new sponsorship can take up to a day to become active in the app.';
+
+  @override
+  String get becomeASponsor => 'Become A Sponsor';
+
+  @override
   String get contributeTitle => '支持我们的工作';
 
   @override
@@ -1402,6 +1433,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get directory => '目录';
+
+  @override
+  String get confirmFileDirDeleteTitle => 'Confirm Deletion';
 
   @override
   String get confirmFileDirDeleteMsg => '确定要删除 %s \"%s\" %s吗？';
@@ -1917,6 +1951,35 @@ class AppLocalizationsZh extends AppLocalizations {
   String get actionFilterFailed => '失败';
 
   @override
+  String get mergeRequests => 'Merge Requests';
+
+  @override
+  String get jobs => 'Jobs';
+
+  @override
+  String get comment => 'Comment';
+
+  @override
+  String get downloading => 'Downloading…';
+
+  @override
+  String get downloadFailed => 'Download failed';
+
+  @override
+  String savedTo(Object name) {
+    return 'Saved to $name';
+  }
+
+  @override
+  String get saveArchive => 'Save archive';
+
+  @override
+  String get saveAsset => 'Save asset';
+
+  @override
+  String get useOffline => 'Use Offline';
+
+  @override
   String get attemptAutoFix => '尝试自动修复？';
 
   @override
@@ -2065,6 +2128,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get issueCommentFailedMsg => 'Your message couldn’t be sent. Please check your connection and try again.';
+
+  @override
+  String get issueReportFailedMsg => 'Your report couldn’t be sent. Please check your connection and try again.';
 
   @override
   String get createNewRepository => '创建新仓库';
@@ -2369,6 +2435,18 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get aiSetupMsg => '请配置AI提供商以使用此功能。前往AI设置？';
+
+  @override
+  String get aiAlwaysAllowSession => 'Always allow this session';
+
+  @override
+  String get aiAllowAllEdits => 'Allow all edits this session';
+
+  @override
+  String get aiRateLimited => 'Rate limited. Your chat is saved. Wait a moment, then send again to carry on.';
+
+  @override
+  String get aiStopGeneratingMsg => 'This will cancel the current response. Any partial output will be kept.';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -2377,6 +2455,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get dismiss => '忽略';
+
+  @override
+  String get dontShowAgain => '不再顯示';
 
   @override
   String get skip => '跳過';

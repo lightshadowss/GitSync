@@ -51,6 +51,7 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
   final _landscapeScrollControllerLeft = ScrollController();
   final _landscapeScrollControllerRight = ScrollController();
   bool atTop = true;
+  bool _blockTouches = false;
   late final _uiSetupGuideKey = GlobalKey();
 
   @override
@@ -75,37 +76,43 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
     });
 
     if (widget.onboarding) {
+      _blockTouches = true;
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         await _controller.animateTo(_controller.position.maxScrollExtent / 2, duration: animSlow, curve: Curves.easeInOut);
+        if (!mounted) return;
         await Future.delayed(Duration(milliseconds: 200));
+        if (!mounted) return;
+        setState(() => _blockTouches = false);
         ShowCaseWidget.of(context).startShowCase([_uiSetupGuideKey]);
-        while (!ShowCaseWidget.of(context).isShowCaseCompleted) {
+        while (mounted && !ShowCaseWidget.of(context).isShowCaseCompleted) {
           await Future.delayed(Duration(milliseconds: 100));
         }
-        Navigator.of(context).popUntil((route) => route.isFirst);
+        if (mounted) Navigator.of(context).popUntil((route) => route.isFirst);
       });
     }
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => AbsorbPointer(absorbing: _blockTouches, child: _buildContent(context));
+
+  Widget _buildContent(BuildContext context) {
     return Scaffold(
-      backgroundColor: colours.primaryDark,
+      backgroundColor: context.colours.primaryDark,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         foregroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
         systemOverlayStyle: SystemUiOverlayStyle(
-          statusBarColor: colours.primaryDark,
-          systemNavigationBarColor: colours.primaryDark,
+          statusBarColor: context.colours.primaryDark,
+          systemNavigationBarColor: context.colours.primaryDark,
           statusBarIconBrightness: Brightness.light,
           systemNavigationBarIconBrightness: Brightness.light,
         ),
         leading: getBackButton(context, () => Navigator.of(context).canPop() ? Navigator.pop(context) : null),
         centerTitle: true,
         title: Text(
-          t.globalSettings.toUpperCase(),
-          style: TextStyle(color: colours.primaryLight, fontWeight: FontWeight.bold),
+          context.t.globalSettings.toUpperCase(),
+          style: TextStyle(color: context.colours.primaryLight, fontWeight: FontWeight.bold),
         ),
       ),
       body: BetterOrientationBuilder(
@@ -175,19 +182,19 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                                     bottomLeft: cornerRadiusMD,
                                     bottomRight: Radius.zero,
                                   ),
-                                  color: themeModeSnapshot.data == false ? colours.tertiaryLight : colours.tertiaryDark,
+                                  color: themeModeSnapshot.data == false ? context.colours.tertiaryLight : context.colours.tertiaryDark,
                                 ),
                                 child: TextButton.icon(
                                   onPressed: () async {
                                     await repoManager.setBoolNullable(StorageKey.repoman_themeMode, false);
-                                    colours.reloadTheme(context);
+                                    reloadTheme(context);
                                     setState(() {});
                                   },
                                   style: ButtonStyle(
                                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                     padding: WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: spaceSM, horizontal: spaceMD)),
                                     backgroundColor: WidgetStatePropertyAll(
-                                      themeModeSnapshot.data == false ? colours.tertiaryLight : colours.tertiaryDark,
+                                      themeModeSnapshot.data == false ? context.colours.tertiaryLight : context.colours.tertiaryDark,
                                     ),
                                     shape: WidgetStatePropertyAll(
                                       RoundedRectangleBorder(
@@ -198,13 +205,15 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                                           bottomRight: Radius.zero,
                                         ),
 
-                                        side: themeModeSnapshot.data == false ? BorderSide.none : BorderSide(width: 3, color: colours.tertiaryLight),
+                                        side: themeModeSnapshot.data == false
+                                            ? BorderSide.none
+                                            : BorderSide(width: 3, color: context.colours.tertiaryLight),
                                       ),
                                     ),
                                   ),
                                   icon: FaIcon(
                                     FontAwesomeIcons.solidSun,
-                                    color: themeModeSnapshot.data == false ? colours.primaryDark : colours.primaryLight,
+                                    color: themeModeSnapshot.data == false ? context.colours.primaryDark : context.colours.primaryLight,
                                     size: textMD,
                                   ),
                                   label: SizedBox(
@@ -215,12 +224,12 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                                       children: [
                                         AnimatedDefaultTextStyle(
                                           child: Text(
-                                            t.lightMode,
+                                            context.t.lightMode,
                                             textAlign: TextAlign.center,
                                             style: TextStyle(fontSize: textMD, fontWeight: FontWeight.bold),
                                           ),
                                           style: TextStyle(
-                                            color: themeModeSnapshot.data == false ? colours.primaryDark : colours.primaryLight,
+                                            color: themeModeSnapshot.data == false ? context.colours.primaryDark : context.colours.primaryLight,
                                             fontSize: textMD,
                                             fontWeight: FontWeight.bold,
                                           ),
@@ -235,20 +244,20 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                             Expanded(
                               child: AnimatedContainer(
                                 duration: animFast,
-                                decoration: BoxDecoration(borderRadius: BorderRadius.zero, color: colours.tertiaryLight),
+                                decoration: BoxDecoration(borderRadius: BorderRadius.zero, color: context.colours.tertiaryLight),
                                 padding: EdgeInsets.symmetric(vertical: 3),
                                 child: Container(
                                   child: TextButton.icon(
                                     onPressed: () async {
                                       await repoManager.setBoolNullable(StorageKey.repoman_themeMode, null);
-                                      colours.reloadTheme(context);
+                                      reloadTheme(context);
                                       setState(() {});
                                     },
                                     style: ButtonStyle(
                                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                       padding: WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: spaceSM - 3, horizontal: spaceMD)),
                                       backgroundColor: WidgetStatePropertyAll(
-                                        themeModeSnapshot.data == null ? colours.tertiaryLight : colours.tertiaryDark,
+                                        themeModeSnapshot.data == null ? context.colours.tertiaryLight : context.colours.tertiaryDark,
                                       ),
                                       shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.zero, side: BorderSide.none)),
                                     ),
@@ -260,12 +269,12 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                                         children: [
                                           AnimatedDefaultTextStyle(
                                             child: Text(
-                                              t.system,
+                                              context.t.system,
                                               textAlign: TextAlign.center,
                                               style: TextStyle(fontSize: textMD, fontWeight: FontWeight.bold),
                                             ),
                                             style: TextStyle(
-                                              color: themeModeSnapshot.data == null ? colours.primaryDark : colours.primaryLight,
+                                              color: themeModeSnapshot.data == null ? context.colours.primaryDark : context.colours.primaryLight,
                                               fontSize: textMD,
                                               fontWeight: FontWeight.bold,
                                             ),
@@ -276,7 +285,7 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                                             flipX: true,
                                             child: FaIcon(
                                               FontAwesomeIcons.circleHalfStroke,
-                                              color: themeModeSnapshot.data == null ? colours.primaryDark : colours.primaryLight,
+                                              color: themeModeSnapshot.data == null ? context.colours.primaryDark : context.colours.primaryLight,
                                               size: textMD,
                                             ),
                                           ),
@@ -297,19 +306,19 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                                     bottomLeft: Radius.zero,
                                     bottomRight: cornerRadiusMD,
                                   ),
-                                  color: themeModeSnapshot.data == true ? colours.tertiaryLight : colours.tertiaryDark,
+                                  color: themeModeSnapshot.data == true ? context.colours.tertiaryLight : context.colours.tertiaryDark,
                                 ),
                                 child: TextButton.icon(
                                   onPressed: () async {
                                     await repoManager.setBoolNullable(StorageKey.repoman_themeMode, true);
-                                    colours.reloadTheme(context);
+                                    reloadTheme(context);
                                     setState(() {});
                                   },
                                   style: ButtonStyle(
                                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                     padding: WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: spaceSM, horizontal: spaceMD)),
                                     backgroundColor: WidgetStatePropertyAll(
-                                      themeModeSnapshot.data == true ? colours.tertiaryLight : colours.tertiaryDark,
+                                      themeModeSnapshot.data == true ? context.colours.tertiaryLight : context.colours.tertiaryDark,
                                     ),
                                     shape: WidgetStatePropertyAll(
                                       RoundedRectangleBorder(
@@ -319,14 +328,16 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                                           bottomLeft: Radius.zero,
                                           bottomRight: cornerRadiusMD,
                                         ),
-                                        side: themeModeSnapshot.data == true ? BorderSide.none : BorderSide(width: 3, color: colours.tertiaryLight),
+                                        side: themeModeSnapshot.data == true
+                                            ? BorderSide.none
+                                            : BorderSide(width: 3, color: context.colours.tertiaryLight),
                                       ),
                                     ),
                                   ),
                                   iconAlignment: IconAlignment.end,
                                   icon: FaIcon(
                                     FontAwesomeIcons.solidMoon,
-                                    color: themeModeSnapshot.data == true ? colours.primaryDark : colours.primaryLight,
+                                    color: themeModeSnapshot.data == true ? context.colours.primaryDark : context.colours.primaryLight,
                                     size: textMD,
                                   ),
                                   label: SizedBox(
@@ -337,12 +348,12 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                                       children: [
                                         AnimatedDefaultTextStyle(
                                           child: Text(
-                                            t.darkMode,
+                                            context.t.darkMode,
                                             textAlign: TextAlign.center,
                                             style: TextStyle(fontSize: textMD, fontWeight: FontWeight.bold),
                                           ),
                                           style: TextStyle(
-                                            color: themeModeSnapshot.data == true ? colours.primaryDark : colours.primaryLight,
+                                            color: themeModeSnapshot.data == true ? context.colours.primaryDark : context.colours.primaryLight,
                                             fontSize: textMD,
                                             fontWeight: FontWeight.bold,
                                           ),
@@ -360,7 +371,7 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                     ),
                     SizedBox(height: spaceMD),
                     ButtonSetting(
-                      text: t.language,
+                      text: context.t.language,
                       icon: FontAwesomeIcons.earthOceania,
                       onPressed: () async {
                         await ChangeLanguageDialog.showDialog(context, (locale) async {
@@ -373,7 +384,7 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                     ),
                     SizedBox(height: spaceMD),
                     ButtonSetting(
-                      text: t.browseEditDir,
+                      text: context.t.browseEditDir,
                       icon: FontAwesomeIcons.folderTree,
                       onPressed: () async {
                         String? selectedDirectory;
@@ -397,7 +408,7 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                         },
                         style: ButtonStyle(
                           alignment: Alignment.centerLeft,
-                          backgroundColor: WidgetStatePropertyAll(colours.tertiaryDark),
+                          backgroundColor: WidgetStatePropertyAll(context.colours.tertiaryDark),
                           padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: spaceMD, vertical: spaceMD)),
                           shape: WidgetStatePropertyAll(
                             RoundedRectangleBorder(borderRadius: BorderRadius.all(cornerRadiusMD), side: BorderSide.none),
@@ -408,14 +419,14 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                         iconAlignment: IconAlignment.end,
                         icon: FaIcon(
                           editorLineWrapSnapshot.data == true ? FontAwesomeIcons.solidSquareCheck : FontAwesomeIcons.squareCheck,
-                          color: colours.primaryPositive,
+                          color: context.colours.primaryPositive,
                           size: textLG,
                         ),
                         label: SizedBox(
                           width: double.infinity,
                           child: Text(
-                            t.enableLineWrap.toUpperCase(),
-                            style: TextStyle(color: colours.primaryLight, fontSize: textMD, fontWeight: FontWeight.bold),
+                            context.t.enableLineWrap.toUpperCase(),
+                            style: TextStyle(color: context.colours.primaryLight, fontSize: textMD, fontWeight: FontWeight.bold),
                           ),
                         ),
                       ),
@@ -430,7 +441,7 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                           },
                           style: ButtonStyle(
                             alignment: Alignment.centerLeft,
-                            backgroundColor: WidgetStatePropertyAll(colours.tertiaryDark),
+                            backgroundColor: WidgetStatePropertyAll(context.colours.tertiaryDark),
                             padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: spaceMD, vertical: spaceMD)),
                             shape: WidgetStatePropertyAll(
                               RoundedRectangleBorder(borderRadius: BorderRadius.all(cornerRadiusMD), side: BorderSide.none),
@@ -441,14 +452,14 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                           iconAlignment: IconAlignment.end,
                           icon: FaIcon(
                             aiEnabled ? FontAwesomeIcons.solidSquareCheck : FontAwesomeIcons.squareCheck,
-                            color: colours.primaryPositive,
+                            color: context.colours.primaryPositive,
                             size: textLG,
                           ),
                           label: SizedBox(
                             width: double.infinity,
                             child: Text(
-                              t.enableAiFeatures.toUpperCase(),
-                              style: TextStyle(color: colours.primaryLight, fontSize: textMD, fontWeight: FontWeight.bold),
+                              context.t.enableAiFeatures.toUpperCase(),
+                              style: TextStyle(color: context.colours.primaryLight, fontSize: textMD, fontWeight: FontWeight.bold),
                             ),
                           ),
                         );
@@ -465,7 +476,7 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                           },
                           style: ButtonStyle(
                             alignment: Alignment.centerLeft,
-                            backgroundColor: WidgetStatePropertyAll(colours.tertiaryDark),
+                            backgroundColor: WidgetStatePropertyAll(context.colours.tertiaryDark),
                             padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: spaceMD, vertical: spaceMD)),
                             shape: WidgetStatePropertyAll(
                               RoundedRectangleBorder(borderRadius: BorderRadius.all(cornerRadiusMD), side: BorderSide.none),
@@ -476,14 +487,14 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                           iconAlignment: IconAlignment.end,
                           icon: FaIcon(
                             excludedFromRecentsSnapshot.data == true ? FontAwesomeIcons.solidSquareCheck : FontAwesomeIcons.squareCheck,
-                            color: colours.primaryPositive,
+                            color: context.colours.primaryPositive,
                             size: textLG,
                           ),
                           label: SizedBox(
                             width: double.infinity,
                             child: Text(
-                              t.excludeFromRecents.toUpperCase(),
-                              style: TextStyle(color: colours.primaryLight, fontSize: textMD, fontWeight: FontWeight.bold),
+                              context.t.excludeFromRecents.toUpperCase(),
+                              style: TextStyle(color: context.colours.primaryLight, fontSize: textMD, fontWeight: FontWeight.bold),
                             ),
                           ),
                         ),
@@ -496,18 +507,18 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                         children: [
                           Expanded(
                             child: Container(
-                              color: colours.tertiaryLight,
+                              color: context.colours.tertiaryLight,
                               height: spaceXXXXS,
                               margin: EdgeInsets.only(right: spaceSM),
                             ),
                           ),
                           Text(
-                            t.backupRestoreTitle.toUpperCase(),
-                            style: TextStyle(fontSize: textSM, color: colours.primaryLight, fontWeight: FontWeight.bold),
+                            context.t.backupRestoreTitle.toUpperCase(),
+                            style: TextStyle(fontSize: textSM, color: context.colours.primaryLight, fontWeight: FontWeight.bold),
                           ),
                           Expanded(
                             child: Container(
-                              color: colours.tertiaryLight,
+                              color: context.colours.tertiaryLight,
                               height: spaceXXXXS,
                               margin: EdgeInsets.only(left: spaceSM),
                             ),
@@ -517,10 +528,11 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                     ),
                     SizedBox(height: spaceSM),
                     ButtonSetting(
-                      text: t.encryptedBackup,
+                      text: context.t.encryptedBackup,
                       icon: FontAwesomeIcons.solidFloppyDisk,
                       onPressed: () async {
                         await EnterBackupRestorePasswordDialog.showDialog(context, true, (text) async {
+                          final t = context.t;
                           final repoManagerSettings = await repoManager.getAll();
                           final repoCount = (await repoManager.getStringList(StorageKey.repoman_repoNames)).length;
                           final settingsManagerSettings = <Map<String, String>>[];
@@ -543,7 +555,7 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                     ),
                     SizedBox(height: spaceMD),
                     ButtonSetting(
-                      text: t.encryptedRestore,
+                      text: context.t.encryptedRestore,
                       icon: FontAwesomeIcons.arrowRotateLeft,
                       onPressed: () async {
                         if (!await requestStoragePerm(false) && !await requestStoragePerm()) return;
@@ -553,6 +565,7 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                         File file = File(result.files.single.path!);
 
                         await EnterBackupRestorePasswordDialog.showDialog(context, false, (text) async {
+                          final t = context.t;
                           Map<String, dynamic> settingsMap = {};
                           try {
                             settingsMap = await decryptMap(file.readAsStringSync(), text);
@@ -603,18 +616,18 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                         children: [
                           Expanded(
                             child: Container(
-                              color: colours.tertiaryLight,
+                              color: context.colours.tertiaryLight,
                               height: spaceXXXXS,
                               margin: EdgeInsets.only(right: spaceSM),
                             ),
                           ),
                           Text(
-                            t.community.toUpperCase(),
-                            style: TextStyle(fontSize: textSM, color: colours.primaryLight, fontWeight: FontWeight.bold),
+                            context.t.community.toUpperCase(),
+                            style: TextStyle(fontSize: textSM, color: context.colours.primaryLight, fontWeight: FontWeight.bold),
                           ),
                           Expanded(
                             child: Container(
-                              color: colours.tertiaryLight,
+                              color: context.colours.tertiaryLight,
                               height: spaceXXXXS,
                               margin: EdgeInsets.only(left: spaceSM),
                             ),
@@ -624,11 +637,11 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                     ),
                     SizedBox(height: spaceSM),
                     ButtonSetting(
-                      text: t.reportABug,
+                      text: context.t.reportABug,
                       icon: FontAwesomeIcons.bug,
-                      textColor: colours.primaryDark,
-                      iconColor: colours.primaryDark,
-                      buttonColor: colours.tertiaryNegative,
+                      textColor: context.colours.primaryDark,
+                      iconColor: context.colours.primaryDark,
+                      buttonColor: context.colours.tertiaryNegative,
                       onPressed: () async {
                         await Logger.reportIssue(context, From.GLOBAL_SETTINGS);
                       },
@@ -638,9 +651,9 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                       ButtonSetting(
                         text: 'FAKE ERROR',
                         icon: FontAwesomeIcons.explosion,
-                        textColor: colours.primaryDark,
-                        iconColor: colours.primaryDark,
-                        buttonColor: colours.tertiaryWarning,
+                        textColor: context.colours.primaryDark,
+                        iconColor: context.colours.primaryDark,
+                        buttonColor: context.colours.tertiaryWarning,
                         onPressed: () async {
                           Logger.logError(
                             LogType.Sync,
@@ -653,10 +666,11 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                     ],
                     SizedBox(height: spaceMD),
                     ButtonSetting(
-                      text: t.shareLogs,
+                      text: context.t.shareLogs,
                       icon: FontAwesomeIcons.envelopeOpenText,
                       loads: true,
                       onPressed: () async {
+                        final t = context.t;
                         final dir = await getTemporaryDirectory();
                         final logsDir = Directory('${dir.path}/logs');
                         final files = !logsDir.existsSync()
@@ -708,7 +722,7 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                     ),
                     SizedBox(height: spaceMD),
                     ButtonSetting(
-                      text: t.requestAFeature,
+                      text: context.t.requestAFeature,
                       icon: FontAwesomeIcons.solidHandPointUp,
                       onPressed: () async {
                         if (await canLaunchUrl(Uri.parse(githubFeatureTemplate))) {
@@ -718,7 +732,7 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                     ),
                     SizedBox(height: spaceMD),
                     ButtonSetting(
-                      text: t.improveTranslations,
+                      text: context.t.improveTranslations,
                       icon: FontAwesomeIcons.language,
                       onPressed: () async {
                         if (await canLaunchUrl(Uri.parse(githubImproveTranslationsDocs))) {
@@ -728,7 +742,7 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                     ),
                     SizedBox(height: spaceMD),
                     ButtonSetting(
-                      text: t.joinTheDiscussion,
+                      text: context.t.joinTheDiscussion,
                       icon: FontAwesomeIcons.discord,
                       onPressed: () async {
                         if (await canLaunchUrl(Uri.parse(discordLink))) {
@@ -745,18 +759,18 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                         children: [
                           Expanded(
                             child: Container(
-                              color: colours.tertiaryLight,
+                              color: context.colours.tertiaryLight,
                               height: spaceXXXXS,
                               margin: EdgeInsets.only(right: spaceSM),
                             ),
                           ),
                           Text(
-                            t.guides.toUpperCase(),
-                            style: TextStyle(fontSize: textSM, color: colours.primaryLight, fontWeight: FontWeight.bold),
+                            context.t.guides.toUpperCase(),
+                            style: TextStyle(fontSize: textSM, color: context.colours.primaryLight, fontWeight: FontWeight.bold),
                           ),
                           Expanded(
                             child: Container(
-                              color: colours.tertiaryLight,
+                              color: context.colours.tertiaryLight,
                               height: spaceXXXXS,
                               margin: EdgeInsets.only(left: spaceSM),
                             ),
@@ -766,7 +780,7 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                     ),
                     SizedBox(height: spaceSM),
                     ButtonSetting(
-                      text: t.viewDocumentation,
+                      text: context.t.viewDocumentation,
                       icon: FontAwesomeIcons.solidFileLines,
                       onPressed: () async {
                         launchUrl(Uri.parse(documentationLink));
@@ -779,18 +793,18 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                       first: true,
                       last: true,
                       richContent: ShowcaseTooltipContent(
-                        title: t.showcaseSetupGuideTitle,
-                        subtitle: t.showcaseSetupGuideSubtitle,
+                        title: context.t.showcaseSetupGuideTitle,
+                        subtitle: context.t.showcaseSetupGuideSubtitle,
                         featureRows: [
-                          ShowcaseFeatureRow(icon: FontAwesomeIcons.chalkboardUser, text: t.showcaseSetupGuideFeatureSetup),
-                          ShowcaseFeatureRow(icon: FontAwesomeIcons.route, text: t.showcaseSetupGuideFeatureTour),
+                          ShowcaseFeatureRow(icon: FontAwesomeIcons.chalkboardUser, text: context.t.showcaseSetupGuideFeatureSetup),
+                          ShowcaseFeatureRow(icon: FontAwesomeIcons.route, text: context.t.showcaseSetupGuideFeatureTour),
                         ],
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           ButtonSetting(
-                            text: t.guidedSetup,
+                            text: context.t.guidedSetup,
                             icon: FontAwesomeIcons.chalkboardUser,
                             onPressed: () async {
                               await repoManager.setInt(StorageKey.repoman_onboardingStep, 0);
@@ -799,7 +813,7 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                           ),
                           SizedBox(height: spaceMD),
                           ButtonSetting(
-                            text: t.uiGuide,
+                            text: context.t.uiGuide,
                             icon: FontAwesomeIcons.route,
                             onPressed: () async {
                               await repoManager.setInt(StorageKey.repoman_onboardingStep, 4);
@@ -844,18 +858,18 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                         children: [
                           Expanded(
                             child: Container(
-                              color: colours.tertiaryLight,
+                              color: context.colours.tertiaryLight,
                               height: spaceXXXXS,
                               margin: EdgeInsets.only(right: spaceSM),
                             ),
                           ),
                           Text(
-                            t.repositoryDefaults.toUpperCase(),
-                            style: TextStyle(fontSize: textSM, color: colours.primaryLight, fontWeight: FontWeight.bold),
+                            context.t.repositoryDefaults.toUpperCase(),
+                            style: TextStyle(fontSize: textSM, color: context.colours.primaryLight, fontWeight: FontWeight.bold),
                           ),
                           Expanded(
                             child: Container(
-                              color: colours.tertiaryLight,
+                              color: context.colours.tertiaryLight,
                               height: spaceXXXXS,
                               margin: EdgeInsets.only(left: spaceSM),
                             ),
@@ -869,8 +883,8 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                     ItemSetting(
                       setFn: (value) => repoManager.setString(StorageKey.repoman_defaultSyncMessage, value),
                       getFn: () => repoManager.getString(StorageKey.repoman_defaultSyncMessage),
-                      title: t.defaultSyncMessageLabel,
-                      description: t.syncMessageDescription,
+                      title: context.t.defaultSyncMessageLabel,
+                      description: context.t.syncMessageDescription,
                       hint: defaultSyncMessage,
                       maxLines: null,
                       minLines: null,
@@ -879,32 +893,32 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                     ItemSetting(
                       setFn: (value) => repoManager.setString(StorageKey.repoman_defaultSyncMessageTimeFormat, value),
                       getFn: () => repoManager.getString(StorageKey.repoman_defaultSyncMessageTimeFormat),
-                      title: t.defaultSyncMessageTimeFormatLabel,
-                      description: t.syncMessageTimeFormatDescription,
+                      title: context.t.defaultSyncMessageTimeFormatLabel,
+                      description: context.t.syncMessageTimeFormatDescription,
                       hint: defaultSyncMessageTimeFormat,
                     ),
                     SizedBox(height: spaceMD),
                     ItemSetting(
                       setFn: (value) => repoManager.setString(StorageKey.repoman_defaultAuthorName, value.trim()),
                       getFn: demo ? () async => "" : () => repoManager.getString(StorageKey.repoman_defaultAuthorName),
-                      title: t.defaultAuthorNameLabel,
-                      description: t.authorNameDescription,
-                      hint: t.authorName,
+                      title: context.t.defaultAuthorNameLabel,
+                      description: context.t.authorNameDescription,
+                      hint: context.t.authorName,
                     ),
                     SizedBox(height: spaceMD),
                     ItemSetting(
                       setFn: (value) => repoManager.setString(StorageKey.repoman_defaultAuthorEmail, value.trim()),
                       getFn: demo ? () async => "" : () => repoManager.getString(StorageKey.repoman_defaultAuthorEmail),
-                      title: t.defaultAuthorEmailLabel,
-                      description: t.authorEmailDescription,
-                      hint: t.authorEmail,
+                      title: context.t.defaultAuthorEmailLabel,
+                      description: context.t.authorEmailDescription,
+                      hint: context.t.authorEmail,
                     ),
                     SizedBox(height: spaceMD),
                     ItemSetting(
                       setFn: (value) => repoManager.setString(StorageKey.repoman_defaultPostFooter, value),
                       getFn: () => repoManager.getString(StorageKey.repoman_defaultPostFooter),
-                      title: t.postFooterLabel,
-                      description: t.postFooterDescription,
+                      title: context.t.postFooterLabel,
+                      description: context.t.postFooterDescription,
                       hint: defaultPostFooter,
                       maxLines: null,
                       minLines: null,
@@ -918,18 +932,18 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                         children: [
                           Expanded(
                             child: Container(
-                              color: colours.tertiaryLight,
+                              color: context.colours.tertiaryLight,
                               height: spaceXXXXS,
                               margin: EdgeInsets.only(right: spaceSM),
                             ),
                           ),
                           Text(
-                            t.miscellaneous.toUpperCase(),
-                            style: TextStyle(fontSize: textSM, color: colours.primaryLight, fontWeight: FontWeight.bold),
+                            context.t.miscellaneous.toUpperCase(),
+                            style: TextStyle(fontSize: textSM, color: context.colours.primaryLight, fontWeight: FontWeight.bold),
                           ),
                           Expanded(
                             child: Container(
-                              color: colours.tertiaryLight,
+                              color: context.colours.tertiaryLight,
                               height: spaceXXXXS,
                               margin: EdgeInsets.only(left: spaceSM),
                             ),
@@ -942,9 +956,9 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                       builder: (context) {
                         final hasPremium = ref.watch(premiumStatusProvider);
                         return ButtonSetting(
-                          text: (hasPremium == true ? t.contributeTitle : t.premiumDialogTitle).toUpperCase(),
+                          text: (hasPremium == true ? context.t.contributeTitle : context.t.premiumDialogTitle).toUpperCase(),
                           icon: hasPremium == true ? FontAwesomeIcons.circleDollarToSlot : FontAwesomeIcons.solidGem,
-                          iconColor: colours.tertiaryPositive,
+                          iconColor: context.colours.tertiaryPositive,
                           onPressed: () async {
                             if (hasPremium == true) {
                               await launchUrl(Uri.parse(contributeLink));
@@ -958,7 +972,7 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                     ),
                     SizedBox(height: spaceMD),
                     ButtonSetting(
-                      text: t.viewPrivacyPolicy,
+                      text: context.t.viewPrivacyPolicy,
                       icon: FontAwesomeIcons.userShield,
                       onPressed: () async {
                         launchUrl(Uri.parse(privacyPolicyLink));
@@ -966,7 +980,7 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                     ),
                     SizedBox(height: spaceMD),
                     ButtonSetting(
-                      text: t.viewEula,
+                      text: context.t.viewEula,
                       icon: FontAwesomeIcons.fileContract,
                       onPressed: () async {
                         launchUrl(Uri.parse(eulaLink));
@@ -987,18 +1001,18 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                         children: [
                           Expanded(
                             child: Container(
-                              color: colours.tertiaryNegative,
+                              color: context.colours.tertiaryNegative,
                               height: spaceXXXXS,
                               margin: EdgeInsets.only(right: spaceSM),
                             ),
                           ),
                           Text(
-                            t.dangerZone.toUpperCase(),
-                            style: TextStyle(fontSize: textSM, color: colours.tertiaryNegative, fontWeight: FontWeight.bold),
+                            context.t.dangerZone.toUpperCase(),
+                            style: TextStyle(fontSize: textSM, color: context.colours.tertiaryNegative, fontWeight: FontWeight.bold),
                           ),
                           Expanded(
                             child: Container(
-                              color: colours.tertiaryNegative,
+                              color: context.colours.tertiaryNegative,
                               height: spaceXXXXS,
                               margin: EdgeInsets.only(left: spaceSM),
                             ),
@@ -1008,7 +1022,7 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                     ),
                     SizedBox(height: spaceSM),
                     ButtonSetting(
-                      text: t.iosClearDataAction,
+                      text: context.t.iosClearDataAction,
                       icon: FontAwesomeIcons.dumpsterFire,
                       onPressed: () async {
                         await ConfirmClearDataDialog.showDialog(context, () async {
@@ -1020,7 +1034,7 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                           Navigator.of(context).canPop() ? Navigator.pop(context) : null;
                         });
                       },
-                      buttonColor: colours.secondaryNegative,
+                      buttonColor: context.colours.secondaryNegative,
                     ),
                     SizedBox(height: spaceLG),
                   ]),

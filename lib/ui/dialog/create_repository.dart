@@ -30,8 +30,8 @@ Future<CreateRepoResult?> showDialog(
           title: SizedBox(
             width: MediaQuery.of(context).size.width,
             child: Text(
-              t.createNewRepository,
-              style: TextStyle(color: colours.primaryLight, fontSize: textXL, fontWeight: FontWeight.bold),
+              context.t.createNewRepository,
+              style: TextStyle(color: context.colours.primaryLight, fontSize: textXL, fontWeight: FontWeight.bold),
             ),
           ),
           content: SingleChildScrollView(
@@ -39,13 +39,13 @@ Future<CreateRepoResult?> showDialog(
               children: [
                 SizedBox(height: spaceMD),
                 Text(
-                  t.noGitRepoFoundMsg,
-                  style: TextStyle(color: colours.primaryLight, fontSize: textMD),
+                  context.t.noGitRepoFoundMsg,
+                  style: TextStyle(color: context.colours.primaryLight, fontSize: textMD),
                 ),
                 SizedBox(height: spaceMD),
                 Text(
-                  t.remoteSetupLaterMsg.toUpperCase(),
-                  style: TextStyle(color: colours.tertiaryInfo, fontSize: textXS, fontWeight: FontWeight.bold),
+                  context.t.remoteSetupLaterMsg.toUpperCase(),
+                  style: TextStyle(color: context.colours.tertiaryInfo, fontSize: textXS, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -53,8 +53,8 @@ Future<CreateRepoResult?> showDialog(
           actions: <Widget>[
             TextButton(
               child: Text(
-                t.cancel.toUpperCase(),
-                style: TextStyle(color: colours.primaryLight, fontSize: textMD),
+                context.t.cancel.toUpperCase(),
+                style: TextStyle(color: context.colours.primaryLight, fontSize: textMD),
               ),
               onPressed: () {
                 Navigator.of(context).canPop() ? Navigator.pop(context) : null;
@@ -65,8 +65,8 @@ Future<CreateRepoResult?> showDialog(
                 Navigator.of(context).canPop() ? Navigator.pop(context, CreateRepoResult(createLocal: true, createRemote: false)) : null;
               },
               child: Text(
-                t.create.toUpperCase(),
-                style: TextStyle(color: colours.primaryPositive, fontSize: textMD),
+                context.t.create.toUpperCase(),
+                style: TextStyle(color: context.colours.primaryPositive, fontSize: textMD),
               ),
             ),
           ],
@@ -115,8 +115,8 @@ class _OAuthCreateRepoDialogState extends State<_OAuthCreateRepoDialog> {
       title: SizedBox(
         width: MediaQuery.of(context).size.width,
         child: Text(
-          widget.repoAlreadyExists ? t.createRemoteRepo : t.createNewRepository,
-          style: TextStyle(color: colours.primaryLight, fontSize: textXL, fontWeight: FontWeight.bold),
+          widget.repoAlreadyExists ? context.t.createRemoteRepo : context.t.createNewRepository,
+          style: TextStyle(color: context.colours.primaryLight, fontSize: textXL, fontWeight: FontWeight.bold),
         ),
       ),
       content: SingleChildScrollView(
@@ -124,36 +124,36 @@ class _OAuthCreateRepoDialogState extends State<_OAuthCreateRepoDialog> {
           children: [
             SizedBox(height: spaceSM),
             Text(
-              widget.repoAlreadyExists ? t.noRemoteDetectedMsg : t.noGitRepoFoundMsg,
-              style: TextStyle(color: colours.primaryLight, fontSize: textMD),
+              widget.repoAlreadyExists ? context.t.noRemoteDetectedMsg : context.t.noGitRepoFoundMsg,
+              style: TextStyle(color: context.colours.primaryLight, fontSize: textMD),
             ),
             SizedBox(height: spaceMD),
             Text(
-              t.repoName.toUpperCase(),
-              style: TextStyle(color: colours.tertiaryLight, fontSize: textXS, fontWeight: FontWeight.bold),
+              context.t.repoName.toUpperCase(),
+              style: TextStyle(color: context.colours.tertiaryLight, fontSize: textXS, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: spaceXS),
             TextField(
               controller: _nameController,
               onChanged: (_) => setState(() {}),
-              style: TextStyle(color: colours.primaryLight, fontSize: textMD),
+              style: TextStyle(color: context.colours.primaryLight, fontSize: textMD),
               decoration: InputDecoration(
-                hintText: t.repoName,
-                hintStyle: TextStyle(color: colours.tertiaryLight, fontSize: textMD),
+                hintText: context.t.repoName,
+                hintStyle: TextStyle(color: context.colours.tertiaryLight, fontSize: textMD),
                 filled: true,
-                fillColor: colours.secondaryDark,
+                fillColor: context.colours.secondaryDark,
                 contentPadding: EdgeInsets.symmetric(horizontal: spaceMD, vertical: spaceSM),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(cornerRadiusMD),
-                  borderSide: BorderSide(color: colours.tertiaryDark),
+                  borderSide: BorderSide(color: context.colours.tertiaryDark),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.all(cornerRadiusMD),
-                  borderSide: BorderSide(color: colours.tertiaryDark),
+                  borderSide: BorderSide(color: context.colours.tertiaryDark),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.all(cornerRadiusMD),
-                  borderSide: BorderSide(color: colours.tertiaryInfo),
+                  borderSide: BorderSide(color: context.colours.tertiaryInfo),
                 ),
               ),
             ),
@@ -166,15 +166,15 @@ class _OAuthCreateRepoDialogState extends State<_OAuthCreateRepoDialog> {
                     child: Container(
                       padding: EdgeInsets.symmetric(vertical: spaceSM),
                       decoration: BoxDecoration(
-                        color: _isPrivate ? colours.tertiaryDark : colours.secondaryDark,
+                        color: _isPrivate ? context.colours.tertiaryDark : context.colours.secondaryDark,
                         borderRadius: BorderRadius.horizontal(left: cornerRadiusMD),
-                        border: Border.all(color: _isPrivate ? colours.tertiaryInfo : colours.tertiaryDark),
+                        border: Border.all(color: _isPrivate ? context.colours.tertiaryInfo : context.colours.tertiaryDark),
                       ),
                       child: Text(
-                        t.repoPrivate.toUpperCase(),
+                        context.t.repoPrivate.toUpperCase(),
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: _isPrivate ? colours.primaryLight : colours.tertiaryLight,
+                          color: _isPrivate ? context.colours.primaryLight : context.colours.tertiaryLight,
                           fontSize: textSM,
                           fontWeight: FontWeight.bold,
                         ),
@@ -188,15 +188,15 @@ class _OAuthCreateRepoDialogState extends State<_OAuthCreateRepoDialog> {
                     child: Container(
                       padding: EdgeInsets.symmetric(vertical: spaceSM),
                       decoration: BoxDecoration(
-                        color: !_isPrivate ? colours.tertiaryDark : colours.secondaryDark,
+                        color: !_isPrivate ? context.colours.tertiaryDark : context.colours.secondaryDark,
                         borderRadius: BorderRadius.horizontal(right: cornerRadiusMD),
-                        border: Border.all(color: !_isPrivate ? colours.tertiaryInfo : colours.tertiaryDark),
+                        border: Border.all(color: !_isPrivate ? context.colours.tertiaryInfo : context.colours.tertiaryDark),
                       ),
                       child: Text(
-                        t.repoPublic.toUpperCase(),
+                        context.t.repoPublic.toUpperCase(),
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: !_isPrivate ? colours.primaryLight : colours.tertiaryLight,
+                          color: !_isPrivate ? context.colours.primaryLight : context.colours.tertiaryLight,
                           fontSize: textSM,
                           fontWeight: FontWeight.bold,
                         ),
@@ -217,15 +217,15 @@ class _OAuthCreateRepoDialogState extends State<_OAuthCreateRepoDialog> {
                     child: Checkbox(
                       value: _initMainBranch,
                       onChanged: (v) => setState(() => _initMainBranch = v ?? true),
-                      activeColor: colours.tertiaryInfo,
-                      checkColor: colours.primaryLight,
-                      side: BorderSide(color: colours.tertiaryLight),
+                      activeColor: context.colours.tertiaryInfo,
+                      checkColor: context.colours.primaryLight,
+                      side: BorderSide(color: context.colours.tertiaryLight),
                     ),
                   ),
                   SizedBox(width: spaceXS),
                   Text(
-                    t.initMainBranch,
-                    style: TextStyle(color: colours.primaryLight, fontSize: textSM),
+                    context.t.initMainBranch,
+                    style: TextStyle(color: context.colours.primaryLight, fontSize: textSM),
                   ),
                 ],
               ),
@@ -236,8 +236,8 @@ class _OAuthCreateRepoDialogState extends State<_OAuthCreateRepoDialog> {
       actions: <Widget>[
         TextButton(
           child: Text(
-            widget.repoAlreadyExists ? t.cancel.toUpperCase() : t.createLocalOnly.toUpperCase(),
-            style: TextStyle(color: colours.primaryLight, fontSize: textMD),
+            widget.repoAlreadyExists ? context.t.cancel.toUpperCase() : context.t.createLocalOnly.toUpperCase(),
+            style: TextStyle(color: context.colours.primaryLight, fontSize: textMD),
           ),
           onPressed: () {
             if (widget.repoAlreadyExists) {
@@ -265,8 +265,8 @@ class _OAuthCreateRepoDialogState extends State<_OAuthCreateRepoDialog> {
                       : null;
                 },
           child: Text(
-            t.createAndLinkRemote.toUpperCase(),
-            style: TextStyle(color: repoNameEmpty ? colours.tertiaryLight : colours.primaryPositive, fontSize: textMD),
+            context.t.createAndLinkRemote.toUpperCase(),
+            style: TextStyle(color: repoNameEmpty ? context.colours.tertiaryLight : context.colours.primaryPositive, fontSize: textMD),
           ),
         ),
       ],

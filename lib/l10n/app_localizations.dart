@@ -116,6 +116,12 @@ abstract class AppLocalizations {
   /// **'Dismiss'**
   String get dismiss;
 
+  /// No description provided for @dontShowAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t Show Again'**
+  String get dontShowAgain;
+
   /// No description provided for @skip.
   ///
   /// In en, this message translates to:
@@ -535,6 +541,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'detect-private-key'**
   String get premiumHookDetectPrivateKey;
+
+  /// No description provided for @premiumIndieDevTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Built by one developer'**
+  String get premiumIndieDevTitle;
+
+  /// No description provided for @premiumIndieDevSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'GitSync is an independent project, not a company. Buying Premium pays for the time that goes into it.'**
+  String get premiumIndieDevSubtitle;
 
   /// No description provided for @switchToClientMode.
   ///
@@ -1712,6 +1730,12 @@ abstract class AppLocalizations {
   /// **'No commits found…'**
   String get commitsNotFound;
 
+  /// No description provided for @filesNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No files found…'**
+  String get filesNotFound;
+
   /// No description provided for @repoNotFound.
   ///
   /// In en, this message translates to:
@@ -2057,13 +2081,13 @@ abstract class AppLocalizations {
   /// No description provided for @remoteAuthMismatchUsesSsh.
   ///
   /// In en, this message translates to:
-  /// **'This remote uses SSH — tap to switch'**
+  /// **'This remote uses SSH. Tap to switch'**
   String get remoteAuthMismatchUsesSsh;
 
   /// No description provided for @remoteAuthMismatchUsesHttps.
   ///
   /// In en, this message translates to:
-  /// **'This remote uses HTTPS or OAuth — tap to switch'**
+  /// **'This remote uses HTTPS or OAuth. Tap to switch'**
   String get remoteAuthMismatchUsesHttps;
 
   /// No description provided for @selectYourGitProviderAndAuthenticate.
@@ -2798,6 +2822,42 @@ abstract class AppLocalizations {
   /// **'Request A Feature'**
   String get requestAFeature;
 
+  /// No description provided for @sponsorCheckFailedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sponsor Check Failed'**
+  String get sponsorCheckFailedTitle;
+
+  /// No description provided for @sponsorCheckFailedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'We could not reach GitHub to check your sponsorship. Check your connection and try again.'**
+  String get sponsorCheckFailedMessage;
+
+  /// No description provided for @sponsorCheckRejectedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'GitHub rejected the linked account. Please sign in again.'**
+  String get sponsorCheckRejectedMessage;
+
+  /// No description provided for @sponsorNotFoundTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No Sponsorship Found'**
+  String get sponsorNotFoundTitle;
+
+  /// No description provided for @sponsorNotFoundMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This GitHub account is not in the sponsor list. A new sponsorship can take up to a day to become active in the app.'**
+  String get sponsorNotFoundMessage;
+
+  /// No description provided for @becomeASponsor.
+  ///
+  /// In en, this message translates to:
+  /// **'Become A Sponsor'**
+  String get becomeASponsor;
+
   /// No description provided for @contributeTitle.
   ///
   /// In en, this message translates to:
@@ -2899,6 +2959,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Directory'**
   String get directory;
+
+  /// No description provided for @confirmFileDirDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Deletion'**
+  String get confirmFileDirDeleteTitle;
 
   /// No description provided for @confirmFileDirDeleteMsg.
   ///
@@ -3926,6 +3992,60 @@ abstract class AppLocalizations {
   /// **'Failed'**
   String get actionFilterFailed;
 
+  /// No description provided for @mergeRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge Requests'**
+  String get mergeRequests;
+
+  /// No description provided for @jobs.
+  ///
+  /// In en, this message translates to:
+  /// **'Jobs'**
+  String get jobs;
+
+  /// No description provided for @comment.
+  ///
+  /// In en, this message translates to:
+  /// **'Comment'**
+  String get comment;
+
+  /// No description provided for @downloading.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading…'**
+  String get downloading;
+
+  /// No description provided for @downloadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Download failed'**
+  String get downloadFailed;
+
+  /// No description provided for @savedTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved to {name}'**
+  String savedTo(Object name);
+
+  /// No description provided for @saveArchive.
+  ///
+  /// In en, this message translates to:
+  /// **'Save archive'**
+  String get saveArchive;
+
+  /// No description provided for @saveAsset.
+  ///
+  /// In en, this message translates to:
+  /// **'Save asset'**
+  String get saveAsset;
+
+  /// No description provided for @useOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'Use Offline'**
+  String get useOffline;
+
   /// No description provided for @attemptAutoFix.
   ///
   /// In en, this message translates to:
@@ -4219,6 +4339,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your message couldn’t be sent. Please check your connection and try again.'**
   String get issueCommentFailedMsg;
+
+  /// No description provided for @issueReportFailedMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Your report couldn’t be sent. Please check your connection and try again.'**
+  String get issueReportFailedMsg;
 
   /// No description provided for @createNewRepository.
   ///
@@ -4819,6 +4945,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Configure an AI provider to use this feature. Go to AI settings?'**
   String get aiSetupMsg;
+
+  /// No description provided for @aiAlwaysAllowSession.
+  ///
+  /// In en, this message translates to:
+  /// **'Always allow this session'**
+  String get aiAlwaysAllowSession;
+
+  /// No description provided for @aiAllowAllEdits.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow all edits this session'**
+  String get aiAllowAllEdits;
+
+  /// No description provided for @aiRateLimited.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate limited. Your chat is saved. Wait a moment, then send again to carry on.'**
+  String get aiRateLimited;
+
+  /// No description provided for @aiStopGeneratingMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'This will cancel the current response. Any partial output will be kept.'**
+  String get aiStopGeneratingMsg;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

@@ -26,9 +26,9 @@ Future<void> showDialog(BuildContext parentContext, Set<String>? prevSelectedApp
     builder: (BuildContext context) => BaseAlertDialog(
       title: Center(
         child: Text(
-          t.selectApplication.toUpperCase(),
+          context.t.selectApplication.toUpperCase(),
           textAlign: TextAlign.center,
-          style: TextStyle(color: colours.primaryLight, fontSize: textXL, fontWeight: FontWeight.bold),
+          style: TextStyle(color: context.colours.primaryLight, fontSize: textXL, fontWeight: FontWeight.bold),
         ),
       ),
       content: StatefulBuilder(
@@ -49,20 +49,20 @@ Future<void> showDialog(BuildContext parentContext, Set<String>? prevSelectedApp
                   controller: searchController,
                   maxLines: 1,
                   style: TextStyle(
-                    color: colours.primaryLight,
+                    color: context.colours.primaryLight,
                     fontWeight: FontWeight.bold,
                     decoration: TextDecoration.none,
                     decorationThickness: 0,
                     fontSize: textMD,
                   ),
                   decoration: InputDecoration(
-                    fillColor: colours.tertiaryDark,
+                    fillColor: context.colours.tertiaryDark,
                     filled: true,
                     border: const OutlineInputBorder(borderRadius: BorderRadius.all(cornerRadiusMD), borderSide: BorderSide.none),
                     isCollapsed: true,
                     label: Text(
-                      t.search.toUpperCase(),
-                      style: TextStyle(color: colours.secondaryLight, fontSize: textSM, fontWeight: FontWeight.bold),
+                      context.t.search.toUpperCase(),
+                      style: TextStyle(color: context.colours.secondaryLight, fontSize: textSM, fontWeight: FontWeight.bold),
                     ),
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     contentPadding: const EdgeInsets.symmetric(horizontal: spaceMD, vertical: spaceSM),
@@ -100,7 +100,7 @@ Future<void> showDialog(BuildContext parentContext, Set<String>? prevSelectedApp
                 deviceApplications == null
                     ? Padding(
                         padding: EdgeInsets.symmetric(vertical: spaceSM),
-                        child: Center(child: CircularProgressIndicator(color: colours.primaryLight)),
+                        child: Center(child: CircularProgressIndicator(color: context.colours.primaryLight)),
                       )
                     : SizedBox(
                         width: double.maxFinite,
@@ -150,7 +150,7 @@ Future<void> showDialog(BuildContext parentContext, Set<String>? prevSelectedApp
                                   },
                                   style: ButtonStyle(
                                     alignment: Alignment.centerLeft,
-                                    backgroundColor: WidgetStatePropertyAll(colours.tertiaryDark),
+                                    backgroundColor: WidgetStatePropertyAll(context.colours.tertiaryDark),
                                     padding: WidgetStatePropertyAll(EdgeInsets.all(spaceSM)),
                                     shape: WidgetStatePropertyAll(
                                       RoundedRectangleBorder(borderRadius: BorderRadius.all(cornerRadiusMD), side: BorderSide.none),
@@ -166,7 +166,7 @@ Future<void> showDialog(BuildContext parentContext, Set<String>? prevSelectedApp
                                           child: FutureBuilder(
                                             future: iconFuture,
                                             builder: (context, snapshot) => snapshot.data == null
-                                                ? CircularProgressIndicator(color: colours.tertiaryLight)
+                                                ? CircularProgressIndicator(color: context.colours.tertiaryLight)
                                                 : Image.memory(snapshot.data!, height: textXXL, width: textXXL, gaplessPlayback: true),
                                           ),
                                         ),
@@ -176,7 +176,7 @@ Future<void> showDialog(BuildContext parentContext, Set<String>? prevSelectedApp
                                           builder: (context, snapshot) => Text(
                                             (snapshot.data ?? "").toUpperCase(),
                                             textAlign: TextAlign.center,
-                                            style: TextStyle(color: colours.primaryLight, fontSize: textSM, fontWeight: FontWeight.bold),
+                                            style: TextStyle(color: context.colours.primaryLight, fontSize: textSM, fontWeight: FontWeight.bold),
                                           ),
                                         ),
                                       ],
@@ -187,7 +187,7 @@ Future<void> showDialog(BuildContext parentContext, Set<String>? prevSelectedApp
                                   Positioned(
                                     top: spaceSM,
                                     right: spaceSM,
-                                    child: FaIcon(FontAwesomeIcons.solidCircleCheck, color: colours.primaryPositive, size: textXL),
+                                    child: FaIcon(FontAwesomeIcons.solidCircleCheck, color: context.colours.primaryPositive, size: textXL),
                                   ),
                               ],
                             );
@@ -202,8 +202,8 @@ Future<void> showDialog(BuildContext parentContext, Set<String>? prevSelectedApp
       actions: <Widget>[
         TextButton(
           child: Text(
-            t.cancel.toUpperCase(),
-            style: TextStyle(color: colours.primaryLight, fontSize: textMD),
+            context.t.cancel.toUpperCase(),
+            style: TextStyle(color: context.colours.primaryLight, fontSize: textMD),
           ),
           onPressed: () {
             Navigator.of(context).canPop() ? Navigator.pop(context) : null;
@@ -211,8 +211,8 @@ Future<void> showDialog(BuildContext parentContext, Set<String>? prevSelectedApp
         ),
         TextButton(
           child: Text(
-            t.saveApplication.toUpperCase(),
-            style: TextStyle(color: colours.primaryPositive, fontSize: textMD),
+            context.t.saveApplication.toUpperCase(),
+            style: TextStyle(color: context.colours.primaryPositive, fontSize: textMD),
           ),
           onPressed: () async {
             uiSettingsManager.setStringList(StorageKey.setman_packageNames, selectedApplications);

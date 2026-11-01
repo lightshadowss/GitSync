@@ -15,16 +15,16 @@ Future<void> showDialog(BuildContext context, Future<void> Function() callback) 
       title: SizedBox(
         width: MediaQuery.of(context).size.width,
         child: Text(
-          t.accessibilityServiceDisclosureTitle,
-          style: TextStyle(color: colours.primaryLight, fontSize: textXL, fontWeight: FontWeight.bold),
+          context.t.accessibilityServiceDisclosureTitle,
+          style: TextStyle(color: context.colours.primaryLight, fontSize: textXL, fontWeight: FontWeight.bold),
         ),
       ),
       content: SingleChildScrollView(
         child: ListBody(
           children: [
             Text(
-              t.accessibilityServiceDisclosureMessage,
-              style: TextStyle(color: colours.primaryLight, fontWeight: FontWeight.bold, fontSize: textSM),
+              context.t.accessibilityServiceDisclosureMessage,
+              style: TextStyle(color: context.colours.primaryLight, fontWeight: FontWeight.bold, fontSize: textSM),
             ),
           ],
         ),
@@ -32,8 +32,8 @@ Future<void> showDialog(BuildContext context, Future<void> Function() callback) 
       actions: <Widget>[
         TextButton(
           child: Text(
-            t.cancel.toUpperCase(),
-            style: TextStyle(color: colours.primaryLight, fontSize: textMD),
+            context.t.cancel.toUpperCase(),
+            style: TextStyle(color: context.colours.primaryLight, fontSize: textMD),
           ),
           onPressed: () {
             Navigator.of(context).canPop() ? Navigator.pop(context) : null;
@@ -41,8 +41,8 @@ Future<void> showDialog(BuildContext context, Future<void> Function() callback) 
         ),
         TextButton(
           child: Text(
-            t.ok.toUpperCase(),
-            style: TextStyle(color: colours.primaryPositive, fontSize: textMD),
+            context.t.ok.toUpperCase(),
+            style: TextStyle(color: context.colours.primaryPositive, fontSize: textMD),
           ),
           onPressed: () async {
             Navigator.of(context).canPop() ? Navigator.pop(context) : null;

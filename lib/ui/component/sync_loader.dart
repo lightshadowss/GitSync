@@ -163,13 +163,13 @@ class _SyncLoaderState extends State<SyncLoader> with TickerProviderStateMixin {
                                 FaIcon(
                                   FontAwesomeIcons.circleUp,
                                   size: spaceMD + spaceXS,
-                                  color: colours.primaryLight.withValues(alpha: _arrowOpacity),
+                                  color: context.colours.primaryLight.withValues(alpha: _arrowOpacity),
                                 ),
                                 IgnorePointer(
                                   child: Container(
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
-                                      border: Border.all(color: colours.primaryDark, width: 6, strokeAlign: BorderSide.strokeAlignCenter),
+                                      border: Border.all(color: context.colours.primaryDark, width: 6, strokeAlign: BorderSide.strokeAlignCenter),
                                     ),
                                   ),
                                 ),
@@ -206,13 +206,13 @@ class _SyncLoaderState extends State<SyncLoader> with TickerProviderStateMixin {
                                 FaIcon(
                                   FontAwesomeIcons.circleDown,
                                   size: spaceMD + spaceXS,
-                                  color: colours.primaryLight.withValues(alpha: _arrowOpacity),
+                                  color: context.colours.primaryLight.withValues(alpha: _arrowOpacity),
                                 ),
                                 IgnorePointer(
                                   child: Container(
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
-                                      border: Border.all(color: colours.primaryDark, width: 6, strokeAlign: BorderSide.strokeAlignCenter),
+                                      border: Border.all(color: context.colours.primaryDark, width: 6, strokeAlign: BorderSide.strokeAlignCenter),
                                     ),
                                   ),
                                 ),
@@ -232,12 +232,12 @@ class _SyncLoaderState extends State<SyncLoader> with TickerProviderStateMixin {
               globalKey: widget.syncProgressKey,
               cornerRadius: cornerRadiusMax,
               richContent: ShowcaseTooltipContent(
-                title: t.showcaseSyncProgressTitle,
-                subtitle: t.showcaseSyncProgressSubtitle,
+                title: context.t.showcaseSyncProgressTitle,
+                subtitle: context.t.showcaseSyncProgressSubtitle,
                 featureRows: [
-                  ShowcaseFeatureRow(icon: FontAwesomeIcons.solidCircleDown, text: t.showcaseSyncProgressFeatureWatch),
-                  ShowcaseFeatureRow(icon: FontAwesomeIcons.solidCircleCheck, text: t.showcaseSyncProgressFeatureConfirm),
-                  ShowcaseFeatureRow(icon: FontAwesomeIcons.bug, text: t.showcaseSyncProgressFeatureErrors),
+                  ShowcaseFeatureRow(icon: FontAwesomeIcons.solidCircleDown, text: context.t.showcaseSyncProgressFeatureWatch),
+                  ShowcaseFeatureRow(icon: FontAwesomeIcons.solidCircleCheck, text: context.t.showcaseSyncProgressFeatureConfirm),
+                  ShowcaseFeatureRow(icon: FontAwesomeIcons.bug, text: context.t.showcaseSyncProgressFeatureErrors),
                 ],
               ),
               child: Container(
@@ -245,7 +245,7 @@ class _SyncLoaderState extends State<SyncLoader> with TickerProviderStateMixin {
                 height: spaceMD + spaceXS,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(color: colours.tertiaryDark, width: 4),
+                  border: Border.all(color: context.colours.tertiaryDark, width: 4),
                 ),
               ),
             ),
@@ -257,7 +257,7 @@ class _SyncLoaderState extends State<SyncLoader> with TickerProviderStateMixin {
                 width: spaceMD + spaceXS,
                 height: spaceMD + spaceXS,
                 child: CircularProgressIndicator(
-                  color: colours.primaryLight,
+                  color: context.colours.primaryLight,
                   padding: EdgeInsets.zero,
                   strokeAlign: BorderSide.strokeAlignInside,
                   strokeWidth: 4.2,
@@ -273,7 +273,7 @@ class _SyncLoaderState extends State<SyncLoader> with TickerProviderStateMixin {
               child: SizedBox(
                 width: spaceMD + spaceXS,
                 height: spaceMD + spaceXS,
-                child: FaIcon(FontAwesomeIcons.circleExclamation, color: colours.tertiaryNegative, size: spaceMD + spaceXS),
+                child: FaIcon(FontAwesomeIcons.circleExclamation, color: context.colours.tertiaryNegative, size: spaceMD + spaceXS),
               ),
             ),
           ),
@@ -286,7 +286,7 @@ class _SyncLoaderState extends State<SyncLoader> with TickerProviderStateMixin {
               child: SizedBox(
                 width: spaceMD + spaceXS,
                 height: spaceMD + spaceXS,
-                child: FaIcon(FontAwesomeIcons.solidCircleCheck, color: colours.primaryPositive, size: spaceMD + spaceXS),
+                child: FaIcon(FontAwesomeIcons.solidCircleCheck, color: context.colours.primaryPositive, size: spaceMD + spaceXS),
               ),
             ),
           ),

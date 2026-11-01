@@ -24,13 +24,13 @@ Future<void> showDialog(
     builder: (BuildContext context) => StatefulBuilder(
       builder: (context, setState) => BaseAlertDialog(
         expandable: true,
-        backgroundColor: colours.secondaryDark,
+        backgroundColor: context.colours.secondaryDark,
         title: SizedBox(
           width: MediaQuery.of(context).size.width,
           child: Text(
-            t.reportABug.toUpperCase(),
+            context.t.reportABug.toUpperCase(),
             textAlign: TextAlign.center,
-            style: TextStyle(color: colours.primaryLight, fontSize: textXL, fontWeight: FontWeight.bold),
+            style: TextStyle(color: context.colours.primaryLight, fontSize: textXL, fontWeight: FontWeight.bold),
           ),
         ),
         contentBuilder: (expanded) => Column(
@@ -46,15 +46,15 @@ Future<void> showDialog(
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: spaceMD),
                           child: Text(
-                            t.issueReportTitleTitle.toUpperCase(),
-                            style: TextStyle(color: colours.primaryLight, fontSize: textMD, fontWeight: FontWeight.bold),
+                            context.t.issueReportTitleTitle.toUpperCase(),
+                            style: TextStyle(color: context.colours.primaryLight, fontSize: textMD, fontWeight: FontWeight.bold),
                           ),
                         ),
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: spaceMD),
                           child: Text(
-                            t.issueReportTitleDesc,
-                            style: TextStyle(color: colours.secondaryLight, fontSize: textSM, fontWeight: FontWeight.bold),
+                            context.t.issueReportTitleDesc,
+                            style: TextStyle(color: context.colours.secondaryLight, fontSize: textSM, fontWeight: FontWeight.bold),
                           ),
                         ),
                         SizedBox(height: spaceSM),
@@ -64,21 +64,21 @@ Future<void> showDialog(
                           maxLines: 1,
                           minLines: 1,
                           style: TextStyle(
-                            color: colours.primaryLight,
+                            color: context.colours.primaryLight,
                             fontWeight: FontWeight.bold,
                             decoration: TextDecoration.none,
                             decorationThickness: 0,
                             fontSize: textMD,
                           ),
                           decoration: InputDecoration(
-                            fillColor: colours.tertiaryDark,
+                            fillColor: context.colours.tertiaryDark,
                             filled: true,
                             border: const OutlineInputBorder(borderRadius: BorderRadius.all(cornerRadiusMD), borderSide: BorderSide.none),
                             isCollapsed: true,
                             floatingLabelBehavior: FloatingLabelBehavior.always,
                             contentPadding: const EdgeInsets.symmetric(horizontal: spaceMD, vertical: spaceSM),
-                            errorText: titleController.text.isEmpty ? t.fieldCannotBeEmpty : null,
-                            errorStyle: TextStyle(color: colours.tertiaryNegative),
+                            errorText: titleController.text.isEmpty ? context.t.fieldCannotBeEmpty : null,
+                            errorStyle: TextStyle(color: context.colours.tertiaryNegative),
                             isDense: true,
                           ),
                           onChanged: (_) => setState(() {}),
@@ -93,15 +93,15 @@ Future<void> showDialog(
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: spaceMD),
                           child: Text(
-                            t.issueReportDescTitle.toUpperCase(),
-                            style: TextStyle(color: colours.primaryLight, fontSize: textMD, fontWeight: FontWeight.bold),
+                            context.t.issueReportDescTitle.toUpperCase(),
+                            style: TextStyle(color: context.colours.primaryLight, fontSize: textMD, fontWeight: FontWeight.bold),
                           ),
                         ),
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: spaceMD),
                           child: Text(
-                            t.issueReportDescDesc,
-                            style: TextStyle(color: colours.secondaryLight, fontSize: textSM, fontWeight: FontWeight.bold),
+                            context.t.issueReportDescDesc,
+                            style: TextStyle(color: context.colours.secondaryLight, fontSize: textSM, fontWeight: FontWeight.bold),
                           ),
                         ),
                         SizedBox(height: spaceSM),
@@ -111,7 +111,7 @@ Future<void> showDialog(
                           maxLines: null,
                           minLines: 3,
                           style: TextStyle(
-                            color: colours.primaryLight,
+                            color: context.colours.primaryLight,
                             fontWeight: FontWeight.bold,
                             decoration: TextDecoration.none,
                             decorationThickness: 0,
@@ -120,10 +120,10 @@ Future<void> showDialog(
                           decoration: InputDecoration(
                             contentPadding: const EdgeInsets.symmetric(horizontal: spaceMD, vertical: spaceSM),
                             border: const OutlineInputBorder(borderSide: BorderSide.none, borderRadius: BorderRadius.all(cornerRadiusMD)),
-                            errorText: descriptionController.text.isEmpty ? t.fieldCannotBeEmpty : null,
-                            errorStyle: TextStyle(color: colours.tertiaryNegative),
+                            errorText: descriptionController.text.isEmpty ? context.t.fieldCannotBeEmpty : null,
+                            errorStyle: TextStyle(color: context.colours.tertiaryNegative),
                             isCollapsed: true,
-                            fillColor: colours.tertiaryDark,
+                            fillColor: context.colours.tertiaryDark,
                             filled: true,
                             isDense: true,
                           ),
@@ -139,15 +139,15 @@ Future<void> showDialog(
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: spaceMD),
                           child: Text(
-                            t.issueReportMinimalReproTitle.toUpperCase(),
-                            style: TextStyle(color: colours.primaryLight, fontSize: textMD, fontWeight: FontWeight.bold),
+                            context.t.issueReportMinimalReproTitle.toUpperCase(),
+                            style: TextStyle(color: context.colours.primaryLight, fontSize: textMD, fontWeight: FontWeight.bold),
                           ),
                         ),
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: spaceMD),
                           child: Text(
-                            t.issueReportMinimalReproDesc,
-                            style: TextStyle(color: colours.secondaryLight, fontSize: textSM, fontWeight: FontWeight.bold),
+                            context.t.issueReportMinimalReproDesc,
+                            style: TextStyle(color: context.colours.secondaryLight, fontSize: textSM, fontWeight: FontWeight.bold),
                           ),
                         ),
                         SizedBox(height: spaceSM),
@@ -157,7 +157,7 @@ Future<void> showDialog(
                           maxLines: null,
                           minLines: 3,
                           style: TextStyle(
-                            color: colours.primaryLight,
+                            color: context.colours.primaryLight,
                             fontWeight: FontWeight.bold,
                             decoration: TextDecoration.none,
                             decorationThickness: 0,
@@ -167,9 +167,9 @@ Future<void> showDialog(
                             contentPadding: const EdgeInsets.symmetric(horizontal: spaceMD, vertical: spaceSM),
                             border: const OutlineInputBorder(borderSide: BorderSide.none, borderRadius: BorderRadius.all(cornerRadiusMD)),
                             isCollapsed: true,
-                            errorText: minimalReproController.text.isEmpty ? t.fieldCannotBeEmpty : null,
-                            errorStyle: TextStyle(color: colours.tertiaryNegative),
-                            fillColor: colours.tertiaryDark,
+                            errorText: minimalReproController.text.isEmpty ? context.t.fieldCannotBeEmpty : null,
+                            errorStyle: TextStyle(color: context.colours.tertiaryNegative),
+                            fillColor: context.colours.tertiaryDark,
                             filled: true,
                             isDense: true,
                           ),
@@ -193,14 +193,14 @@ Future<void> showDialog(
                   onPressed: () async {
                     openLogViewer(context, deviceInfoEntries: deviceInfoEntries);
                   },
-                  icon: FaIcon(FontAwesomeIcons.eye, color: colours.tertiaryInfo, size: textSM),
+                  icon: FaIcon(FontAwesomeIcons.eye, color: context.colours.tertiaryInfo, size: textSM),
                 ),
                 SizedBox(width: spaceXS),
                 TextButton.icon(
                   onPressed: () async {
                     includeLogFiles = !includeLogFiles;
                     if (includeLogFiles == false) {
-                      await InfoDialog.showDialog(context, t.includeLogFiles, t.includeLogFilesDescription);
+                      await InfoDialog.showDialog(context, context.t.includeLogFiles, context.t.includeLogFilesDescription);
                     }
                     setState(() {});
                   },
@@ -211,13 +211,13 @@ Future<void> showDialog(
                   ),
                   icon: FaIcon(
                     includeLogFiles ? FontAwesomeIcons.solidSquareCheck : FontAwesomeIcons.squareCheck,
-                    color: colours.primaryPositive,
+                    color: context.colours.primaryPositive,
                     size: textSM,
                   ),
                   label: Text(
-                    t.includeLogs,
+                    context.t.includeLogs,
                     textAlign: TextAlign.end,
-                    style: TextStyle(color: colours.secondaryLight, fontWeight: FontWeight.bold, fontSize: textSM),
+                    style: TextStyle(color: context.colours.secondaryLight, fontWeight: FontWeight.bold, fontSize: textSM),
                   ),
                 ),
               ],
@@ -227,8 +227,8 @@ Future<void> showDialog(
         actions: <Widget>[
           TextButton(
             child: Text(
-              t.cancel.toUpperCase(),
-              style: TextStyle(color: colours.primaryLight, fontSize: textMD),
+              context.t.cancel.toUpperCase(),
+              style: TextStyle(color: context.colours.primaryLight, fontSize: textMD),
             ),
             onPressed: () async {
               Navigator.of(context).canPop() ? Navigator.pop(context) : null;
@@ -239,16 +239,16 @@ Future<void> showDialog(
             icon: FaIcon(
               FontAwesomeIcons.solidPaperPlane,
               color: minimalReproController.text.isEmpty || descriptionController.text.isEmpty || titleController.text.isEmpty
-                  ? colours.tertiaryLight
-                  : colours.primaryPositive,
+                  ? context.colours.tertiaryLight
+                  : context.colours.primaryPositive,
               size: textMD,
             ),
             label: Text(
-              t.report.toUpperCase(),
+              context.t.report.toUpperCase(),
               style: TextStyle(
                 color: minimalReproController.text.isEmpty || descriptionController.text.isEmpty || titleController.text.isEmpty
-                    ? colours.tertiaryLight
-                    : colours.primaryPositive,
+                    ? context.colours.tertiaryLight
+                    : context.colours.primaryPositive,
                 fontSize: textMD,
               ),
             ),

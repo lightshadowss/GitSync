@@ -12,6 +12,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get dismiss => '閉じる';
 
   @override
+  String get dontShowAgain => '今後表示しない';
+
+  @override
   String get skip => 'スキップ';
 
   @override
@@ -220,6 +223,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get premiumHookDetectPrivateKey => '秘密鍵の検出';
+
+  @override
+  String get premiumIndieDevTitle => 'Built by one developer';
+
+  @override
+  String get premiumIndieDevSubtitle => 'GitSync is an independent project, not a company. Buying Premium pays for the time that goes into it.';
 
   @override
   String get switchToClientMode => 'クライアントモードに切り替え…';
@@ -812,6 +821,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get commitsNotFound => 'コミットが見つかりません…';
 
   @override
+  String get filesNotFound => 'No files found…';
+
+  @override
   String get repoNotFound => 'リポジトリが見つかりません…';
 
   @override
@@ -1358,6 +1370,25 @@ class AppLocalizationsJa extends AppLocalizations {
   String get requestAFeature => '機能のリクエスト';
 
   @override
+  String get sponsorCheckFailedTitle => 'Sponsor Check Failed';
+
+  @override
+  String get sponsorCheckFailedMessage => 'We could not reach GitHub to check your sponsorship. Check your connection and try again.';
+
+  @override
+  String get sponsorCheckRejectedMessage => 'GitHub rejected the linked account. Please sign in again.';
+
+  @override
+  String get sponsorNotFoundTitle => 'No Sponsorship Found';
+
+  @override
+  String get sponsorNotFoundMessage =>
+      'This GitHub account is not in the sponsor list. A new sponsorship can take up to a day to become active in the app.';
+
+  @override
+  String get becomeASponsor => 'Become A Sponsor';
+
+  @override
   String get contributeTitle => '開発を支援する';
 
   @override
@@ -1407,6 +1438,9 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get directory => 'ディレクトリ';
+
+  @override
+  String get confirmFileDirDeleteTitle => '%s の削除確認';
 
   @override
   String get confirmFileDirDeleteMsg => '本当に %s \"%s\" %s を削除しますか？';
@@ -1923,6 +1957,35 @@ class AppLocalizationsJa extends AppLocalizations {
   String get actionFilterFailed => '失敗';
 
   @override
+  String get mergeRequests => 'Merge Requests';
+
+  @override
+  String get jobs => 'Jobs';
+
+  @override
+  String get comment => 'Comment';
+
+  @override
+  String get downloading => 'Downloading…';
+
+  @override
+  String get downloadFailed => 'Download failed';
+
+  @override
+  String savedTo(Object name) {
+    return 'Saved to $name';
+  }
+
+  @override
+  String get saveArchive => 'Save archive';
+
+  @override
+  String get saveAsset => 'Save asset';
+
+  @override
+  String get useOffline => 'Use Offline';
+
+  @override
   String get attemptAutoFix => '自動修復を試みますか？';
 
   @override
@@ -2074,6 +2137,9 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get issueCommentFailedMsg => 'Your message couldn’t be sent. Please check your connection and try again.';
+
+  @override
+  String get issueReportFailedMsg => 'Your report couldn’t be sent. Please check your connection and try again.';
 
   @override
   String get createNewRepository => '新しいリポジトリを作成';
@@ -2378,4 +2444,16 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get aiSetupMsg => 'この機能を使用するにはAIプロバイダを設定してください。AI設定に移動しますか？';
+
+  @override
+  String get aiAlwaysAllowSession => 'Always allow this session';
+
+  @override
+  String get aiAllowAllEdits => 'Allow all edits this session';
+
+  @override
+  String get aiRateLimited => 'Rate limited. Your chat is saved. Wait a moment, then send again to carry on.';
+
+  @override
+  String get aiStopGeneratingMsg => 'This will cancel the current response. Any partial output will be kept.';
 }

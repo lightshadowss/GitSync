@@ -13,6 +13,9 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../constant/dimens.dart';
 import 'package:GitSync/api/manager/auth/github_manager.dart';
 import 'package:GitSync/api/manager/storage.dart';
+import 'package:GitSync/ui/dialog/info_dialog.dart' as InfoDialog;
+import 'package:GitSync/ui/component/button_setting.dart';
+import 'package:GitSync/api/manager/premium_manager.dart';
 
 const double _featureCardHeight =
     spaceXXXS * 2 +
@@ -61,12 +64,17 @@ class _UnlockPremiumState extends ConsumerState<UnlockPremium> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          FaIcon(icon, color: colours.premiumAccent, size: textMD),
+          FaIcon(icon, color: context.colours.premiumAccent, size: textMD),
           SizedBox(width: spaceSM),
           Flexible(
             child: Text(
               text,
-              style: TextStyle(color: colours.primaryLight, fontSize: textSM, fontWeight: FontWeight.bold, fontFamily: 'AtkinsonHyperlegible'),
+              style: TextStyle(
+                color: context.colours.primaryLight,
+                fontSize: textSM,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'AtkinsonHyperlegible',
+              ),
             ),
           ),
         ],
@@ -88,9 +96,9 @@ class _UnlockPremiumState extends ConsumerState<UnlockPremium> {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: spaceXS),
       decoration: BoxDecoration(
-        color: colours.premiumSurface,
+        color: context.colours.premiumSurface,
         borderRadius: BorderRadius.all(cornerRadiusMD),
-        border: Border.all(color: colours.premiumBorder, width: spaceXXXS),
+        border: Border.all(color: context.colours.premiumBorder, width: spaceXXXS),
       ),
       clipBehavior: Clip.hardEdge,
       child: Column(
@@ -105,13 +113,18 @@ class _UnlockPremiumState extends ConsumerState<UnlockPremium> {
                   padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: spaceMD, vertical: spaceSM)),
                   visualDensity: VisualDensity.compact,
                   shape: WidgetStatePropertyAll(RoundedRectangleBorder()),
-                  backgroundColor: WidgetStatePropertyAll(colours.premiumBorder),
+                  backgroundColor: WidgetStatePropertyAll(context.colours.premiumBorder),
                 ),
 
-                icon: FaIcon(FontAwesomeIcons.store, color: colours.premiumAccent, size: textXS),
+                icon: FaIcon(FontAwesomeIcons.store, color: context.colours.premiumAccent, size: textXS),
                 label: Text(
                   "Exclusive Features: Store Version Only!",
-                  style: TextStyle(color: colours.premiumAccent, fontSize: textXS, fontWeight: FontWeight.w900, fontFamily: 'AtkinsonHyperlegible'),
+                  style: TextStyle(
+                    color: context.colours.premiumAccent,
+                    fontSize: textXS,
+                    fontWeight: FontWeight.w900,
+                    fontFamily: 'AtkinsonHyperlegible',
+                  ),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -131,9 +144,9 @@ class _UnlockPremiumState extends ConsumerState<UnlockPremium> {
                         Container(
                           padding: EdgeInsets.symmetric(horizontal: spaceXXXS, vertical: spaceXXXS),
                           decoration: BoxDecoration(
-                            color: colours.premiumBg,
+                            color: context.colours.premiumBg,
                             borderRadius: BorderRadius.all(cornerRadiusMax),
-                            border: Border.all(color: colours.premiumBorder, width: spaceXXXS),
+                            border: Border.all(color: context.colours.premiumBorder, width: spaceXXXS),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
@@ -147,7 +160,7 @@ class _UnlockPremiumState extends ConsumerState<UnlockPremium> {
                                     SizedBox(width: spaceXS),
                                     Text(
                                       badgeLabel.toUpperCase(),
-                                      style: TextStyle(color: colours.premiumAccent, fontSize: textXS, fontWeight: FontWeight.w900),
+                                      style: TextStyle(color: context.colours.premiumAccent, fontSize: textXS, fontWeight: FontWeight.w900),
                                     ),
                                   ],
                                 ),
@@ -156,10 +169,10 @@ class _UnlockPremiumState extends ConsumerState<UnlockPremium> {
                                 SizedBox(width: spaceXXS),
                                 Container(
                                   padding: EdgeInsets.symmetric(horizontal: spaceXS, vertical: spaceXXXS),
-                                  decoration: BoxDecoration(color: colours.premiumAccent, borderRadius: BorderRadius.all(cornerRadiusMax)),
+                                  decoration: BoxDecoration(color: context.colours.premiumAccent, borderRadius: BorderRadius.all(cornerRadiusMax)),
                                   child: Text(
                                     tag.toUpperCase(),
-                                    style: TextStyle(color: colours.premiumBg, fontSize: textXS, fontWeight: FontWeight.w900),
+                                    style: TextStyle(color: context.colours.premiumBg, fontSize: textXS, fontWeight: FontWeight.w900),
                                   ),
                                 ),
                               ],
@@ -170,7 +183,7 @@ class _UnlockPremiumState extends ConsumerState<UnlockPremium> {
                         Text(
                           title,
                           style: TextStyle(
-                            color: colours.primaryLight,
+                            color: context.colours.primaryLight,
                             fontSize: textXL,
                             fontWeight: FontWeight.bold,
                             fontFamily: 'AtkinsonHyperlegible',
@@ -181,7 +194,7 @@ class _UnlockPremiumState extends ConsumerState<UnlockPremium> {
                         Text(
                           subtitle,
                           style: TextStyle(
-                            color: colours.premiumTextSecondary,
+                            color: context.colours.premiumTextSecondary,
                             fontSize: textSM,
                             fontWeight: FontWeight.bold,
                             fontFamily: 'AtkinsonHyperlegible',
@@ -208,13 +221,49 @@ class _UnlockPremiumState extends ConsumerState<UnlockPremium> {
   }
 
   Future<void> _verifyGhSponsor() async {
+    final t = context.t;
     final result = await GithubManager().launchOAuthFlow(["read:user", "user:email"]);
     if (result == null) return;
 
     await repoManager.setStringNullable(StorageKey.repoman_ghSponsorToken, result.$3);
-    await premiumManager.updateGitHubSponsorPremium();
-    if (mounted && ref.read(premiumStatusProvider) == true) {
+    final check = await premiumManager.updateGitHubSponsorPremium();
+    if (!mounted) return;
+
+    if (ref.read(premiumStatusProvider) == true) {
       Navigator.pop(context, true);
+      return;
+    }
+
+    switch (check) {
+      case GhSponsorCheck.sponsor:
+        return;
+      case GhSponsorCheck.notSponsor:
+        await InfoDialog.showDialog(
+          context,
+          t.sponsorNotFoundTitle,
+          t.sponsorNotFoundMessage,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SizedBox(height: spaceMD),
+              ButtonSetting(
+                text: t.becomeASponsor,
+                icon: FontAwesomeIcons.solidHeart,
+                onPressed: () async {
+                  final uri = Uri.parse(contributeLink);
+                  if (await canLaunchUrl(uri)) {
+                    await launchUrl(uri);
+                  }
+                },
+              ),
+            ],
+          ),
+        );
+      case GhSponsorCheck.tokenRejected:
+        await InfoDialog.showDialog(context, t.sponsorCheckFailedTitle, t.sponsorCheckRejectedMessage);
+      case GhSponsorCheck.notLinked:
+      case GhSponsorCheck.unreachable:
+        await InfoDialog.showDialog(context, t.sponsorCheckFailedTitle, t.sponsorCheckFailedMessage);
     }
   }
 
@@ -223,17 +272,17 @@ class _UnlockPremiumState extends ConsumerState<UnlockPremium> {
     final cards = <Widget>[
       _featureCard(
         badgeIcons: [
-          FaIcon(FontAwesomeIcons.solidSquarePlus, color: colours.premiumAccent, size: textSM),
-          FaIcon(FontAwesomeIcons.solidSquareMinus, color: colours.tertiaryNegative, size: textSM),
-          FaIcon(FontAwesomeIcons.squarePen, color: colours.tertiaryInfo, size: textSM),
+          FaIcon(FontAwesomeIcons.solidSquarePlus, color: context.colours.premiumAccent, size: textSM),
+          FaIcon(FontAwesomeIcons.solidSquareMinus, color: context.colours.tertiaryNegative, size: textSM),
+          FaIcon(FontAwesomeIcons.squarePen, color: context.colours.tertiaryInfo, size: textSM),
         ],
-        badgeLabel: t.addMore,
-        title: t.premiumMultiRepoTitle,
-        subtitle: t.premiumMultiRepoSubtitle,
+        badgeLabel: context.t.addMore,
+        title: context.t.premiumMultiRepoTitle,
+        subtitle: context.t.premiumMultiRepoSubtitle,
         featureRows: [
-          _featureRow(FontAwesomeIcons.solidCircleCheck, t.premiumUnlimitedContainers),
-          _featureRow(FontAwesomeIcons.key, t.premiumIndependentAuth),
-          _featureRow(FontAwesomeIcons.folderTree, t.premiumAutoAddSubmodules),
+          _featureRow(FontAwesomeIcons.solidCircleCheck, context.t.premiumUnlimitedContainers),
+          _featureRow(FontAwesomeIcons.key, context.t.premiumIndependentAuth),
+          _featureRow(FontAwesomeIcons.folderTree, context.t.premiumAutoAddSubmodules),
         ],
       ),
 
@@ -241,55 +290,55 @@ class _UnlockPremiumState extends ConsumerState<UnlockPremium> {
         _featureCard(
           showStoreBanner: true,
           badgeIcons: [
-            FaIcon(FontAwesomeIcons.solidBell, color: colours.tertiaryInfo, size: textSM),
-            FaIcon(FontAwesomeIcons.server, color: colours.tertiaryInfo, size: textSM),
+            FaIcon(FontAwesomeIcons.solidBell, color: context.colours.tertiaryInfo, size: textSM),
+            FaIcon(FontAwesomeIcons.server, color: context.colours.tertiaryInfo, size: textSM),
           ],
           badgeLabel: "ESS",
           tag: "ios-only",
-          title: t.enhancedScheduledSync,
-          subtitle: t.premiumEnhancedSyncSubtitle,
+          title: context.t.enhancedScheduledSync,
+          subtitle: context.t.premiumEnhancedSyncSubtitle,
           featureRows: [
-            _featureRow(FontAwesomeIcons.arrowsRotate, t.premiumSyncPerMinute),
-            _featureRow(FontAwesomeIcons.server, t.premiumServerTriggered),
-            _featureRow(FontAwesomeIcons.batteryFull, t.premiumWorksAppClosed),
-            _featureRow(FontAwesomeIcons.solidClock, t.premiumReliableDelivery),
+            _featureRow(FontAwesomeIcons.arrowsRotate, context.t.premiumSyncPerMinute),
+            _featureRow(FontAwesomeIcons.server, context.t.premiumServerTriggered),
+            _featureRow(FontAwesomeIcons.batteryFull, context.t.premiumWorksAppClosed),
+            _featureRow(FontAwesomeIcons.solidClock, context.t.premiumReliableDelivery),
           ],
         ),
 
       _featureCard(
         showStoreBanner: true,
         badgeIcons: [
-          FaIcon(FontAwesomeIcons.fileArrowUp, color: colours.tertiaryWarning, size: textSM),
-          FaIcon(FontAwesomeIcons.fileArrowDown, color: colours.tertiaryInfo, size: textSM),
+          FaIcon(FontAwesomeIcons.fileArrowUp, color: context.colours.tertiaryWarning, size: textSM),
+          FaIcon(FontAwesomeIcons.fileArrowDown, color: context.colours.tertiaryInfo, size: textSM),
         ],
         badgeLabel: "LARGE FILES",
-        title: t.premiumGitLfsTitle,
-        subtitle: t.premiumGitLfsSubtitle,
+        title: context.t.premiumGitLfsTitle,
+        subtitle: context.t.premiumGitLfsSubtitle,
         featureRows: [
-          _featureRow(FontAwesomeIcons.solidCircleCheck, t.premiumFullLfsSupport),
-          _featureRow(FontAwesomeIcons.fileCirclePlus, t.premiumTrackLargeFiles),
+          _featureRow(FontAwesomeIcons.solidCircleCheck, context.t.premiumFullLfsSupport),
+          _featureRow(FontAwesomeIcons.fileCirclePlus, context.t.premiumTrackLargeFiles),
 
-          _featureRow(FontAwesomeIcons.download, t.premiumAutoLfsPullPush),
+          _featureRow(FontAwesomeIcons.download, context.t.premiumAutoLfsPullPush),
         ],
       ),
 
       _featureCard(
         showStoreBanner: true,
-        badgeIcons: [FaIcon(FontAwesomeIcons.filter, color: colours.premiumAccent, size: textSM)],
+        badgeIcons: [FaIcon(FontAwesomeIcons.filter, color: context.colours.premiumAccent, size: textSM)],
         badgeLabel: "FILTERS",
-        title: t.premiumGitFiltersTitle,
-        subtitle: t.premiumGitFiltersSubtitle,
+        title: context.t.premiumGitFiltersTitle,
+        subtitle: context.t.premiumGitFiltersSubtitle,
         featureRows: [
-          _featureRow(FontAwesomeIcons.solidCircleCheck, t.premiumGitLfsFilter),
-          _featureRow(FontAwesomeIcons.lock, t.premiumGitCryptFilter),
-          _featureRow(FontAwesomeIcons.wandMagicSparkles, t.premiumMoreFiltersSoon),
+          _featureRow(FontAwesomeIcons.solidCircleCheck, context.t.premiumGitLfsFilter),
+          _featureRow(FontAwesomeIcons.lock, context.t.premiumGitCryptFilter),
+          _featureRow(FontAwesomeIcons.wandMagicSparkles, context.t.premiumMoreFiltersSoon),
         ],
       ),
 
       // _featureCard(
       //   showStoreBanner: true,
       //   badgeIcons: [
-      //     FaIcon(FontAwesomeIcons.codeCommit, color: colours.premiumAccent, size: textSM),
+      //     FaIcon(FontAwesomeIcons.codeCommit, color: context.colours.premiumAccent, size: textSM),
       //   ],
       //   badgeLabel: "HOOKS",
       //   title: t.premiumGitHooksTitle,
@@ -305,11 +354,11 @@ class _UnlockPremiumState extends ConsumerState<UnlockPremium> {
     ];
 
     return Scaffold(
-      backgroundColor: colours.premiumBg,
+      backgroundColor: context.colours.premiumBg,
       body: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light.copyWith(
-          statusBarColor: colours.premiumBg,
-          systemNavigationBarColor: colours.premiumBg,
+          statusBarColor: context.colours.premiumBg,
+          systemNavigationBarColor: context.colours.premiumBg,
           statusBarIconBrightness: Brightness.light,
           systemNavigationBarIconBrightness: Brightness.light,
         ),
@@ -336,23 +385,27 @@ class _UnlockPremiumState extends ConsumerState<UnlockPremium> {
                             width: spaceXL,
                             height: spaceXL,
                             decoration: BoxDecoration(
-                              border: BoxBorder.all(width: spaceXXXS, color: colours.premiumAccent, strokeAlign: BorderSide.strokeAlignOutside),
+                              border: BoxBorder.all(
+                                width: spaceXXXS,
+                                color: context.colours.premiumAccent,
+                                strokeAlign: BorderSide.strokeAlignOutside,
+                              ),
                               shape: BoxShape.circle,
                               image: DecorationImage(
                                 fit: BoxFit.fill,
                                 image: AssetImage('assets/app_icon.png'),
-                                colorFilter: ColorFilter.mode(colours.primaryLight, BlendMode.srcATop),
+                                colorFilter: ColorFilter.mode(context.colours.primaryLight, BlendMode.srcATop),
                               ),
                             ),
                           ),
                           SizedBox(height: spaceLG),
                           Row(
                             children: [
-                              FaIcon(FontAwesomeIcons.solidGem, color: colours.premiumAccent, size: textLG * 2),
+                              FaIcon(FontAwesomeIcons.solidGem, color: context.colours.premiumAccent, size: textLG * 2),
                               SizedBox(width: spaceSM),
                               Text(
                                 "Premium",
-                                style: TextStyle(color: colours.primaryLight, fontSize: textLG * 2, fontWeight: FontWeight.bold),
+                                style: TextStyle(color: context.colours.primaryLight, fontSize: textLG * 2, fontWeight: FontWeight.bold),
                               ),
                             ],
                           ),
@@ -370,7 +423,7 @@ class _UnlockPremiumState extends ConsumerState<UnlockPremium> {
                           onPressed: () async {
                             Navigator.of(context).pop();
                           },
-                          icon: FaIcon(FontAwesomeIcons.solidCircleXmark, color: colours.premiumAccent, size: spaceSM * 2),
+                          icon: FaIcon(FontAwesomeIcons.solidCircleXmark, color: context.colours.premiumAccent, size: spaceSM * 2),
                         ),
                       ),
                   ],
@@ -384,7 +437,7 @@ class _UnlockPremiumState extends ConsumerState<UnlockPremium> {
                         constraints: BoxConstraints(minHeight: constraints.maxHeight),
                         child: Column(
                           children: [
-                            SizedBox(height: spaceLG),
+                            SizedBox(height: spaceXS),
                             Padding(
                               padding: EdgeInsets.symmetric(horizontal: spaceLG, vertical: spaceMD),
                               child: SizedBox(
@@ -401,7 +454,7 @@ class _UnlockPremiumState extends ConsumerState<UnlockPremium> {
                               ),
                             ),
                             Padding(
-                              padding: EdgeInsets.only(bottom: spaceXL),
+                              padding: EdgeInsets.only(bottom: spaceLG),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: List.generate(cards.length, (index) {
@@ -412,11 +465,40 @@ class _UnlockPremiumState extends ConsumerState<UnlockPremium> {
                                     width: spaceXS,
                                     height: spaceXS,
                                     decoration: BoxDecoration(
-                                      color: isActive ? colours.premiumAccent : colours.premiumAccent.withValues(alpha: 0.3),
+                                      color: isActive ? context.colours.premiumAccent : context.colours.premiumAccent.withValues(alpha: 0.3),
                                       shape: BoxShape.circle,
                                     ),
                                   );
                                 }),
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(bottom: spaceMD, left: spaceLG, right: spaceLG),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      FaIcon(FontAwesomeIcons.solidHeart, color: context.colours.premiumAccent, size: textXS),
+                                      SizedBox(width: spaceXS),
+                                      Text(
+                                        context.t.premiumIndieDevTitle.toUpperCase(),
+                                        style: TextStyle(color: context.colours.premiumAccent, fontSize: textXS, fontWeight: FontWeight.w900),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: spaceXS),
+                                  Text(
+                                    context.t.premiumIndieDevSubtitle,
+                                    style: TextStyle(
+                                      color: context.colours.premiumTextSecondary,
+                                      fontSize: textXS,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'AtkinsonHyperlegible',
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
                               ),
                             ),
                             Padding(
@@ -428,12 +510,12 @@ class _UnlockPremiumState extends ConsumerState<UnlockPremium> {
                                     style: ButtonStyle(
                                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                       padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: spaceXS)),
-                                      backgroundColor: WidgetStatePropertyAll(colours.premiumAccent),
+                                      backgroundColor: WidgetStatePropertyAll(context.colours.premiumAccent),
                                       shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.all(cornerRadiusMD))),
                                     ),
                                     child: Text(
                                       sprintf("purchase now — %s", [price]).toUpperCase(),
-                                      style: TextStyle(color: colours.premiumBg, fontWeight: FontWeight.bold, fontSize: textMD),
+                                      style: TextStyle(color: context.colours.premiumBg, fontWeight: FontWeight.bold, fontSize: textMD),
                                     ),
                                     onPressed: () async {
                                       await launchUrl(Uri.parse(contributeLink));
@@ -451,13 +533,13 @@ class _UnlockPremiumState extends ConsumerState<UnlockPremium> {
                                           style: ButtonStyle(
                                             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                             padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: spaceXS)),
-                                            backgroundColor: WidgetStatePropertyAll(colours.premiumSurface),
+                                            backgroundColor: WidgetStatePropertyAll(context.colours.premiumSurface),
                                             shape: WidgetStatePropertyAll(
                                               RoundedRectangleBorder(
                                                 borderRadius: BorderRadius.all(cornerRadiusMD),
                                                 side: BorderSide(
                                                   width: spaceXXXS,
-                                                  color: colours.premiumBorder,
+                                                  color: context.colours.premiumBorder,
                                                   strokeAlign: BorderSide.strokeAlignCenter,
                                                 ),
                                               ),
@@ -467,12 +549,15 @@ class _UnlockPremiumState extends ConsumerState<UnlockPremium> {
                                               ? SizedBox(
                                                   height: textMD,
                                                   width: textMD,
-                                                  child: CircularProgressIndicator(color: colours.premiumTextSecondary, strokeWidth: spaceXXXS),
+                                                  child: CircularProgressIndicator(
+                                                    color: context.colours.premiumTextSecondary,
+                                                    strokeWidth: spaceXXXS,
+                                                  ),
                                                 )
                                               : Text(
-                                                  t.restorePurchase.toUpperCase(),
+                                                  context.t.restorePurchase.toUpperCase(),
                                                   style: TextStyle(
-                                                    color: colours.premiumTextSecondary,
+                                                    color: context.colours.premiumTextSecondary,
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: textMD,
                                                   ),
@@ -498,11 +583,11 @@ class _UnlockPremiumState extends ConsumerState<UnlockPremium> {
                                       //     style: ButtonStyle(
                                       //       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                       //       padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: spaceSM)),
-                                      //       backgroundColor: WidgetStatePropertyAll(colours.premiumAccent),
+                                      //       backgroundColor: WidgetStatePropertyAll(context.colours.premiumAccent),
                                       //       shape: WidgetStatePropertyAll(
                                       //         RoundedRectangleBorder(
                                       //           borderRadius: BorderRadius.all(cornerRadiusMD),
-                                      //           side: BorderSide(width: spaceXXXS, color: colours.premiumAccent, strokeAlign: BorderSide.strokeAlignCenter),
+                                      //           side: BorderSide(width: spaceXXXS, color: context.colours.premiumAccent, strokeAlign: BorderSide.strokeAlignCenter),
                                       //         ),
                                       //       ),
                                       //     ),
@@ -521,19 +606,19 @@ class _UnlockPremiumState extends ConsumerState<UnlockPremium> {
                                       //               "github".toUpperCase(),
                                       //               maxLines: 1,
                                       //               textAlign: TextAlign.center,
-                                      //               style: TextStyle(color: colours.premiumBg, fontWeight: FontWeight.w900, fontSize: textXS, height: 1),
+                                      //               style: TextStyle(color: context.colours.premiumBg, fontWeight: FontWeight.w900, fontSize: textXS, height: 1),
                                       //             ),
                                       //             SizedBox(height: spaceXXXXS),
                                       //             Text(
                                       //               "sponsors".toUpperCase(),
                                       //               maxLines: 1,
                                       //               textAlign: TextAlign.center,
-                                      //               style: TextStyle(color: colours.premiumBg, fontWeight: FontWeight.w900, fontSize: textXS, height: 1),
+                                      //               style: TextStyle(color: context.colours.premiumBg, fontWeight: FontWeight.w900, fontSize: textXS, height: 1),
                                       //             ),
                                       //           ],
                                       //         ),
                                       //         SizedBox(width: spaceXS),
-                                      //         FaIcon(FontAwesomeIcons.github, color: colours.premiumBg),
+                                      //         FaIcon(FontAwesomeIcons.github, color: context.colours.premiumBg),
                                       //       ],
                                       //     ),
                                       //   ),
@@ -545,17 +630,17 @@ class _UnlockPremiumState extends ConsumerState<UnlockPremium> {
                                   //   style: ButtonStyle(
                                   //     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                   //     padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: spaceXS)),
-                                  //     backgroundColor: WidgetStatePropertyAll(colours.premiumSurface),
+                                  //     backgroundColor: WidgetStatePropertyAll(context.colours.premiumSurface),
                                   //     shape: WidgetStatePropertyAll(
                                   //       RoundedRectangleBorder(
                                   //         borderRadius: BorderRadius.all(cornerRadiusMD),
-                                  //         side: BorderSide(width: spaceXXXS, color: colours.premiumBorder, strokeAlign: BorderSide.strokeAlignCenter),
+                                  //         side: BorderSide(width: spaceXXXS, color: context.colours.premiumBorder, strokeAlign: BorderSide.strokeAlignCenter),
                                   //       ),
                                   //     ),
                                   //   ),
                                   //   child: Text(
                                   //     "enterprise".toUpperCase(),
-                                  //     style: TextStyle(color: colours.premiumTextSecondary, fontWeight: FontWeight.bold, fontSize: textMD),
+                                  //     style: TextStyle(color: context.colours.premiumTextSecondary, fontWeight: FontWeight.bold, fontSize: textMD),
                                   //   ),
                                   //   onPressed: () async {},
                                   // ),
@@ -571,15 +656,15 @@ class _UnlockPremiumState extends ConsumerState<UnlockPremium> {
                                             borderRadius: BorderRadius.all(cornerRadiusMD),
                                             side: BorderSide(
                                               width: spaceXXXS,
-                                              color: colours.premiumBorder,
+                                              color: context.colours.premiumBorder,
                                               strokeAlign: BorderSide.strokeAlignCenter,
                                             ),
                                           ),
                                         ),
                                       ),
                                       child: Text(
-                                        t.skip.toUpperCase(),
-                                        style: TextStyle(color: colours.premiumTextSecondary, fontWeight: FontWeight.bold, fontSize: textMD),
+                                        context.t.skip.toUpperCase(),
+                                        style: TextStyle(color: context.colours.premiumTextSecondary, fontWeight: FontWeight.bold, fontSize: textMD),
                                       ),
                                       onPressed: () => Navigator.pop(context),
                                     ),
@@ -587,7 +672,11 @@ class _UnlockPremiumState extends ConsumerState<UnlockPremium> {
                                   SizedBox(height: spaceSM),
                                   Text(
                                     "Purchased via GitHub Sponsors · may take up to 1 day to activate\nRestore Purchase · sign in with GitHub to verify sponsor status\nEnterprise · volume licensing and custom billing for teams",
-                                    style: TextStyle(color: colours.premiumTextSecondary, fontSize: textXXS, fontFamily: 'AtkinsonHyperlegible'),
+                                    style: TextStyle(
+                                      color: context.colours.premiumTextSecondary,
+                                      fontSize: textXXS,
+                                      fontFamily: 'AtkinsonHyperlegible',
+                                    ),
                                     textAlign: TextAlign.center,
                                   ),
                                 ],

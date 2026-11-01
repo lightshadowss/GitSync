@@ -12,6 +12,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get dismiss => 'Schließen';
 
   @override
+  String get dontShowAgain => 'Nicht mehr anzeigen';
+
+  @override
   String get skip => 'Überspringen';
 
   @override
@@ -221,6 +224,12 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get premiumHookDetectPrivateKey => 'detect-private-key';
+
+  @override
+  String get premiumIndieDevTitle => 'Built by one developer';
+
+  @override
+  String get premiumIndieDevSubtitle => 'GitSync is an independent project, not a company. Buying Premium pays for the time that goes into it.';
 
   @override
   String get switchToClientMode => 'Zu Client-Modus wechseln…';
@@ -816,6 +825,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get commitsNotFound => 'Keine Commits gefunden…';
 
   @override
+  String get filesNotFound => 'No files found…';
+
+  @override
   String get repoNotFound => 'Repository nicht gefunden…';
 
   @override
@@ -1365,6 +1377,25 @@ class AppLocalizationsDe extends AppLocalizations {
   String get requestAFeature => 'Feature anfordern';
 
   @override
+  String get sponsorCheckFailedTitle => 'Sponsor Check Failed';
+
+  @override
+  String get sponsorCheckFailedMessage => 'We could not reach GitHub to check your sponsorship. Check your connection and try again.';
+
+  @override
+  String get sponsorCheckRejectedMessage => 'GitHub rejected the linked account. Please sign in again.';
+
+  @override
+  String get sponsorNotFoundTitle => 'No Sponsorship Found';
+
+  @override
+  String get sponsorNotFoundMessage =>
+      'This GitHub account is not in the sponsor list. A new sponsorship can take up to a day to become active in the app.';
+
+  @override
+  String get becomeASponsor => 'Become A Sponsor';
+
+  @override
   String get contributeTitle => 'Unterstützen Sie unsere Arbeit';
 
   @override
@@ -1414,6 +1445,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get directory => 'Verzeichnis';
+
+  @override
+  String get confirmFileDirDeleteTitle => 'Confirm Deletion';
 
   @override
   String get confirmFileDirDeleteMsg => 'Möchten Sie %s «%s» %s wirklich löschen?';
@@ -1934,6 +1968,35 @@ class AppLocalizationsDe extends AppLocalizations {
   String get actionFilterFailed => 'Fehlgeschlagen';
 
   @override
+  String get mergeRequests => 'Merge Requests';
+
+  @override
+  String get jobs => 'Jobs';
+
+  @override
+  String get comment => 'Comment';
+
+  @override
+  String get downloading => 'Downloading…';
+
+  @override
+  String get downloadFailed => 'Download failed';
+
+  @override
+  String savedTo(Object name) {
+    return 'Saved to $name';
+  }
+
+  @override
+  String get saveArchive => 'Save archive';
+
+  @override
+  String get saveAsset => 'Save asset';
+
+  @override
+  String get useOffline => 'Use Offline';
+
+  @override
   String get attemptAutoFix => 'Auto-Korrektur versuchen?';
 
   @override
@@ -2087,6 +2150,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get issueCommentFailedMsg => 'Your message couldn’t be sent. Please check your connection and try again.';
+
+  @override
+  String get issueReportFailedMsg => 'Your report couldn’t be sent. Please check your connection and try again.';
 
   @override
   String get createNewRepository => 'Neues Repository erstellen';
@@ -2395,4 +2461,16 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get aiSetupMsg => 'Konfigurieren Sie einen KI-Anbieter, um diese Funktion zu nutzen. Zu den KI-Einstellungen gehen?';
+
+  @override
+  String get aiAlwaysAllowSession => 'Always allow this session';
+
+  @override
+  String get aiAllowAllEdits => 'Allow all edits this session';
+
+  @override
+  String get aiRateLimited => 'Rate limited. Your chat is saved. Wait a moment, then send again to carry on.';
+
+  @override
+  String get aiStopGeneratingMsg => 'This will cancel the current response. Any partial output will be kept.';
 }

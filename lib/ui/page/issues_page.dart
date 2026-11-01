@@ -10,6 +10,7 @@ import 'package:GitSync/global.dart';
 import 'package:GitSync/type/git_provider.dart';
 import 'package:GitSync/type/issue.dart';
 import 'package:GitSync/ui/page/issue_detail_page.dart';
+import 'package:GitSync/ui/page/pr_detail_page.dart';
 import 'package:GitSync/ui/page/create_issue_page.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -211,34 +212,38 @@ class _IssuesPageState extends State<IssuesPage> {
     showMenu<IssueSortOption>(
       context: context,
       position: position,
-      color: colours.secondaryDark,
+      color: context.colours.secondaryDark,
       items: [
         PopupMenuItem(
           value: IssueSortOption.newest,
           child: Text(
-            t.sortNewest,
-            style: TextStyle(color: _sortOption == IssueSortOption.newest ? colours.showcaseFeatureIcon : colours.primaryLight),
+            context.t.sortNewest,
+            style: TextStyle(color: _sortOption == IssueSortOption.newest ? context.colours.showcaseFeatureIcon : context.colours.primaryLight),
           ),
         ),
         PopupMenuItem(
           value: IssueSortOption.oldest,
           child: Text(
-            t.sortOldest,
-            style: TextStyle(color: _sortOption == IssueSortOption.oldest ? colours.showcaseFeatureIcon : colours.primaryLight),
+            context.t.sortOldest,
+            style: TextStyle(color: _sortOption == IssueSortOption.oldest ? context.colours.showcaseFeatureIcon : context.colours.primaryLight),
           ),
         ),
         PopupMenuItem(
           value: IssueSortOption.mostCommented,
           child: Text(
-            t.sortMostCommented,
-            style: TextStyle(color: _sortOption == IssueSortOption.mostCommented ? colours.showcaseFeatureIcon : colours.primaryLight),
+            context.t.sortMostCommented,
+            style: TextStyle(
+              color: _sortOption == IssueSortOption.mostCommented ? context.colours.showcaseFeatureIcon : context.colours.primaryLight,
+            ),
           ),
         ),
         PopupMenuItem(
           value: IssueSortOption.recentlyUpdated,
           child: Text(
-            t.sortRecentlyUpdated,
-            style: TextStyle(color: _sortOption == IssueSortOption.recentlyUpdated ? colours.showcaseFeatureIcon : colours.primaryLight),
+            context.t.sortRecentlyUpdated,
+            style: TextStyle(
+              color: _sortOption == IssueSortOption.recentlyUpdated ? context.colours.showcaseFeatureIcon : context.colours.primaryLight,
+            ),
           ),
         ),
       ],
@@ -257,7 +262,7 @@ class _IssuesPageState extends State<IssuesPage> {
     final milestones = _milestones ?? [];
     showModalBottomSheet(
       context: context,
-      backgroundColor: colours.secondaryDark,
+      backgroundColor: context.colours.secondaryDark,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: cornerRadiusMD)),
       builder: (context) {
         return SafeArea(
@@ -267,20 +272,20 @@ class _IssuesPageState extends State<IssuesPage> {
               Padding(
                 padding: EdgeInsets.all(spaceMD),
                 child: Text(
-                  t.filterMilestone.toUpperCase(),
-                  style: TextStyle(color: colours.primaryLight, fontWeight: FontWeight.bold, fontSize: textMD),
+                  context.t.filterMilestone.toUpperCase(),
+                  style: TextStyle(color: context.colours.primaryLight, fontWeight: FontWeight.bold, fontSize: textMD),
                 ),
               ),
               if (milestones.isEmpty)
                 Padding(
                   padding: EdgeInsets.all(spaceMD),
                   child: Text(
-                    t.filterMilestonesEmpty,
-                    style: TextStyle(color: colours.secondaryLight, fontSize: textSM),
+                    context.t.filterMilestonesEmpty,
+                    style: TextStyle(color: context.colours.secondaryLight, fontSize: textSM),
                   ),
                 )
               else ...[
-                _buildSheetOption(t.filterNone, _milestoneFilter == null, () {
+                _buildSheetOption(context.t.filterNone, _milestoneFilter == null, () {
                   setState(() => _milestoneFilter = null);
                   Navigator.pop(context);
                 }),
@@ -306,7 +311,7 @@ class _IssuesPageState extends State<IssuesPage> {
     final projects = _projects ?? [];
     showModalBottomSheet(
       context: context,
-      backgroundColor: colours.secondaryDark,
+      backgroundColor: context.colours.secondaryDark,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: cornerRadiusMD)),
       builder: (context) {
         return SafeArea(
@@ -316,20 +321,20 @@ class _IssuesPageState extends State<IssuesPage> {
               Padding(
                 padding: EdgeInsets.all(spaceMD),
                 child: Text(
-                  t.filterProject.toUpperCase(),
-                  style: TextStyle(color: colours.primaryLight, fontWeight: FontWeight.bold, fontSize: textMD),
+                  context.t.filterProject.toUpperCase(),
+                  style: TextStyle(color: context.colours.primaryLight, fontWeight: FontWeight.bold, fontSize: textMD),
                 ),
               ),
               if (projects.isEmpty)
                 Padding(
                   padding: EdgeInsets.all(spaceMD),
                   child: Text(
-                    t.filterProjectsEmpty,
-                    style: TextStyle(color: colours.secondaryLight, fontSize: textSM),
+                    context.t.filterProjectsEmpty,
+                    style: TextStyle(color: context.colours.secondaryLight, fontSize: textSM),
                   ),
                 )
               else ...[
-                _buildSheetOption(t.filterNone, _projectFilter == null, () {
+                _buildSheetOption(context.t.filterNone, _projectFilter == null, () {
                   setState(() => _projectFilter = null);
                   Navigator.pop(context);
                 }),
@@ -352,10 +357,59 @@ class _IssuesPageState extends State<IssuesPage> {
     return ListTile(
       title: Text(
         title,
-        style: TextStyle(color: selected ? colours.showcaseFeatureIcon : colours.primaryLight, fontSize: textSM),
+        style: TextStyle(color: selected ? context.colours.showcaseFeatureIcon : context.colours.primaryLight, fontSize: textSM),
       ),
-      trailing: selected ? FaIcon(FontAwesomeIcons.check, size: textSM, color: colours.showcaseFeatureIcon) : null,
+      trailing: selected ? FaIcon(FontAwesomeIcons.check, size: textSM, color: context.colours.showcaseFeatureIcon) : null,
       onTap: onTap,
+    );
+  }
+
+  void _openPr(int number) {
+    Navigator.of(context).push(
+      createPrDetailPageRoute(
+        gitProvider: widget.gitProvider,
+        remoteWebUrl: widget.remoteWebUrl,
+        accessToken: widget.accessToken,
+        githubAppOauth: widget.githubAppOauth,
+        prNumber: number,
+        prTitle: '#$number',
+      ),
+    );
+  }
+
+  void _openLinkedPrs(List<int> numbers) {
+    if (numbers.isEmpty) return;
+    if (numbers.length == 1) {
+      _openPr(numbers.first);
+      return;
+    }
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: context.colours.secondaryDark,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: cornerRadiusMD)),
+      builder: (context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: EdgeInsets.all(spaceMD),
+                child: Text(
+                  context.t.pullRequests.toUpperCase(),
+                  style: TextStyle(color: context.colours.primaryLight, fontWeight: FontWeight.bold, fontSize: textMD),
+                ),
+              ),
+              ...numbers.map(
+                (number) => _buildSheetOption('#$number', false, () {
+                  Navigator.pop(context);
+                  _openPr(number);
+                }),
+              ),
+              SizedBox(height: spaceSM),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -382,20 +436,20 @@ class _IssuesPageState extends State<IssuesPage> {
           focusNode: focusNode,
           maxLines: 1,
           style: TextStyle(
-            color: colours.primaryLight,
+            color: context.colours.primaryLight,
             fontWeight: FontWeight.bold,
             decoration: TextDecoration.none,
             decorationThickness: 0,
             fontSize: textMD,
           ),
           decoration: InputDecoration(
-            fillColor: colours.tertiaryDark,
+            fillColor: context.colours.tertiaryDark,
             filled: true,
             border: const OutlineInputBorder(borderRadius: BorderRadius.all(cornerRadiusSM), borderSide: BorderSide.none),
             isCollapsed: true,
             label: Text(
               label,
-              style: TextStyle(color: colours.secondaryLight, fontSize: textSM, fontWeight: FontWeight.bold),
+              style: TextStyle(color: context.colours.secondaryLight, fontSize: textSM, fontWeight: FontWeight.bold),
             ),
             floatingLabelBehavior: FloatingLabelBehavior.always,
             contentPadding: const EdgeInsets.symmetric(horizontal: spaceMD, vertical: spaceSM),
@@ -409,7 +463,7 @@ class _IssuesPageState extends State<IssuesPage> {
           alignment: Alignment.topLeft,
           child: Material(
             elevation: 4,
-            color: colours.tertiaryDark,
+            color: context.colours.tertiaryDark,
             borderRadius: BorderRadius.all(cornerRadiusSM),
             child: ConstrainedBox(
               constraints: BoxConstraints(maxHeight: 200, maxWidth: 300),
@@ -423,7 +477,7 @@ class _IssuesPageState extends State<IssuesPage> {
                     dense: true,
                     title: Text(
                       option,
-                      style: TextStyle(color: colours.primaryLight, fontSize: textSM),
+                      style: TextStyle(color: context.colours.primaryLight, fontSize: textSM),
                     ),
                     onTap: () => onSelected(option),
                   );
@@ -442,28 +496,28 @@ class _IssuesPageState extends State<IssuesPage> {
       child: Container(
         width: double.infinity,
         padding: EdgeInsets.symmetric(horizontal: spaceMD, vertical: spaceSM),
-        decoration: BoxDecoration(color: colours.tertiaryDark, borderRadius: BorderRadius.all(cornerRadiusSM)),
+        decoration: BoxDecoration(color: context.colours.tertiaryDark, borderRadius: BorderRadius.all(cornerRadiusSM)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               label,
-              style: TextStyle(color: colours.secondaryLight, fontSize: textXS, fontWeight: FontWeight.bold),
+              style: TextStyle(color: context.colours.secondaryLight, fontSize: textXS, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: spaceXXXS),
             Row(
               children: [
                 Expanded(
                   child: Text(
-                    value ?? t.filterNone,
+                    value ?? context.t.filterNone,
                     style: TextStyle(
-                      color: value != null ? colours.primaryLight : colours.tertiaryLight,
+                      color: value != null ? context.colours.primaryLight : context.colours.tertiaryLight,
                       fontWeight: FontWeight.bold,
                       fontSize: textMD,
                     ),
                   ),
                 ),
-                FaIcon(FontAwesomeIcons.chevronDown, size: textXS, color: colours.secondaryLight),
+                FaIcon(FontAwesomeIcons.chevronDown, size: textXS, color: context.colours.secondaryLight),
               ],
             ),
           ],
@@ -474,7 +528,7 @@ class _IssuesPageState extends State<IssuesPage> {
 
   Widget _buildFilterDrawer() {
     return Drawer(
-      backgroundColor: colours.primaryDark,
+      backgroundColor: context.colours.primaryDark,
       child: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -484,13 +538,13 @@ class _IssuesPageState extends State<IssuesPage> {
               child: Row(
                 children: [
                   Text(
-                    t.filterSidebar.toUpperCase(),
-                    style: TextStyle(color: colours.primaryLight, fontSize: textLG, fontWeight: FontWeight.bold),
+                    context.t.filterSidebar.toUpperCase(),
+                    style: TextStyle(color: context.colours.primaryLight, fontSize: textLG, fontWeight: FontWeight.bold),
                   ),
                   const Spacer(),
                   GestureDetector(
                     onTap: () => Navigator.pop(context),
-                    child: FaIcon(FontAwesomeIcons.xmark, size: textMD, color: colours.primaryLight),
+                    child: FaIcon(FontAwesomeIcons.xmark, size: textMD, color: context.colours.primaryLight),
                   ),
                 ],
               ),
@@ -502,24 +556,24 @@ class _IssuesPageState extends State<IssuesPage> {
                   _buildAutocompleteField(
                     _authorController,
                     _authorFocusNode,
-                    t.filterAuthor.toUpperCase(),
+                    context.t.filterAuthor.toUpperCase(),
                     _ensureCollaborators,
                     _repoCollaborators,
                   ),
                   SizedBox(height: spaceSM),
-                  _buildAutocompleteField(_labelsController, _labelsFocusNode, t.filterLabels.toUpperCase(), _ensureLabels, _repoLabels),
+                  _buildAutocompleteField(_labelsController, _labelsFocusNode, context.t.filterLabels.toUpperCase(), _ensureLabels, _repoLabels),
                   SizedBox(height: spaceSM),
                   _buildAutocompleteField(
                     _assigneeController,
                     _assigneeFocusNode,
-                    t.filterAssignee.toUpperCase(),
+                    context.t.filterAssignee.toUpperCase(),
                     _ensureCollaborators,
                     _repoCollaborators,
                   ),
                   SizedBox(height: spaceSM),
-                  _buildSelectorField(t.filterMilestone.toUpperCase(), _milestoneFilter, _showMilestoneSheet),
+                  _buildSelectorField(context.t.filterMilestone.toUpperCase(), _milestoneFilter, _showMilestoneSheet),
                   SizedBox(height: spaceSM),
-                  _buildSelectorField(t.filterProject.toUpperCase(), _projectFilter, _showProjectSheet),
+                  _buildSelectorField(context.t.filterProject.toUpperCase(), _projectFilter, _showProjectSheet),
                 ],
               ),
             ),
@@ -533,7 +587,7 @@ class _IssuesPageState extends State<IssuesPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: colours.primaryDark,
+      backgroundColor: context.colours.primaryDark,
       endDrawer: _buildFilterDrawer(),
       onEndDrawerChanged: (isOpened) {
         if (!isOpened) _fetchIssues();
@@ -548,10 +602,11 @@ class _IssuesPageState extends State<IssuesPage> {
                   getBackButton(context, () => Navigator.of(context).pop()),
                   SizedBox(width: spaceXS),
                   Text(
-                    t.issues.toUpperCase(),
-                    style: TextStyle(color: colours.primaryLight, fontSize: textXL, fontWeight: FontWeight.bold),
+                    context.t.issues.toUpperCase(),
+                    style: TextStyle(color: context.colours.primaryLight, fontSize: textXL, fontWeight: FontWeight.bold),
                   ),
                   const Spacer(),
+                  getOpenInBrowserButton(widget.gitProvider.issuesUrl(widget.remoteWebUrl)),
                   GestureDetector(
                     onTap: () => _scaffoldKey.currentState?.openEndDrawer(),
                     child: Container(
@@ -559,7 +614,7 @@ class _IssuesPageState extends State<IssuesPage> {
                       child: Stack(
                         clipBehavior: Clip.none,
                         children: [
-                          FaIcon(FontAwesomeIcons.filter, size: textMD, color: colours.primaryLight),
+                          FaIcon(FontAwesomeIcons.filter, size: textMD, color: context.colours.primaryLight),
                           if (_hasActiveFilters)
                             Positioned(
                               right: -spaceXXXS,
@@ -567,7 +622,7 @@ class _IssuesPageState extends State<IssuesPage> {
                               child: Container(
                                 width: spaceXS,
                                 height: spaceXS,
-                                decoration: BoxDecoration(color: colours.showcaseFeatureIcon, shape: BoxShape.circle),
+                                decoration: BoxDecoration(color: context.colours.showcaseFeatureIcon, shape: BoxShape.circle),
                               ),
                             ),
                         ],
@@ -588,7 +643,7 @@ class _IssuesPageState extends State<IssuesPage> {
                     },
                     child: Container(
                       padding: EdgeInsets.all(spaceXS),
-                      child: FaIcon(FontAwesomeIcons.plus, size: textMD, color: colours.primaryLight),
+                      child: FaIcon(FontAwesomeIcons.plus, size: textMD, color: context.colours.primaryLight),
                     ),
                   ),
                 ],
@@ -604,17 +659,22 @@ class _IssuesPageState extends State<IssuesPage> {
                       contextMenuBuilder: globalContextMenuBuilder,
                       controller: _searchController,
                       maxLines: 1,
-                      style: TextStyle(color: colours.primaryLight, decoration: TextDecoration.none, decorationThickness: 0, fontSize: textSM),
+                      style: TextStyle(
+                        color: context.colours.primaryLight,
+                        decoration: TextDecoration.none,
+                        decorationThickness: 0,
+                        fontSize: textSM,
+                      ),
                       decoration: InputDecoration(
-                        fillColor: colours.secondaryDark,
+                        fillColor: context.colours.secondaryDark,
                         filled: true,
                         border: const OutlineInputBorder(borderRadius: BorderRadius.all(cornerRadiusSM), borderSide: BorderSide.none),
                         isCollapsed: true,
-                        hintText: t.searchEllipsis,
-                        hintStyle: TextStyle(color: colours.tertiaryLight, fontSize: textSM),
+                        hintText: context.t.searchEllipsis,
+                        hintStyle: TextStyle(color: context.colours.tertiaryLight, fontSize: textSM),
                         prefixIcon: Padding(
                           padding: EdgeInsets.only(left: spaceSM, right: spaceXS),
-                          child: FaIcon(FontAwesomeIcons.magnifyingGlass, size: textXS, color: colours.tertiaryLight),
+                          child: FaIcon(FontAwesomeIcons.magnifyingGlass, size: textXS, color: context.colours.tertiaryLight),
                         ),
                         prefixIconConstraints: BoxConstraints(minHeight: 0, minWidth: 0),
                         suffixIcon: _searchController.text.isNotEmpty
@@ -625,7 +685,7 @@ class _IssuesPageState extends State<IssuesPage> {
                                 },
                                 child: Padding(
                                   padding: EdgeInsets.only(right: spaceSM),
-                                  child: FaIcon(FontAwesomeIcons.xmark, size: textXS, color: colours.tertiaryLight),
+                                  child: FaIcon(FontAwesomeIcons.xmark, size: textXS, color: context.colours.tertiaryLight),
                                 ),
                               )
                             : null,
@@ -644,7 +704,7 @@ class _IssuesPageState extends State<IssuesPage> {
                       child: FaIcon(
                         FontAwesomeIcons.arrowDownWideShort,
                         size: textMD,
-                        color: _sortOption != IssueSortOption.newest ? colours.showcaseFeatureIcon : colours.primaryLight,
+                        color: _sortOption != IssueSortOption.newest ? context.colours.showcaseFeatureIcon : context.colours.primaryLight,
                       ),
                     ),
                   ),
@@ -658,15 +718,23 @@ class _IssuesPageState extends State<IssuesPage> {
               padding: EdgeInsets.symmetric(horizontal: spaceMD),
               child: Row(
                 children: [
-                  _FilterChip(label: t.issueFilterOpen.toUpperCase(), selected: _stateFilter == "open", onTap: () => _onStateFilterChanged("open")),
+                  _FilterChip(
+                    label: context.t.issueFilterOpen.toUpperCase(),
+                    selected: _stateFilter == "open",
+                    onTap: () => _onStateFilterChanged("open"),
+                  ),
                   SizedBox(width: spaceXS),
                   _FilterChip(
-                    label: t.issueFilterClosed.toUpperCase(),
+                    label: context.t.issueFilterClosed.toUpperCase(),
                     selected: _stateFilter == "closed",
                     onTap: () => _onStateFilterChanged("closed"),
                   ),
                   SizedBox(width: spaceXS),
-                  _FilterChip(label: t.issueFilterAll.toUpperCase(), selected: _stateFilter == "all", onTap: () => _onStateFilterChanged("all")),
+                  _FilterChip(
+                    label: context.t.issueFilterAll.toUpperCase(),
+                    selected: _stateFilter == "all",
+                    onTap: () => _onStateFilterChanged("all"),
+                  ),
                 ],
               ),
             ),
@@ -675,7 +743,7 @@ class _IssuesPageState extends State<IssuesPage> {
 
             Expanded(
               child: RefreshIndicator(
-                color: colours.tertiaryDark,
+                color: context.colours.tertiaryDark,
                 onRefresh: () async {
                   _fetchIssues();
                   await Future.delayed(const Duration(milliseconds: 500));
@@ -688,8 +756,8 @@ class _IssuesPageState extends State<IssuesPage> {
                             height: constraints.maxHeight,
                             child: Center(
                               child: Text(
-                                t.issuesNotFound.toUpperCase(),
-                                style: TextStyle(color: colours.secondaryLight, fontWeight: FontWeight.bold, fontSize: textLG),
+                                context.t.issuesNotFound.toUpperCase(),
+                                style: TextStyle(color: context.colours.secondaryLight, fontWeight: FontWeight.bold, fontSize: textLG),
                               ),
                             ),
                           ),
@@ -705,7 +773,7 @@ class _IssuesPageState extends State<IssuesPage> {
                             return Padding(
                               padding: EdgeInsets.all(spaceMD),
                               child: Center(
-                                child: CircularProgressIndicator(color: colours.secondaryLight, strokeWidth: spaceXXXXS),
+                                child: CircularProgressIndicator(color: context.colours.secondaryLight, strokeWidth: spaceXXXXS),
                               ),
                             );
                           }
@@ -713,6 +781,7 @@ class _IssuesPageState extends State<IssuesPage> {
                             padding: EdgeInsets.only(bottom: spaceXS),
                             child: _ItemIssue(
                               issue: _issues[index],
+                              onOpenLinkedPrs: _openLinkedPrs,
                               onTap: () async {
                                 final result = await Navigator.of(context).push(
                                   createIssueDetailPageRoute(
@@ -735,7 +804,7 @@ class _IssuesPageState extends State<IssuesPage> {
                                       authorUsername: old.authorUsername,
                                       createdAt: old.createdAt,
                                       commentCount: old.commentCount,
-                                      linkedPrCount: old.linkedPrCount,
+                                      linkedPrNumbers: old.linkedPrNumbers,
                                       labels: old.labels,
                                     );
                                   });
@@ -769,14 +838,18 @@ class _FilterChip extends StatelessWidget {
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: spaceSM, vertical: spaceXXS),
           decoration: BoxDecoration(
-            color: selected ? colours.showcaseBg : colours.tertiaryDark,
+            color: selected ? context.colours.showcaseBg : context.colours.tertiaryDark,
             borderRadius: BorderRadius.all(cornerRadiusSM),
-            border: Border.all(color: selected ? colours.showcaseBorder : Colors.transparent, width: spaceXXXXS),
+            border: Border.all(color: selected ? context.colours.showcaseBorder : Colors.transparent, width: spaceXXXXS),
           ),
           child: Text(
             label,
             textAlign: TextAlign.center,
-            style: TextStyle(color: selected ? colours.showcaseFeatureIcon : colours.secondaryLight, fontSize: textSM, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              color: selected ? context.colours.showcaseFeatureIcon : context.colours.secondaryLight,
+              fontSize: textSM,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ),
@@ -787,8 +860,9 @@ class _FilterChip extends StatelessWidget {
 class _ItemIssue extends StatelessWidget {
   final Issue issue;
   final VoidCallback? onTap;
+  final void Function(List<int>)? onOpenLinkedPrs;
 
-  const _ItemIssue({required this.issue, this.onTap});
+  const _ItemIssue({required this.issue, this.onTap, this.onOpenLinkedPrs});
 
   @override
   Widget build(BuildContext context) {
@@ -800,7 +874,7 @@ class _ItemIssue extends StatelessWidget {
       onTap: onTap,
       child: Container(
         padding: EdgeInsets.all(spaceSM),
-        decoration: BoxDecoration(color: colours.secondaryDark, borderRadius: BorderRadius.all(cornerRadiusSM)),
+        decoration: BoxDecoration(color: context.colours.secondaryDark, borderRadius: BorderRadius.all(cornerRadiusSM)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -812,7 +886,7 @@ class _ItemIssue extends StatelessWidget {
                   child: FaIcon(
                     issue.isOpen ? FontAwesomeIcons.solidCircleDot : FontAwesomeIcons.solidCircleCheck,
                     size: textMD,
-                    color: issue.isOpen ? colours.tertiaryPositive : colours.primaryNegative,
+                    color: issue.isOpen ? context.colours.tertiaryPositive : context.colours.primaryNegative,
                   ),
                 ),
                 SizedBox(width: spaceXS),
@@ -821,7 +895,7 @@ class _ItemIssue extends StatelessWidget {
                     issue.title,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(color: colours.primaryLight, fontSize: textMD, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: context.colours.primaryLight, fontSize: textMD, fontWeight: FontWeight.bold),
                   ),
                 ),
               ],
@@ -834,49 +908,61 @@ class _ItemIssue extends StatelessWidget {
                 children: [
                   Text(
                     '#${issue.number}',
-                    style: TextStyle(color: colours.tertiaryLight, fontSize: textXS),
+                    style: TextStyle(color: context.colours.tertiaryLight, fontSize: textXS),
                   ),
                   Text(
                     ' $bullet ',
-                    style: TextStyle(color: colours.tertiaryLight, fontSize: textXS),
+                    style: TextStyle(color: context.colours.tertiaryLight, fontSize: textXS),
                   ),
                   Flexible(
                     child: Text(
                       issue.authorUsername,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(color: colours.secondaryLight, fontSize: textXS),
+                      style: TextStyle(color: context.colours.secondaryLight, fontSize: textXS),
                     ),
                   ),
                   Text(
                     ' $bullet ',
-                    style: TextStyle(color: colours.tertiaryLight, fontSize: textXS),
+                    style: TextStyle(color: context.colours.tertiaryLight, fontSize: textXS),
                   ),
                   Text(
                     relativeTime,
-                    style: TextStyle(color: colours.tertiaryLight, fontSize: textXS),
+                    style: TextStyle(color: context.colours.tertiaryLight, fontSize: textXS),
                   ),
                   if (issue.linkedPrCount > 0) ...[
                     Text(
                       ' $bullet ',
-                      style: TextStyle(color: colours.tertiaryLight, fontSize: textXS),
+                      style: TextStyle(color: context.colours.tertiaryLight, fontSize: textXS),
                     ),
-                    FaIcon(FontAwesomeIcons.codePullRequest, size: textXS, color: colours.tertiaryLight),
-                    SizedBox(width: spaceXXXXS),
-                    Text(
-                      '${issue.linkedPrCount}',
-                      style: TextStyle(color: colours.tertiaryLight, fontSize: textXS),
+                    GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () => onOpenLinkedPrs?.call(issue.linkedPrNumbers),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: spaceXXS, vertical: spaceXS),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            FaIcon(FontAwesomeIcons.codePullRequest, size: textXS, color: context.colours.tertiaryInfo),
+                            SizedBox(width: spaceXXXXS),
+                            Text(
+                              '${issue.linkedPrCount}',
+                              style: TextStyle(color: context.colours.tertiaryInfo, fontSize: textXS),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ],
                   if (issue.commentCount > 0) ...[
                     Text(
                       ' $bullet ',
-                      style: TextStyle(color: colours.tertiaryLight, fontSize: textXS),
+                      style: TextStyle(color: context.colours.tertiaryLight, fontSize: textXS),
                     ),
-                    FaIcon(FontAwesomeIcons.solidMessage, size: textXS, color: colours.tertiaryLight),
+                    FaIcon(FontAwesomeIcons.solidMessage, size: textXS, color: context.colours.tertiaryLight),
                     SizedBox(width: spaceXXXXS),
                     Text(
                       '${issue.commentCount}',
-                      style: TextStyle(color: colours.tertiaryLight, fontSize: textXS),
+                      style: TextStyle(color: context.colours.tertiaryLight, fontSize: textXS),
                     ),
                   ],
                 ],
@@ -908,7 +994,7 @@ class _LabelChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bgColor = label.color != null ? _parseHexColor(label.color!) : colours.tertiaryDark;
+    final bgColor = label.color != null ? _parseHexColor(context, label.color!) : context.colours.tertiaryDark;
     final textColor = bgColor.computeLuminance() > 0.5 ? Colors.black : Colors.white;
 
     return Container(
@@ -921,12 +1007,12 @@ class _LabelChip extends StatelessWidget {
     );
   }
 
-  Color _parseHexColor(String hex) {
+  Color _parseHexColor(BuildContext context, String hex) {
     final cleaned = hex.replaceAll('#', '');
     if (cleaned.length == 6) {
       return Color(int.parse('FF$cleaned', radix: 16));
     }
-    return colours.tertiaryDark;
+    return context.colours.tertiaryDark;
   }
 }
 

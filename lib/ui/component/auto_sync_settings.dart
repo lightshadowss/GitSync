@@ -50,7 +50,7 @@ class _AutoSyncSettingsState extends State<AutoSyncSettings> {
               padding: WidgetStatePropertyAll(EdgeInsets.only(left: spaceMD, top: spaceXS, bottom: spaceXS, right: spaceXS)),
 
               shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.all(cornerRadiusMD), side: BorderSide.none)),
-              backgroundColor: WidgetStatePropertyAll(colours.tertiaryDark),
+              backgroundColor: WidgetStatePropertyAll(context.colours.tertiaryDark),
             ),
             icon: FutureBuilder(
               future: uiSettingsManager.getBool(StorageKey.setman_syncOnAppOpened),
@@ -68,21 +68,23 @@ class _AutoSyncSettingsState extends State<AutoSyncSettings> {
                     padding: EdgeInsets.zero,
                     thumbColor: WidgetStatePropertyAll(
                       ((Platform.isAndroid && (applicationPackagesSnapshot.data ?? {}).isEmpty) ? false : snapshot.data ?? false)
-                          ? colours.primaryPositive
-                          : colours.tertiaryDark,
+                          ? context.colours.primaryPositive
+                          : context.colours.tertiaryDark,
                     ),
                     trackOutlineColor: WidgetStatePropertyAll(Colors.transparent),
-                    activeThumbColor: colours.primaryPositive,
-                    inactiveTrackColor: colours.tertiaryLight,
+                    activeThumbColor: context.colours.primaryPositive,
+                    inactiveTrackColor: context.colours.tertiaryLight,
                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
                 ),
               ),
             ),
             label: Text(
-              Platform.isIOS ? t.iosSyncOnAppOpened : t.syncOnAppOpened,
+              Platform.isIOS ? context.t.iosSyncOnAppOpened : context.t.syncOnAppOpened,
               style: TextStyle(
-                color: (Platform.isAndroid && (applicationPackagesSnapshot.data ?? {}).isEmpty) ? colours.tertiaryLight : colours.primaryLight,
+                color: (Platform.isAndroid && (applicationPackagesSnapshot.data ?? {}).isEmpty)
+                    ? context.colours.tertiaryLight
+                    : context.colours.primaryLight,
                 fontSize: textMD,
               ),
             ),
@@ -107,7 +109,7 @@ class _AutoSyncSettingsState extends State<AutoSyncSettings> {
               padding: WidgetStatePropertyAll(EdgeInsets.only(left: spaceMD, top: spaceXS, bottom: spaceXS, right: spaceXS)),
 
               shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.all(cornerRadiusMD), side: BorderSide.none)),
-              backgroundColor: WidgetStatePropertyAll(colours.tertiaryDark),
+              backgroundColor: WidgetStatePropertyAll(context.colours.tertiaryDark),
             ),
             icon: FutureBuilder(
               future: uiSettingsManager.getBool(StorageKey.setman_syncOnAppClosed),
@@ -125,20 +127,22 @@ class _AutoSyncSettingsState extends State<AutoSyncSettings> {
                     padding: EdgeInsets.zero,
                     thumbColor: WidgetStatePropertyAll(
                       ((Platform.isAndroid && (applicationPackagesSnapshot.data ?? {}).isEmpty) ? false : snapshot.data ?? false)
-                          ? colours.primaryPositive
-                          : colours.tertiaryDark,
+                          ? context.colours.primaryPositive
+                          : context.colours.tertiaryDark,
                     ),
-                    activeThumbColor: colours.primaryPositive,
-                    inactiveTrackColor: colours.tertiaryLight,
+                    activeThumbColor: context.colours.primaryPositive,
+                    inactiveTrackColor: context.colours.tertiaryLight,
                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
                 ),
               ),
             ),
             label: Text(
-              Platform.isIOS ? t.iosSyncOnAppClosed : t.syncOnAppClosed,
+              Platform.isIOS ? context.t.iosSyncOnAppClosed : context.t.syncOnAppClosed,
               style: TextStyle(
-                color: (Platform.isAndroid && (applicationPackagesSnapshot.data ?? {}).isEmpty) ? colours.tertiaryLight : colours.primaryLight,
+                color: (Platform.isAndroid && (applicationPackagesSnapshot.data ?? {}).isEmpty)
+                    ? context.colours.tertiaryLight
+                    : context.colours.primaryLight,
                 fontSize: textMD,
               ),
             ),
@@ -158,12 +162,12 @@ class _AutoSyncSettingsState extends State<AutoSyncSettings> {
                 padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: spaceMD, vertical: spaceXS)),
                 shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.all(cornerRadiusMD), side: BorderSide.none)),
               ),
-              icon: FaIcon(FontAwesomeIcons.squareArrowUpRight, color: colours.tertiaryInfo, size: textSM),
+              icon: FaIcon(FontAwesomeIcons.squareArrowUpRight, color: context.colours.tertiaryInfo, size: textSM),
               label: SizedBox(
                 width: double.infinity,
                 child: Text(
-                  t.iosAppSyncDocsLinkText,
-                  style: TextStyle(color: colours.tertiaryInfo, fontSize: textSM, fontWeight: FontWeight.normal),
+                  context.t.iosAppSyncDocsLinkText,
+                  style: TextStyle(color: context.colours.tertiaryInfo, fontSize: textSM, fontWeight: FontWeight.normal),
                 ),
               ),
             ),
@@ -185,10 +189,10 @@ class _AutoSyncSettingsState extends State<AutoSyncSettings> {
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     padding: WidgetStatePropertyAll(EdgeInsets.all(spaceMD)),
                     shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.all(cornerRadiusMD), side: BorderSide.none)),
-                    backgroundColor: WidgetStatePropertyAll(colours.tertiaryDark),
+                    backgroundColor: WidgetStatePropertyAll(context.colours.tertiaryDark),
                   ),
                   icon: (applicationPackagesSnapshot.data ?? {}).isEmpty
-                      ? FaIcon(FontAwesomeIcons.circlePlus, color: colours.primaryLight, size: textXL)
+                      ? FaIcon(FontAwesomeIcons.circlePlus, color: context.colours.primaryLight, size: textXL)
                       : ((applicationPackagesSnapshot.data ?? {}).length == 1
                             ? FutureBuilder(
                                 future: AccessibilityServiceHelper.getApplicationIcon(applicationPackagesSnapshot.data!.first),
@@ -202,12 +206,12 @@ class _AutoSyncSettingsState extends State<AutoSyncSettings> {
                         : Future.value(null),
                     builder: (context, labelSnapshot) => Text(
                       ((applicationPackagesSnapshot.data ?? {}).isEmpty
-                              ? t.applicationNotSet
+                              ? context.t.applicationNotSet
                               : ((applicationPackagesSnapshot.data ?? {}).length == 1
                                     ? (labelSnapshot.data ?? "")
-                                    : sprintf(t.multipleApplicationSelected, [(applicationPackagesSnapshot.data ?? {}).length])))
+                                    : sprintf(context.t.multipleApplicationSelected, [(applicationPackagesSnapshot.data ?? {}).length])))
                           .toUpperCase(),
-                      style: TextStyle(color: colours.primaryLight, fontSize: textMD),
+                      style: TextStyle(color: context.colours.primaryLight, fontSize: textMD),
                     ),
                   ),
                 ),
@@ -257,7 +261,7 @@ class _AutoSyncSettingsState extends State<AutoSyncSettings> {
     }
 
     return Container(
-      decoration: BoxDecoration(color: colours.secondaryDark, borderRadius: BorderRadius.all(cornerRadiusMD)),
+      decoration: BoxDecoration(color: context.colours.secondaryDark, borderRadius: BorderRadius.all(cornerRadiusMD)),
       child: FutureBuilder(
         future: AccessibilityServiceHelper.isAccessibilityServiceEnabled(),
         builder: (BuildContext context, AsyncSnapshot accessibilityServiceEnabledSnapshot) => FutureBuilder(
@@ -299,7 +303,7 @@ class _AutoSyncSettingsState extends State<AutoSyncSettings> {
                     ),
                     icon: FaIcon(
                       (expandedSnapshot.data ?? false) ? FontAwesomeIcons.chevronUp : FontAwesomeIcons.chevronDown,
-                      color: (accessibilityServiceEnabledSnapshot.data ?? false) ? colours.primaryLight : colours.secondaryLight,
+                      color: (accessibilityServiceEnabledSnapshot.data ?? false) ? context.colours.primaryLight : context.colours.secondaryLight,
                       size: textXL,
                     ),
                     label: SizedBox(
@@ -315,12 +319,12 @@ class _AutoSyncSettingsState extends State<AutoSyncSettings> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  t.enableApplicationObserver,
+                                  context.t.enableApplicationObserver,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
                                     fontFeatures: [FontFeature.enable('smcp')],
-                                    color: colours.primaryLight,
+                                    color: context.colours.primaryLight,
                                     fontSize: textLG,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -328,8 +332,8 @@ class _AutoSyncSettingsState extends State<AutoSyncSettings> {
                                 if (expandedSnapshot.data == true) ...[
                                   SizedBox(height: spaceXXXXS),
                                   Text(
-                                    Platform.isIOS ? t.appSyncIosDescription : t.appSyncDescription,
-                                    style: TextStyle(color: colours.secondaryLight, fontSize: textMD),
+                                    Platform.isIOS ? context.t.appSyncIosDescription : context.t.appSyncDescription,
+                                    style: TextStyle(color: context.colours.secondaryLight, fontSize: textMD),
                                   ),
                                 ],
                               ],
@@ -359,7 +363,7 @@ class _AutoSyncSettingsState extends State<AutoSyncSettings> {
                               onPressed: () async {
                                 launchUrl(Uri.parse(autoSyncDocsLink));
                               },
-                              icon: FaIcon(FontAwesomeIcons.circleQuestion, color: colours.primaryLight, size: textLG),
+                              icon: FaIcon(FontAwesomeIcons.circleQuestion, color: context.colours.primaryLight, size: textLG),
                             ),
                           )
                         : SizedBox.shrink(),

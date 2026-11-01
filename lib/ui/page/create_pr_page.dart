@@ -121,6 +121,7 @@ class _CreatePrPageState extends ConsumerState<CreatePrPage> {
   }
 
   Future<void> _submitPr() async {
+    final t = context.t;
     if (!_canSubmit) return;
     setState(() => _submitting = true);
 
@@ -151,20 +152,20 @@ class _CreatePrPageState extends ConsumerState<CreatePrPage> {
       setState(() => _submitting = false);
       final errorMsg = result?.error;
       Fluttertoast.showToast(
-        msg: errorMsg != null ? "${t.createPrFailed}: $errorMsg" : t.createPrFailed,
+        msg: errorMsg != null ? "${context.t.createPrFailed}: $errorMsg" : t.createPrFailed,
         toastLength: Toast.LENGTH_LONG,
         gravity: null,
       );
     }
   }
 
-  MarkdownConfig get _markdownConfig => buildMarkdownConfig();
+  MarkdownConfig get _markdownConfig => buildMarkdownConfig(context);
   MarkdownGenerator get _markdownGenerator => buildMarkdownGenerator();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: colours.primaryDark,
+      backgroundColor: context.colours.primaryDark,
       body: SafeArea(
         child: Column(
           children: [
@@ -176,8 +177,8 @@ class _CreatePrPageState extends ConsumerState<CreatePrPage> {
                   SizedBox(width: spaceXS),
                   Expanded(
                     child: Text(
-                      t.createPr.toUpperCase(),
-                      style: TextStyle(color: colours.primaryLight, fontSize: textXL, fontWeight: FontWeight.bold),
+                      context.t.createPr.toUpperCase(),
+                      style: TextStyle(color: context.colours.primaryLight, fontSize: textXL, fontWeight: FontWeight.bold),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
@@ -193,7 +194,7 @@ class _CreatePrPageState extends ConsumerState<CreatePrPage> {
                     scrollDirection: Axis.horizontal,
                     children: [
                       _TemplateChip(
-                        label: t.createIssueBlankIssue.toUpperCase(),
+                        label: context.t.createIssueBlankIssue.toUpperCase(),
                         selected: _selectedTemplate == null,
                         onTap: () => _selectTemplate(null),
                       ),
@@ -216,7 +217,7 @@ class _CreatePrPageState extends ConsumerState<CreatePrPage> {
             Expanded(
               child: _loadingBranches
                   ? Center(
-                      child: CircularProgressIndicator(color: colours.secondaryLight, strokeWidth: spaceXXXXS),
+                      child: CircularProgressIndicator(color: context.colours.secondaryLight, strokeWidth: spaceXXXXS),
                     )
                   : _buildForm(),
             ),
@@ -233,12 +234,12 @@ class _CreatePrPageState extends ConsumerState<CreatePrPage> {
         // Branch selectors
         Row(
           children: [
-            Expanded(child: _buildBranchSelector(t.createPrBaseBranch.toUpperCase(), _baseBranch, (b) => setState(() => _baseBranch = b))),
+            Expanded(child: _buildBranchSelector(context.t.createPrBaseBranch.toUpperCase(), _baseBranch, (b) => setState(() => _baseBranch = b))),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: spaceXS),
-              child: FaIcon(FontAwesomeIcons.arrowLeft, size: textXS, color: colours.tertiaryLight),
+              child: FaIcon(FontAwesomeIcons.arrowLeft, size: textXS, color: context.colours.tertiaryLight),
             ),
-            Expanded(child: _buildBranchSelector(t.createPrHeadBranch.toUpperCase(), _headBranch, (b) => setState(() => _headBranch = b))),
+            Expanded(child: _buildBranchSelector(context.t.createPrHeadBranch.toUpperCase(), _headBranch, (b) => setState(() => _headBranch = b))),
           ],
         ),
 
@@ -277,24 +278,24 @@ class _CreatePrPageState extends ConsumerState<CreatePrPage> {
             controller: _titleController,
             maxLines: 1,
             style: TextStyle(
-              color: colours.primaryLight,
+              color: context.colours.primaryLight,
               fontWeight: FontWeight.bold,
               decoration: TextDecoration.none,
               decorationThickness: 0,
               fontSize: textMD,
             ),
             decoration: InputDecoration(
-              fillColor: colours.secondaryDark,
+              fillColor: context.colours.secondaryDark,
               filled: true,
               border: const OutlineInputBorder(borderRadius: BorderRadius.all(cornerRadiusSM), borderSide: BorderSide.none),
               isCollapsed: true,
               label: Text(
-                t.createPrTitle.toUpperCase(),
-                style: TextStyle(color: colours.secondaryLight, fontSize: textSM, fontWeight: FontWeight.bold),
+                context.t.createPrTitle.toUpperCase(),
+                style: TextStyle(color: context.colours.secondaryLight, fontSize: textSM, fontWeight: FontWeight.bold),
               ),
               floatingLabelBehavior: FloatingLabelBehavior.always,
-              hintText: t.createPrTitleHint,
-              hintStyle: TextStyle(color: colours.tertiaryLight, fontSize: textMD, fontWeight: FontWeight.normal),
+              hintText: context.t.createPrTitleHint,
+              hintStyle: TextStyle(color: context.colours.tertiaryLight, fontSize: textMD, fontWeight: FontWeight.normal),
               contentPadding: const EdgeInsets.symmetric(horizontal: spaceMD, vertical: spaceSM),
               isDense: true,
             ),
@@ -306,16 +307,20 @@ class _CreatePrPageState extends ConsumerState<CreatePrPage> {
 
         // Body with write/preview
         Container(
-          decoration: BoxDecoration(color: colours.secondaryDark, borderRadius: BorderRadius.all(cornerRadiusSM)),
+          decoration: BoxDecoration(color: context.colours.secondaryDark, borderRadius: BorderRadius.all(cornerRadiusSM)),
           child: Column(
             children: [
               Padding(
                 padding: EdgeInsets.fromLTRB(spaceSM, spaceSM, spaceSM, 0),
                 child: Row(
                   children: [
-                    _WritePreviewTab(label: t.issueWrite.toUpperCase(), selected: _writeMode, onTap: () => setState(() => _writeMode = true)),
+                    _WritePreviewTab(label: context.t.issueWrite.toUpperCase(), selected: _writeMode, onTap: () => setState(() => _writeMode = true)),
                     SizedBox(width: spaceXXS),
-                    _WritePreviewTab(label: t.issuePreview.toUpperCase(), selected: !_writeMode, onTap: () => setState(() => _writeMode = false)),
+                    _WritePreviewTab(
+                      label: context.t.issuePreview.toUpperCase(),
+                      selected: !_writeMode,
+                      onTap: () => setState(() => _writeMode = false),
+                    ),
                   ],
                 ),
               ),
@@ -328,14 +333,14 @@ class _CreatePrPageState extends ConsumerState<CreatePrPage> {
                     controller: _bodyController,
                     maxLines: 10,
                     minLines: 5,
-                    style: TextStyle(color: colours.primaryLight, fontSize: textSM, decoration: TextDecoration.none, decorationThickness: 0),
+                    style: TextStyle(color: context.colours.primaryLight, fontSize: textSM, decoration: TextDecoration.none, decorationThickness: 0),
                     decoration: InputDecoration(
-                      fillColor: colours.tertiaryDark,
+                      fillColor: context.colours.tertiaryDark,
                       filled: true,
                       border: const OutlineInputBorder(borderRadius: BorderRadius.all(cornerRadiusSM), borderSide: BorderSide.none),
                       isCollapsed: true,
-                      hintText: t.createPrBodyHint,
-                      hintStyle: TextStyle(color: colours.tertiaryLight, fontSize: textSM),
+                      hintText: context.t.createPrBodyHint,
+                      hintStyle: TextStyle(color: context.colours.tertiaryLight, fontSize: textSM),
                       contentPadding: EdgeInsets.all(spaceSM),
                     ),
                     onChanged: (_) => setState(() {}),
@@ -347,11 +352,11 @@ class _CreatePrPageState extends ConsumerState<CreatePrPage> {
                   constraints: BoxConstraints(minHeight: spaceLG * 3),
                   padding: EdgeInsets.all(spaceSM),
                   margin: EdgeInsets.symmetric(horizontal: spaceSM),
-                  decoration: BoxDecoration(color: colours.tertiaryDark, borderRadius: BorderRadius.all(cornerRadiusSM)),
+                  decoration: BoxDecoration(color: context.colours.tertiaryDark, borderRadius: BorderRadius.all(cornerRadiusSM)),
                   child: _bodyController.text.isEmpty
                       ? Text(
-                          t.createPrBodyHint,
-                          style: TextStyle(color: colours.tertiaryLight, fontSize: textSM, fontStyle: FontStyle.italic),
+                          context.t.createPrBodyHint,
+                          style: TextStyle(color: context.colours.tertiaryLight, fontSize: textSM, fontStyle: FontStyle.italic),
                         )
                       : MarkdownBlock(data: _bodyController.text, config: _markdownConfig, generator: _markdownGenerator),
                 ),
@@ -371,7 +376,7 @@ class _CreatePrPageState extends ConsumerState<CreatePrPage> {
             child: Container(
               padding: EdgeInsets.symmetric(vertical: spaceSM),
               decoration: BoxDecoration(
-                color: _submitting || !_canSubmit ? colours.tertiaryDark : colours.tertiaryInfo.withValues(alpha: 0.15),
+                color: _submitting || !_canSubmit ? context.colours.tertiaryDark : context.colours.tertiaryInfo.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.all(cornerRadiusSM),
               ),
               child: _submitting
@@ -379,14 +384,14 @@ class _CreatePrPageState extends ConsumerState<CreatePrPage> {
                       child: SizedBox(
                         height: textMD,
                         width: textMD,
-                        child: CircularProgressIndicator(color: colours.secondaryLight, strokeWidth: spaceXXXXS),
+                        child: CircularProgressIndicator(color: context.colours.secondaryLight, strokeWidth: spaceXXXXS),
                       ),
                     )
                   : Text(
-                      t.createPrSubmit.toUpperCase(),
+                      context.t.createPrSubmit.toUpperCase(),
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        color: _canSubmit ? colours.tertiaryInfo : colours.tertiaryLight,
+                        color: _canSubmit ? context.colours.tertiaryInfo : context.colours.tertiaryLight,
                         fontSize: textMD,
                         fontWeight: FontWeight.bold,
                       ),
@@ -406,7 +411,7 @@ class _CreatePrPageState extends ConsumerState<CreatePrPage> {
       children: [
         Text(
           label,
-          style: TextStyle(color: colours.secondaryLight, fontSize: textXXS, fontWeight: FontWeight.bold),
+          style: TextStyle(color: context.colours.secondaryLight, fontSize: textXXS, fontWeight: FontWeight.bold),
         ),
         SizedBox(height: spaceXXXS),
         GestureDetector(
@@ -414,17 +419,17 @@ class _CreatePrPageState extends ConsumerState<CreatePrPage> {
           child: Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: spaceSM, vertical: spaceXS),
-            decoration: BoxDecoration(color: colours.secondaryDark, borderRadius: BorderRadius.all(cornerRadiusSM)),
+            decoration: BoxDecoration(color: context.colours.secondaryDark, borderRadius: BorderRadius.all(cornerRadiusSM)),
             child: Row(
               children: [
                 Expanded(
                   child: Text(
-                    selected ?? t.createPrSelectBranch,
-                    style: TextStyle(color: selected != null ? colours.primaryLight : colours.tertiaryLight, fontSize: textSM),
+                    selected ?? context.t.createPrSelectBranch,
+                    style: TextStyle(color: selected != null ? context.colours.primaryLight : context.colours.tertiaryLight, fontSize: textSM),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                FaIcon(FontAwesomeIcons.chevronDown, size: textXXS, color: colours.tertiaryLight),
+                FaIcon(FontAwesomeIcons.chevronDown, size: textXXS, color: context.colours.tertiaryLight),
               ],
             ),
           ),
@@ -436,7 +441,7 @@ class _CreatePrPageState extends ConsumerState<CreatePrPage> {
   void _showBranchSheet(String label, String? current, void Function(String) onSelect) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: colours.secondaryDark,
+      backgroundColor: context.colours.secondaryDark,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
       isScrollControlled: true,
       builder: (context) => DraggableScrollableSheet(
@@ -451,7 +456,7 @@ class _CreatePrPageState extends ConsumerState<CreatePrPage> {
             children: [
               Text(
                 label,
-                style: TextStyle(color: colours.secondaryLight, fontSize: textXS, fontWeight: FontWeight.bold),
+                style: TextStyle(color: context.colours.secondaryLight, fontSize: textXS, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: spaceSM),
               Expanded(
@@ -471,16 +476,16 @@ class _CreatePrPageState extends ConsumerState<CreatePrPage> {
                         padding: EdgeInsets.symmetric(vertical: spaceSM, horizontal: spaceSM),
                         margin: EdgeInsets.only(bottom: spaceXXXS),
                         decoration: BoxDecoration(
-                          color: isSelected ? colours.showcaseBg : colours.tertiaryDark,
+                          color: isSelected ? context.colours.showcaseBg : context.colours.tertiaryDark,
                           borderRadius: BorderRadius.all(cornerRadiusSM),
-                          border: Border.all(color: isSelected ? colours.showcaseBorder : Colors.transparent, width: spaceXXXXS),
+                          border: Border.all(color: isSelected ? context.colours.showcaseBorder : Colors.transparent, width: spaceXXXXS),
                         ),
                         child: Row(
                           children: [
                             Expanded(
                               child: Text(
                                 branch,
-                                style: TextStyle(color: colours.primaryLight, fontSize: textSM),
+                                style: TextStyle(color: context.colours.primaryLight, fontSize: textSM),
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
@@ -488,12 +493,12 @@ class _CreatePrPageState extends ConsumerState<CreatePrPage> {
                               Container(
                                 padding: EdgeInsets.symmetric(horizontal: spaceXXS, vertical: spaceXXXXS),
                                 decoration: BoxDecoration(
-                                  color: colours.tertiaryInfo.withValues(alpha: 0.15),
+                                  color: context.colours.tertiaryInfo.withValues(alpha: 0.15),
                                   borderRadius: BorderRadius.all(cornerRadiusXS),
                                 ),
                                 child: Text(
                                   'default',
-                                  style: TextStyle(color: colours.tertiaryInfo, fontSize: textXXS),
+                                  style: TextStyle(color: context.colours.tertiaryInfo, fontSize: textXXS),
                                 ),
                               ),
                           ],
@@ -524,10 +529,17 @@ class _WritePreviewTab extends StatelessWidget {
       onTap: onTap,
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: spaceSM, vertical: spaceXXS),
-        decoration: BoxDecoration(color: selected ? colours.tertiaryDark : Colors.transparent, borderRadius: BorderRadius.all(cornerRadiusXS)),
+        decoration: BoxDecoration(
+          color: selected ? context.colours.tertiaryDark : Colors.transparent,
+          borderRadius: BorderRadius.all(cornerRadiusXS),
+        ),
         child: Text(
           label,
-          style: TextStyle(color: selected ? colours.primaryLight : colours.tertiaryLight, fontSize: textXS, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: selected ? context.colours.primaryLight : context.colours.tertiaryLight,
+            fontSize: textXS,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
     );
@@ -548,14 +560,18 @@ class _TemplateChip extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: spaceSM, vertical: spaceXXS),
         decoration: BoxDecoration(
-          color: selected ? colours.showcaseBg : colours.tertiaryDark,
+          color: selected ? context.colours.showcaseBg : context.colours.tertiaryDark,
           borderRadius: BorderRadius.all(cornerRadiusSM),
-          border: Border.all(color: selected ? colours.showcaseBorder : Colors.transparent, width: spaceXXXXS),
+          border: Border.all(color: selected ? context.colours.showcaseBorder : Colors.transparent, width: spaceXXXXS),
         ),
         child: Center(
           child: Text(
             label,
-            style: TextStyle(color: selected ? colours.showcaseFeatureIcon : colours.secondaryLight, fontSize: textXS, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              color: selected ? context.colours.showcaseFeatureIcon : context.colours.secondaryLight,
+              fontSize: textXS,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ),

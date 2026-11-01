@@ -16,21 +16,21 @@ Future<void> showDialog(BuildContext context, Future<void> Function() deleteCont
         title: SizedBox(
           width: MediaQuery.of(context).size.width,
           child: Text(
-            t.iosClearDataTitle,
-            style: TextStyle(color: colours.primaryLight, fontSize: textXL, fontWeight: FontWeight.bold),
+            context.t.iosClearDataTitle,
+            style: TextStyle(color: context.colours.primaryLight, fontSize: textXL, fontWeight: FontWeight.bold),
           ),
         ),
         content: SingleChildScrollView(
           child: ListBody(
             children: [
               Text(
-                t.iosClearDataMsg,
-                style: TextStyle(color: colours.primaryLight, fontWeight: FontWeight.bold, fontSize: textSM),
+                context.t.iosClearDataMsg,
+                style: TextStyle(color: context.colours.primaryLight, fontWeight: FontWeight.bold, fontSize: textSM),
               ),
               SizedBox(height: spaceSM),
               Text(
-                t.confirmCloneOverwriteWarning,
-                style: TextStyle(color: colours.tertiaryNegative, fontWeight: FontWeight.bold, fontSize: textSM),
+                context.t.confirmCloneOverwriteWarning,
+                style: TextStyle(color: context.colours.tertiaryNegative, fontWeight: FontWeight.bold, fontSize: textSM),
               ),
             ],
           ),
@@ -39,15 +39,15 @@ Future<void> showDialog(BuildContext context, Future<void> Function() deleteCont
           StatefulBuilder(
             builder: (context, setState) => TextButton.icon(
               label: Text(
-                t.iosClearDataAction.toUpperCase(),
-                style: TextStyle(color: colours.tertiaryNegative, fontSize: textMD),
+                context.t.iosClearDataAction.toUpperCase(),
+                style: TextStyle(color: context.colours.tertiaryNegative, fontSize: textMD),
               ),
               iconAlignment: IconAlignment.start,
               icon: overwriting
                   ? SizedBox(
                       height: spaceMD,
                       width: spaceMD,
-                      child: CircularProgressIndicator(color: colours.tertiaryNegative),
+                      child: CircularProgressIndicator(color: context.colours.tertiaryNegative),
                     )
                   : SizedBox.shrink(),
               onPressed: () async {
@@ -65,8 +65,8 @@ Future<void> showDialog(BuildContext context, Future<void> Function() deleteCont
           ),
           TextButton(
             child: Text(
-              t.skip.toUpperCase(),
-              style: TextStyle(color: colours.primaryLight, fontSize: textMD),
+              context.t.skip.toUpperCase(),
+              style: TextStyle(color: context.colours.primaryLight, fontSize: textMD),
             ),
             onPressed: () {
               Navigator.of(context).canPop() ? Navigator.pop(context) : null;

@@ -27,8 +27,8 @@ Future<void> showDialog(
         title: SizedBox(
           width: MediaQuery.of(context).size.width,
           child: Text(
-            t.amendCommit,
-            style: TextStyle(color: colours.primaryLight, fontSize: textXL, fontWeight: FontWeight.bold),
+            context.t.amendCommit,
+            style: TextStyle(color: context.colours.primaryLight, fontSize: textXL, fontWeight: FontWeight.bold),
           ),
         ),
         content: SingleChildScrollView(
@@ -36,12 +36,12 @@ Future<void> showDialog(
             children: [
               RichText(
                 text: TextSpan(
-                  style: TextStyle(color: colours.primaryLight, fontWeight: FontWeight.bold, fontSize: textSM),
+                  style: TextStyle(color: context.colours.primaryLight, fontWeight: FontWeight.bold, fontSize: textSM),
                   children: [
-                    TextSpan(text: "${t.amendCommitMsg} "),
+                    TextSpan(text: "${context.t.amendCommitMsg} "),
                     TextSpan(
                       text: "[${commitSha.substring(0, 7).toUpperCase()}]",
-                      style: TextStyle(color: colours.tertiaryInfo),
+                      style: TextStyle(color: context.colours.tertiaryInfo),
                     ),
                     TextSpan(text: "."),
                   ],
@@ -50,36 +50,36 @@ Future<void> showDialog(
               SizedBox(height: spaceSM),
               TextField(
                 controller: nameController,
-                style: TextStyle(color: colours.primaryLight, fontSize: textSM),
+                style: TextStyle(color: context.colours.primaryLight, fontSize: textSM),
                 decoration: InputDecoration(
                   labelText: 'Author Name',
-                  labelStyle: TextStyle(color: colours.secondaryLight, fontSize: textSM),
+                  labelStyle: TextStyle(color: context.colours.secondaryLight, fontSize: textSM),
                   border: OutlineInputBorder(borderRadius: BorderRadius.all(cornerRadiusSM)),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.all(cornerRadiusSM),
-                    borderSide: BorderSide(color: colours.tertiaryDark),
+                    borderSide: BorderSide(color: context.colours.tertiaryDark),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.all(cornerRadiusSM),
-                    borderSide: BorderSide(color: colours.tertiaryInfo),
+                    borderSide: BorderSide(color: context.colours.tertiaryInfo),
                   ),
                 ),
               ),
               SizedBox(height: spaceSM),
               TextField(
                 controller: emailController,
-                style: TextStyle(color: colours.primaryLight, fontSize: textSM),
+                style: TextStyle(color: context.colours.primaryLight, fontSize: textSM),
                 decoration: InputDecoration(
                   labelText: 'Author Email',
-                  labelStyle: TextStyle(color: colours.secondaryLight, fontSize: textSM),
+                  labelStyle: TextStyle(color: context.colours.secondaryLight, fontSize: textSM),
                   border: OutlineInputBorder(borderRadius: BorderRadius.all(cornerRadiusSM)),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.all(cornerRadiusSM),
-                    borderSide: BorderSide(color: colours.tertiaryDark),
+                    borderSide: BorderSide(color: context.colours.tertiaryDark),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.all(cornerRadiusSM),
-                    borderSide: BorderSide(color: colours.tertiaryInfo),
+                    borderSide: BorderSide(color: context.colours.tertiaryInfo),
                   ),
                 ),
               ),
@@ -103,24 +103,24 @@ Future<void> showDialog(
                 child: TextField(
                   controller: controller,
                   maxLines: 3,
-                  style: TextStyle(color: colours.primaryLight, fontSize: textSM),
+                  style: TextStyle(color: context.colours.primaryLight, fontSize: textSM),
                   decoration: InputDecoration(
                     border: OutlineInputBorder(borderRadius: BorderRadius.all(cornerRadiusSM)),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.all(cornerRadiusSM),
-                      borderSide: BorderSide(color: colours.tertiaryDark),
+                      borderSide: BorderSide(color: context.colours.tertiaryDark),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.all(cornerRadiusSM),
-                      borderSide: BorderSide(color: colours.tertiaryInfo),
+                      borderSide: BorderSide(color: context.colours.tertiaryInfo),
                     ),
                   ),
                 ),
               ),
               SizedBox(height: spaceSM),
               Text(
-                t.amendCommitWarning,
-                style: TextStyle(color: colours.tertiaryWarning, fontWeight: FontWeight.bold, fontSize: textSM),
+                context.t.amendCommitWarning,
+                style: TextStyle(color: context.colours.tertiaryWarning, fontWeight: FontWeight.bold, fontSize: textSM),
               ),
             ],
           ),
@@ -128,8 +128,8 @@ Future<void> showDialog(
         actions: <Widget>[
           TextButton(
             child: Text(
-              t.cancel.toUpperCase(),
-              style: TextStyle(color: colours.primaryLight, fontSize: textMD, fontWeight: FontWeight.bold),
+              context.t.cancel.toUpperCase(),
+              style: TextStyle(color: context.colours.primaryLight, fontSize: textMD, fontWeight: FontWeight.bold),
             ),
             onPressed: () {
               Navigator.of(context).canPop() ? Navigator.pop(context) : null;
@@ -137,15 +137,15 @@ Future<void> showDialog(
           ),
           TextButton.icon(
             label: Text(
-              t.amend.toUpperCase(),
-              style: TextStyle(color: colours.primaryPositive, fontSize: textMD, fontWeight: FontWeight.bold),
+              context.t.amend.toUpperCase(),
+              style: TextStyle(color: context.colours.primaryPositive, fontSize: textMD, fontWeight: FontWeight.bold),
             ),
             iconAlignment: IconAlignment.end,
             icon: loading
                 ? SizedBox(
                     height: spaceMD,
                     width: spaceMD,
-                    child: CircularProgressIndicator(color: colours.primaryPositive),
+                    child: CircularProgressIndicator(color: context.colours.primaryPositive),
                   )
                 : SizedBox.shrink(),
             onPressed: () async {

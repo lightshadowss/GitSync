@@ -46,8 +46,8 @@ Future<void> showDialog(BuildContext context, String repoUrl, String dir, Functi
         title: SizedBox(
           width: MediaQuery.of(context).size.width,
           child: Text(
-            t.cloningRepository,
-            style: TextStyle(color: colours.primaryLight, fontSize: textXL, fontWeight: FontWeight.bold),
+            context.t.cloningRepository,
+            style: TextStyle(color: context.colours.primaryLight, fontSize: textXL, fontWeight: FontWeight.bold),
           ),
         ),
         content: StatefulBuilder(
@@ -57,25 +57,25 @@ Future<void> showDialog(BuildContext context, String repoUrl, String dir, Functi
               child: ListBody(
                 children: [
                   Text(
-                    t.cloneMessagePart1,
-                    style: TextStyle(color: colours.tertiaryNegative, fontWeight: FontWeight.bold, fontSize: textMD),
+                    context.t.cloneMessagePart1,
+                    style: TextStyle(color: context.colours.tertiaryNegative, fontWeight: FontWeight.bold, fontSize: textMD),
                   ),
                   Text(
-                    t.cloneMessagePart2,
-                    style: TextStyle(color: colours.primaryLight, fontSize: textMD),
+                    context.t.cloneMessagePart2,
+                    style: TextStyle(color: context.colours.primaryLight, fontSize: textMD),
                   ),
                   SizedBox(height: spaceMD),
                   Text(
                     task,
                     maxLines: 1,
-                    style: TextStyle(color: colours.primaryLight, fontSize: textMD, overflow: TextOverflow.ellipsis),
+                    style: TextStyle(color: context.colours.primaryLight, fontSize: textMD, overflow: TextOverflow.ellipsis),
                   ),
                   SizedBox(height: spaceMD),
                   LinearProgressIndicator(
                     value: progress,
-                    backgroundColor: colours.secondaryLight,
-                    color: colours.primaryPositive,
-                    semanticsLabel: t.cloneProgressLabel,
+                    backgroundColor: context.colours.secondaryLight,
+                    color: context.colours.primaryPositive,
+                    semanticsLabel: context.t.cloneProgressLabel,
                   ),
                 ],
               ),

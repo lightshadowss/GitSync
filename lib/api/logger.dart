@@ -58,6 +58,7 @@ enum LogType {
   CommitDiff,
   FileDiff,
   RecentCommits,
+  CommitDiffStats,
   ConflictingFiles,
   UncommittedFiles,
   StagedFiles,
@@ -244,6 +245,7 @@ class Logger {
       minimalRepro,
       includeLogFiles,
     ) async {
+      final t = context.t;
       final logs = !includeLogFiles
           ? ""
           : utf8.decode(utf8.encode((await _generateLogs()).split("\n").reversed.join("\n")).take(62 * 1024).toList(), allowMalformed: true);
@@ -289,29 +291,42 @@ $logs
         return;
       }
 
-      final response = await http.post(
-        url,
-        headers: {'Authorization': 'token $reportIssueToken', 'Accept': 'application/vnd.github+json'},
-        body: jsonEncode({
-          'title': issueTitle,
-          'body': issueBody,
-          'labels': ['bug'],
-        }),
-      );
+      final http.Response response;
+      try {
+        response = await http.post(
+          url,
+          headers: {'Authorization': 'token $reportIssueToken', 'Accept': 'application/vnd.github+json'},
+          body: jsonEncode({
+            'title': issueTitle,
+            'body': issueBody,
+            'labels': ['bug'],
+          }),
+        );
+      } catch (e, stackTrace) {
+        Logger.logError(LogType.Global, e, stackTrace, causeError: false);
+        Fluttertoast.showToast(msg: t.issueReportFailedMsg, toastLength: Toast.LENGTH_LONG, gravity: null);
+        return;
+      }
 
-      final issueJson = jsonDecode(utf8.decode(response.bodyBytes));
       if (response.statusCode != 201) {
         await repoManager.setStringNullable(StorageKey.repoman_reportIssueToken, null);
         print('Failed to create issue: ${response.statusCode} ${response.body}');
+        Fluttertoast.showToast(msg: t.issueReportFailedMsg, toastLength: Toast.LENGTH_LONG, gravity: null);
         return;
       }
+
+      final issueJson = jsonDecode(utf8.decode(response.bodyBytes));
 
       final issueNumber = issueJson["number"]?.toString();
       print('Issue created successfully: ${response.statusCode} ${response.body}');
 
       final issueUrl = issueJson["html_url"];
       print('ISSUE_CREATED: ${issueNumber ?? "?"} ${issueUrl ?? "?"}');
-      if (issueUrl == null || !context.mounted) return;
+      if (issueUrl == null) {
+        Fluttertoast.showToast(msg: t.issueReportFailedMsg, toastLength: Toast.LENGTH_LONG, gravity: null);
+        return;
+      }
+      if (!context.mounted) return;
       IssueReportedSuccessfullyDialog.showDialog(context, issueUrl);
     });
   }

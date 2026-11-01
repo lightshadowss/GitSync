@@ -11,7 +11,7 @@ import '../../../constant/dimens.dart';
 import '../../../ui/dialog/base_alert_dialog.dart';
 import 'package:GitSync/global.dart';
 
-final Map<List<String>, (String?, Future<void> Function([int? repomanRepoindex])?)> autoFixMessageCallbackMap = {
+Map<List<String>, (String?, Future<void> Function([int? repomanRepoindex])?)> _autoFixMessageCallbacks(BuildContext context) => {
   [invalidIndexHeaderError]: (null, ([_]) async => await runGitOperation(LogType.DiscardGitIndex, (event) => event)),
   [invalidDataInIndexInvalidEntry]: (null, ([_]) async => await runGitOperation(LogType.DiscardGitIndex, (event) => event)),
   [invalidDataInIndexExtensionIsTruncated]: (null, ([_]) async => await runGitOperation(LogType.DiscardGitIndex, (event) => event)),
@@ -20,15 +20,15 @@ final Map<List<String>, (String?, Future<void> Function([int? repomanRepoindex])
   [failedToReadIndexError]: (null, ([_]) async => await runGitOperation(LogType.RecreateGitIndex, (event) => event)),
   [theIndexIsLocked]: (null, ([_]) async => await runGitOperation(LogType.DiscardGitIndex, (event) => event)),
   [androidInvalidCharacterInFilenamePrefix, androidInvalidCharacterInFilenameSuffix]: (
-    t.androidLimitedFilepathCharacters,
+    context.t.androidLimitedFilepathCharacters,
     ([int? repomanRepoindex]) async {
       launchUrl(Uri.parse(androidLimitedFilepathCharactersLink));
     },
   ),
-  [emptyNameOrEmail]: (t.emptyNameOrEmail, null),
-  [failedToResolveAddress]: (t.failedToResolveAddressMessage, null),
+  [emptyNameOrEmail]: (context.t.emptyNameOrEmail, null),
+  [failedToResolveAddress]: (context.t.failedToResolveAddressMessage, null),
   [errorReadingZlibStream]: (
-    t.errorReadingZlibStream,
+    context.t.errorReadingZlibStream,
     ([int? repomanRepoindex]) async {
       launchUrl(Uri.parse(release1708Link));
     },
@@ -37,6 +37,7 @@ final Map<List<String>, (String?, Future<void> Function([int? repomanRepoindex])
 late final GlobalKey errorDialogKey = GlobalKey();
 
 Future<void> showDialog(BuildContext context, String error, Function()? callback) {
+  final autoFixMessageCallbackMap = _autoFixMessageCallbacks(context);
   bool autoFixing = false;
 
   final autoFixKey = autoFixMessageCallbackMap.keys.firstWhereOrNull((textArray) => textArray.every((text) => error.contains(text)));
@@ -48,8 +49,8 @@ Future<void> showDialog(BuildContext context, String error, Function()? callback
       key: errorDialogKey,
       title: SizedBox(
         child: Text(
-          callback == null ? t.cloneFailed : t.errorOccurredTitle,
-          style: TextStyle(color: colours.primaryLight, fontSize: textXL, fontWeight: FontWeight.bold),
+          callback == null ? context.t.cloneFailed : context.t.errorOccurredTitle,
+          style: TextStyle(color: context.colours.primaryLight, fontSize: textXL, fontWeight: FontWeight.bold),
         ),
       ),
       contentBuilder: (expanded) =>
@@ -62,7 +63,7 @@ Future<void> showDialog(BuildContext context, String error, Function()? callback
                       padding: EdgeInsets.symmetric(horizontal: spaceXS),
                       child: Text(
                         autoFixMessageCallbackMap[autoFixKey]?.$1 ?? "",
-                        style: TextStyle(color: colours.primaryPositive, fontSize: textSM, fontWeight: FontWeight.bold),
+                        style: TextStyle(color: context.colours.primaryPositive, fontSize: textSM, fontWeight: FontWeight.bold),
                       ),
                     ),
                     SizedBox(height: spaceMD),
@@ -85,12 +86,12 @@ Future<void> showDialog(BuildContext context, String error, Function()? callback
                         },
                         style: ButtonStyle(
                           alignment: Alignment.center,
-                          backgroundColor: WidgetStatePropertyAll(colours.secondaryDark),
+                          backgroundColor: WidgetStatePropertyAll(context.colours.secondaryDark),
                           padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: spaceMD, vertical: spaceMD)),
                           shape: WidgetStatePropertyAll(
                             RoundedRectangleBorder(
                               borderRadius: BorderRadius.all(cornerRadiusMD),
-                              side: BorderSide(color: colours.primaryPositive, width: spaceXXXS),
+                              side: BorderSide(color: context.colours.primaryPositive, width: spaceXXXS),
                             ),
                           ),
                         ),
@@ -98,12 +99,12 @@ Future<void> showDialog(BuildContext context, String error, Function()? callback
                             ? SizedBox(
                                 height: textSM,
                                 width: textSM,
-                                child: CircularProgressIndicator(color: colours.primaryPositive),
+                                child: CircularProgressIndicator(color: context.colours.primaryPositive),
                               )
-                            : FaIcon(FontAwesomeIcons.hammer, color: colours.primaryPositive, size: textLG),
+                            : FaIcon(FontAwesomeIcons.hammer, color: context.colours.primaryPositive, size: textLG),
                         label: Text(
-                          t.attemptAutoFix.toUpperCase(),
-                          style: TextStyle(color: colours.primaryPositive, fontSize: textSM, fontWeight: FontWeight.bold),
+                          context.t.attemptAutoFix.toUpperCase(),
+                          style: TextStyle(color: context.colours.primaryPositive, fontSize: textSM, fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),
@@ -130,7 +131,7 @@ Future<void> showDialog(BuildContext context, String error, Function()? callback
                     child: SingleChildScrollView(
                       child: Text(
                         error,
-                        style: TextStyle(color: colours.tertiaryNegative, fontWeight: FontWeight.bold, fontSize: textSM),
+                        style: TextStyle(color: context.colours.tertiaryNegative, fontWeight: FontWeight.bold, fontSize: textSM),
                       ),
                     ),
                   ),
@@ -142,13 +143,13 @@ Future<void> showDialog(BuildContext context, String error, Function()? callback
                 : [
                     SizedBox(height: spaceMD),
                     Text(
-                      t.errorOccurredMessagePart1,
-                      style: TextStyle(color: colours.primaryLight, fontWeight: FontWeight.bold, fontSize: textSM),
+                      context.t.errorOccurredMessagePart1,
+                      style: TextStyle(color: context.colours.primaryLight, fontWeight: FontWeight.bold, fontSize: textSM),
                     ),
                     SizedBox(height: spaceSM),
                     Text(
-                      t.errorOccurredMessagePart2,
-                      style: TextStyle(color: colours.primaryLight, fontWeight: FontWeight.bold, fontSize: textSM),
+                      context.t.errorOccurredMessagePart2,
+                      style: TextStyle(color: context.colours.primaryLight, fontWeight: FontWeight.bold, fontSize: textSM),
                     ),
                   ],
           ]),
@@ -162,15 +163,15 @@ Future<void> showDialog(BuildContext context, String error, Function()? callback
               },
               style: ButtonStyle(
                 alignment: Alignment.center,
-                backgroundColor: WidgetStatePropertyAll(colours.tertiaryInfo),
+                backgroundColor: WidgetStatePropertyAll(context.colours.tertiaryInfo),
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 visualDensity: VisualDensity.compact,
                 shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.all(cornerRadiusSM), side: BorderSide.none)),
               ),
-              icon: FaIcon(FontAwesomeIcons.solidFileLines, color: colours.secondaryDark, size: textSM),
+              icon: FaIcon(FontAwesomeIcons.solidFileLines, color: context.colours.secondaryDark, size: textSM),
               label: Text(
-                t.troubleshooting.toUpperCase(),
-                style: TextStyle(color: colours.primaryDark, fontSize: textSM, fontWeight: FontWeight.bold),
+                context.t.troubleshooting.toUpperCase(),
+                style: TextStyle(color: context.colours.primaryDark, fontSize: textSM, fontWeight: FontWeight.bold),
               ),
             ),
             Row(
@@ -178,8 +179,8 @@ Future<void> showDialog(BuildContext context, String error, Function()? callback
               children: [
                 TextButton(
                   child: Text(
-                    t.dismiss.toUpperCase(),
-                    style: TextStyle(color: colours.primaryLight, fontSize: textMD),
+                    context.t.dismiss.toUpperCase(),
+                    style: TextStyle(color: context.colours.primaryLight, fontSize: textMD),
                   ),
                   onPressed: () {
                     Navigator.of(context).canPop() ? Navigator.pop(context) : null;
@@ -187,8 +188,8 @@ Future<void> showDialog(BuildContext context, String error, Function()? callback
                 ),
                 TextButton(
                   child: Text(
-                    (callback == null ? t.ok : t.reportABug).toUpperCase(),
-                    style: TextStyle(color: colours.tertiaryNegative, fontSize: textMD),
+                    (callback == null ? context.t.ok : context.t.reportABug).toUpperCase(),
+                    style: TextStyle(color: context.colours.tertiaryNegative, fontSize: textMD),
                   ),
                   onPressed: () async {
                     if (callback != null) callback();

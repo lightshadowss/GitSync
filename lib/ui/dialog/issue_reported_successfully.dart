@@ -13,16 +13,16 @@ Future<void> showDialog(BuildContext context, String issueUrl, {String? title, S
       title: SizedBox(
         width: MediaQuery.of(context).size.width,
         child: Text(
-          title ?? t.issueReportSuccessTitle,
-          style: TextStyle(color: colours.primaryLight, fontSize: textXL, fontWeight: FontWeight.bold),
+          title ?? context.t.issueReportSuccessTitle,
+          style: TextStyle(color: context.colours.primaryLight, fontSize: textXL, fontWeight: FontWeight.bold),
         ),
       ),
       content: SingleChildScrollView(
         child: ListBody(
           children: [
             Text(
-              message ?? t.issueReportSuccessMsg,
-              style: TextStyle(color: colours.primaryLight, fontWeight: FontWeight.bold, fontSize: textSM),
+              message ?? context.t.issueReportSuccessMsg,
+              style: TextStyle(color: context.colours.primaryLight, fontWeight: FontWeight.bold, fontSize: textSM),
             ),
           ],
         ),
@@ -30,8 +30,8 @@ Future<void> showDialog(BuildContext context, String issueUrl, {String? title, S
       actions: <Widget>[
         TextButton(
           child: Text(
-            t.trackIssue.toUpperCase(),
-            style: TextStyle(color: colours.primaryPositive, fontSize: textMD),
+            context.t.trackIssue.toUpperCase(),
+            style: TextStyle(color: context.colours.primaryPositive, fontSize: textMD),
           ),
           onPressed: () async {
             Navigator.of(context).canPop() ? Navigator.pop(context) : null;

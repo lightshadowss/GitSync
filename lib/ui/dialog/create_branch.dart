@@ -21,8 +21,8 @@ Future<void> showDialog(
         title: SizedBox(
           width: MediaQuery.of(context).size.width,
           child: Text(
-            t.createBranch,
-            style: TextStyle(color: colours.primaryLight, fontSize: textXL, fontWeight: FontWeight.bold),
+            context.t.createBranch,
+            style: TextStyle(color: context.colours.primaryLight, fontSize: textXL, fontWeight: FontWeight.bold),
           ),
         ),
         content: SingleChildScrollView(
@@ -34,20 +34,20 @@ Future<void> showDialog(
                 controller: textController,
                 maxLines: 1,
                 style: TextStyle(
-                  color: colours.primaryLight,
+                  color: context.colours.primaryLight,
                   fontWeight: FontWeight.bold,
                   decoration: TextDecoration.none,
                   decorationThickness: 0,
                   fontSize: textMD,
                 ),
                 decoration: InputDecoration(
-                  fillColor: colours.secondaryDark,
+                  fillColor: context.colours.secondaryDark,
                   filled: true,
                   border: const OutlineInputBorder(borderRadius: BorderRadius.all(cornerRadiusSM), borderSide: BorderSide.none),
                   isCollapsed: true,
                   label: Text(
-                    t.createBranchName.toUpperCase(),
-                    style: TextStyle(color: colours.secondaryLight, fontSize: textSM, fontWeight: FontWeight.bold),
+                    context.t.createBranchName.toUpperCase(),
+                    style: TextStyle(color: context.colours.secondaryLight, fontSize: textSM, fontWeight: FontWeight.bold),
                   ),
                   floatingLabelBehavior: FloatingLabelBehavior.always,
                   contentPadding: const EdgeInsets.symmetric(horizontal: spaceMD, vertical: spaceSM),
@@ -61,18 +61,18 @@ Future<void> showDialog(
                 children: [
                   Container(
                     width: double.infinity,
-                    decoration: BoxDecoration(borderRadius: BorderRadius.all(cornerRadiusSM), color: colours.secondaryDark),
+                    decoration: BoxDecoration(borderRadius: BorderRadius.all(cornerRadiusSM), color: context.colours.secondaryDark),
                     child: DropdownButton(
                       isDense: true,
                       isExpanded: true,
                       hint: Text(
-                        t.detachedHead.toUpperCase(),
-                        style: TextStyle(fontSize: textMD, fontWeight: FontWeight.bold, color: colours.secondaryLight),
+                        context.t.detachedHead.toUpperCase(),
+                        style: TextStyle(fontSize: textMD, fontWeight: FontWeight.bold, color: context.colours.secondaryLight),
                       ),
                       padding: EdgeInsets.symmetric(horizontal: spaceMD, vertical: spaceXS),
                       value: branchNames?.contains(branchName) == true ? branchName : null,
                       menuMaxHeight: 250,
-                      dropdownColor: colours.secondaryDark,
+                      dropdownColor: context.colours.secondaryDark,
                       borderRadius: BorderRadius.all(cornerRadiusSM),
                       selectedItemBuilder: (context) => List.generate(
                         (branchNames ?? []).length,
@@ -81,7 +81,7 @@ Future<void> showDialog(
                           children: [
                             Text(
                               (branchNames ?? [])[index].toUpperCase(),
-                              style: TextStyle(fontSize: textMD, fontWeight: FontWeight.bold, color: colours.primaryLight),
+                              style: TextStyle(fontSize: textMD, fontWeight: FontWeight.bold, color: context.colours.primaryLight),
                             ),
                           ],
                         ),
@@ -99,7 +99,7 @@ Future<void> showDialog(
                                 item.toUpperCase(),
                                 style: TextStyle(
                                   fontSize: textSM,
-                                  color: colours.primaryLight,
+                                  color: context.colours.primaryLight,
                                   fontWeight: FontWeight.bold,
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -113,8 +113,8 @@ Future<void> showDialog(
                     top: -spaceXS,
                     left: spaceMD,
                     child: Text(
-                      t.createBranchBasedOn.toUpperCase(),
-                      style: TextStyle(color: colours.secondaryLight, fontSize: textXXS, fontWeight: FontWeight.bold),
+                      context.t.createBranchBasedOn.toUpperCase(),
+                      style: TextStyle(color: context.colours.secondaryLight, fontSize: textXXS, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ],
@@ -125,8 +125,8 @@ Future<void> showDialog(
         actions: <Widget>[
           TextButton(
             child: Text(
-              t.cancel.toUpperCase(),
-              style: TextStyle(color: colours.primaryLight, fontSize: textMD),
+              context.t.cancel.toUpperCase(),
+              style: TextStyle(color: context.colours.primaryLight, fontSize: textMD),
             ),
             onPressed: () {
               Navigator.of(context).canPop() ? Navigator.pop(context) : null;
@@ -140,9 +140,11 @@ Future<void> showDialog(
                   }
                 : null,
             child: Text(
-              t.add.toUpperCase(),
+              context.t.add.toUpperCase(),
               style: TextStyle(
-                color: (textController.text.trim().isNotEmpty && basedOnBranchName != null) ? colours.primaryPositive : colours.secondaryPositive,
+                color: (textController.text.trim().isNotEmpty && basedOnBranchName != null)
+                    ? context.colours.primaryPositive
+                    : context.colours.secondaryPositive,
                 fontSize: textMD,
               ),
             ),

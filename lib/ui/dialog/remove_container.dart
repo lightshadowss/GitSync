@@ -19,16 +19,16 @@ Future<void> showDialog(BuildContext context, Function(bool deleteContents) call
       title: SizedBox(
         width: MediaQuery.of(context).size.width,
         child: Text(
-          t.confirmRepositoryDelete,
-          style: TextStyle(color: colours.primaryLight, fontSize: textXL, fontWeight: FontWeight.bold),
+          context.t.confirmRepositoryDelete,
+          style: TextStyle(color: context.colours.primaryLight, fontSize: textXL, fontWeight: FontWeight.bold),
         ),
       ),
       content: SingleChildScrollView(
         child: ListBody(
           children: [
             Text(
-              sprintf(t.confirmRepositoryDeleteMsg, [containerName]),
-              style: TextStyle(color: colours.primaryLight, fontWeight: FontWeight.bold, fontSize: textSM),
+              sprintf(context.t.confirmRepositoryDeleteMsg, [containerName]),
+              style: TextStyle(color: context.colours.primaryLight, fontWeight: FontWeight.bold, fontSize: textSM),
             ),
             SizedBox(height: spaceSM),
             StatefulBuilder(
@@ -41,22 +41,22 @@ Future<void> showDialog(BuildContext context, Function(bool deleteContents) call
                 label: Padding(
                   padding: EdgeInsets.only(left: spaceSM),
                   child: Text(
-                    t.deleteRepoDirectoryCheckbox,
-                    style: TextStyle(color: colours.primaryLight, fontSize: textSM, fontWeight: FontWeight.bold),
+                    context.t.deleteRepoDirectoryCheckbox,
+                    style: TextStyle(color: context.colours.primaryLight, fontSize: textSM, fontWeight: FontWeight.bold),
                   ),
                 ),
                 iconAlignment: IconAlignment.start,
                 icon: FaIcon(
                   deleteContents ? FontAwesomeIcons.solidSquareCheck : FontAwesomeIcons.squareCheck,
-                  color: colours.primaryPositive,
+                  color: context.colours.primaryPositive,
                   size: textLG,
                 ),
               ),
             ),
             SizedBox(height: spaceSM),
             Text(
-              t.thisActionCannotBeUndone,
-              style: TextStyle(color: colours.primaryLight, fontWeight: FontWeight.bold, fontSize: textSM),
+              context.t.thisActionCannotBeUndone,
+              style: TextStyle(color: context.colours.primaryLight, fontWeight: FontWeight.bold, fontSize: textSM),
             ),
           ],
         ),
@@ -64,8 +64,8 @@ Future<void> showDialog(BuildContext context, Function(bool deleteContents) call
       actions: <Widget>[
         TextButton(
           child: Text(
-            t.confirm.toUpperCase(),
-            style: TextStyle(color: colours.primaryLight, fontSize: textMD),
+            context.t.confirm.toUpperCase(),
+            style: TextStyle(color: context.colours.primaryLight, fontSize: textMD),
           ),
           onPressed: () async {
             if (deleteContents) {
@@ -82,8 +82,8 @@ Future<void> showDialog(BuildContext context, Function(bool deleteContents) call
         ),
         TextButton(
           child: Text(
-            t.cancel.toUpperCase(),
-            style: TextStyle(color: colours.primaryPositive, fontSize: textMD),
+            context.t.cancel.toUpperCase(),
+            style: TextStyle(color: context.colours.primaryPositive, fontSize: textMD),
           ),
           onPressed: () async {
             Navigator.of(context).canPop() ? Navigator.pop(context) : null;

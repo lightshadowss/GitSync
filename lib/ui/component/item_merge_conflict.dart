@@ -44,7 +44,7 @@ class _ItemMergeConflict extends State<ItemMergeConflict> {
               },
               style: ButtonStyle(
                 alignment: Alignment.centerLeft,
-                backgroundColor: WidgetStatePropertyAll(colours.tertiaryNegative),
+                backgroundColor: WidgetStatePropertyAll(context.colours.tertiaryNegative),
                 padding: WidgetStatePropertyAll(EdgeInsets.all(spaceSM)),
                 shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.all(cornerRadiusSM), side: BorderSide.none)),
               ),
@@ -54,12 +54,17 @@ class _ItemMergeConflict extends State<ItemMergeConflict> {
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   Text(
-                    t.mergeConflict.toUpperCase(),
-                    style: TextStyle(color: colours.primaryDark, fontSize: textMD, overflow: TextOverflow.ellipsis, fontWeight: FontWeight.bold),
+                    context.t.mergeConflict.toUpperCase(),
+                    style: TextStyle(
+                      color: context.colours.primaryDark,
+                      fontSize: textMD,
+                      overflow: TextOverflow.ellipsis,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   Text(
-                    t.mergeConflictItemMessage,
-                    style: TextStyle(color: colours.secondaryDark, fontSize: textSM, overflow: TextOverflow.ellipsis),
+                    context.t.mergeConflictItemMessage,
+                    style: TextStyle(color: context.colours.secondaryDark, fontSize: textSM, overflow: TextOverflow.ellipsis),
                   ),
                 ],
               ),
@@ -82,20 +87,20 @@ class _ItemMergeConflict extends State<ItemMergeConflict> {
               style: ButtonStyle(
                 alignment: Alignment.center,
                 visualDensity: VisualDensity.compact,
-                backgroundColor: WidgetStatePropertyAll(colours.secondaryNegative),
+                backgroundColor: WidgetStatePropertyAll(context.colours.secondaryNegative),
                 padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: spaceSM)),
                 shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.all(cornerRadiusSM), side: BorderSide.none)),
               ),
               child: isAborting
                   ? SizedBox.square(
                       dimension: spaceMD,
-                      child: CircularProgressIndicator(color: colours.tertiaryNegative),
+                      child: CircularProgressIndicator(color: context.colours.tertiaryNegative),
                     )
                   : Text(
-                      ((widget.clientModeEnabled ? t.abortMerge : t.resolveLater).split(" ").join("\n")).toUpperCase(),
+                      ((widget.clientModeEnabled ? context.t.abortMerge : context.t.resolveLater).split(" ").join("\n")).toUpperCase(),
                       textAlign: TextAlign.end,
                       style: TextStyle(
-                        color: colours.tertiaryNegative,
+                        color: context.colours.tertiaryNegative,
                         fontSize: textSM,
                         overflow: TextOverflow.ellipsis,
                         fontWeight: FontWeight.bold,
